@@ -1,0 +1,5 @@
+gstreamer1.0 (1.18.5.1-deepin) stable; urgency=medium
+
+  * ['Rebuild  against by  current gcc 11.2']
+
+ -- Deepin Packages Builder <packages@deepin.org>  Thu, 11 Aug 2022 21:56:42 +0800
