@@ -1,6 +1,6 @@
 project('gstreamer', 'c',
-  version : '1.18.5',
-  meson_version : '>= 0.48',
+  version : '1.20.3',
+  meson_version : '>= 0.59',
   default_options : [ 'warning_level=1',
                       'buildtype=debugoptimized' ])
 
@@ -36,18 +36,24 @@ cc = meson.get_compiler('c')
 
 cdata = configuration_data()
 
-# Ignore several spurious warnings for things gstreamer does very commonly
-# If a warning is completely useless and spammy, use '/wdXXXX' to suppress it
-# If a warning is harmless but hard to fix, use '/woXXXX' so it's shown once
-# NOTE: Only add warnings here if you are sure they're spurious
 if cc.get_id() == 'msvc'
-  add_project_arguments(
+  msvc_args = [
+      # Ignore several spurious warnings for things gstreamer does very commonly
+      # If a warning is completely useless and spammy, use '/wdXXXX' to suppress it
+      # If a warning is harmless but hard to fix, use '/woXXXX' so it's shown once
+      # NOTE: Only add warnings here if you are sure they're spurious
       '/wd4018', # implicit signed/unsigned conversion
       '/wd4146', # unary minus on unsigned (beware INT_MIN)
       '/wd4244', # lossy type conversion (e.g. double -> int)
       '/wd4305', # truncating type conversion (e.g. double -> float)
       cc.get_supported_arguments(['/utf-8']), # set the input encoding to utf-8
-      language : 'c')
+
+      # Enable some warnings on MSVC to match GCC/Clang behaviour
+      '/w14062', # enumerator 'identifier' in switch of enum 'enumeration' is not handled
+      '/w14101', # 'identifier' : unreferenced local variable
+      '/w14189', # 'identifier' : local variable is initialized but not referenced
+  ]
+  add_project_arguments(msvc_args, language: 'c')
 elif cc.has_link_argument('-Wl,-Bsymbolic-functions')
   # FIXME: Add an option for this if people ask for it
   add_project_link_arguments('-Wl,-Bsymbolic-functions', language : 'c')
@@ -116,9 +122,9 @@ cdata.set_quoted('VERSION', gst_version)
 cdata.set_quoted('GST_PLUGIN_SCANNER_INSTALLED', join_paths(prefix, helpers_install_dir, 'gst-plugin-scanner'))
 cdata.set_quoted('GST_PTP_HELPER_INSTALLED', join_paths(prefix, helpers_install_dir, 'gst-ptp-helper'))
 cdata.set_quoted('GST_PLUGIN_SUBDIR', get_option('libdir'),
-  description: 'plugin directory path component, used to find plugins on relocatable builds on windows')
+  description: 'plugin directory path component, used to find plugins on relocatable builds')
 cdata.set_quoted('GST_PLUGIN_SCANNER_SUBDIR', libexecdir,
-  description: 'libexecdir path component, used to find plugin-scanner on relocatable builds on windows')
+  description: 'libexecdir path component, used to find plugin-scanner on relocatable builds')
 cdata.set('GST_DISABLE_OPTION_PARSING', not get_option('option-parsing'))
 
 mem_align_opt = get_option('memory-alignment')
@@ -200,7 +206,6 @@ check_headers = [
   'sys/wait.h',
   'ucontext.h',
   'unistd.h',
-  'valgrind/valgrind.h',
   'sys/resource.h',
   'sys/uio.h',
 ]
@@ -231,6 +236,7 @@ check_functions = [
   'pselect',
   'getpagesize',
   'clock_gettime',
+  'clock_nanosleep',
   'strnlen',
   # These are needed by libcheck
   'getline',
@@ -479,7 +485,7 @@ libsinc = include_directories('libs')
 privinc = include_directories('gst')
 
 # Find dependencies
-glib_dep = dependency('glib-2.0', version : '>=2.44.0',
+glib_dep = dependency('glib-2.0', version : '>=2.56.0',
   fallback: ['glib', 'libglib_dep'])
 gobject_dep = dependency('gobject-2.0',
   fallback: ['glib', 'libgobject_dep'])
@@ -533,7 +539,7 @@ bashcomp_found = false
 if bashcomp_dep.found()
   bashcomp_found = true
   bashcomp_dir_override = bashcomp_dep.version().version_compare('>= 2.10') ? ['datadir', datadir] : ['prefix', prefix]
-  bash_completions_dir = bashcomp_dep.get_pkgconfig_variable('completionsdir', define_variable: bashcomp_dir_override)
+  bash_completions_dir = bashcomp_dep.get_variable('completionsdir', pkgconfig_define:  bashcomp_dir_override)
   if bash_completions_dir == ''
     msg = 'Found bash-completion but the .pc file did not set \'completionsdir\'.'
     if bashcomp_option.enabled()
@@ -544,7 +550,7 @@ if bashcomp_dep.found()
     bashcomp_found = false
   endif
 
-  bash_helpers_dir = bashcomp_dep.get_pkgconfig_variable('helpersdir', define_variable: bashcomp_dir_override)
+  bash_helpers_dir = bashcomp_dep.get_variable('helpersdir', pkgconfig_define:  bashcomp_dir_override)
   if bash_helpers_dir == ''
     msg = 'Found bash-completion, but the .pc file did not set \'helpersdir\'.'
     if bashcomp_option.enabled()
@@ -564,14 +570,33 @@ if get_option('default_library') == 'shared'
   # If we don't build static plugins there is no need to generate pc files
   plugins_pkgconfig_install_dir = disabler()
 endif
+pkgconfig_variables = ['exec_prefix=${prefix}',
+    'toolsdir=${exec_prefix}/bin',
+    'pluginsdir=${libdir}/gstreamer-1.0',
+    'datarootdir=${prefix}/share',
+    'datadir=${datarootdir}',
+    'girdir=${datadir}/gir-1.0',
+    'typelibdir=${libdir}/girepository-1.0',
+    'libexecdir=${prefix}/libexec',
+    'pluginscannerdir=${libexecdir}/gstreamer-1.0']
+pkgconfig_uninstalled_variables = ['exec_prefix=${prefix}',
+	'gstreamerdir=${prefix}/subprojects/gstreamer',
+    'bashhelpersdir=${gstreamerdir}/data/bash-completion/helpers',
+    'helpersdir=${gstreamerdir}/libs/gst/helpers']
+pkgconfig_subdirs = ['gstreamer-1.0']
+pkgconfig_libs = []
+if host_system == 'darwin'
+  pkgconfig_libs = ['-Wl,-rpath,${libdir}']
+endif
 
+static_build = get_option('default_library') == 'static'
+libraries = []
 subdir('gst')
 subdir('libs')
 subdir('plugins')
 if not get_option('tools').disabled()
   subdir('tools')
 endif
-subdir('pkgconfig')
 subdir('tests')
 subdir('data')
 subdir('docs')
@@ -587,32 +612,24 @@ subdir('scripts')
 # Set release date
 if gst_version_nano == 0
   extract_release_date = find_program('scripts/extract-release-date-from-doap-file.py')
-  run_result = run_command(extract_release_date, gst_version, files('gstreamer.doap'))
-  if run_result.returncode() == 0
-    release_date = run_result.stdout().strip()
-    cdata.set_quoted('GST_PACKAGE_RELEASE_DATETIME', release_date)
-    message('Package release date: ' + release_date)
-  else
-    # Error out if our release can't be found in the .doap file
-    error(run_result.stderr())
-  endif
+  run_result = run_command(extract_release_date, gst_version, files('gstreamer.doap'), check: true)
+  release_date = run_result.stdout().strip()
+  cdata.set_quoted('GST_PACKAGE_RELEASE_DATETIME', release_date)
+  message('Package release date: ' + release_date)
 endif
 
 configure_file(output : 'config.h', configuration : cdata)
-run_command(python3, '-c', 'import shutil; shutil.copy("hooks/pre-commit.hook", ".git/hooks/pre-commit")')
 install_data('gst-element-check-1.0.m4', install_dir : join_paths(get_option('datadir'), 'aclocal'))
 
-if meson.version().version_compare('>= 0.54')
-  plugin_names = []
-  foreach plugin: plugins
-    # FIXME: Use str.subtring() when we can depend on Meson 0.56
-    split = plugin.name().split('gst')
-    if split.length() == 2
-      plugin_names += [split[1]]
-    else
-      warning('Need substring API in meson >= 0.56 to properly parse plugin name: ' + plugin.name())
-      plugin_names += [plugin.name()]
-    endif
-  endforeach
-  summary({'Plugins':plugin_names}, list_sep: ', ')
-endif
+plugin_names = []
+foreach plugin: plugins
+  if plugin.name().startswith('gst')
+    plugin_names += [plugin.name().substring(3)]
+  else
+    plugin_names += [plugin.name()]
+  endif
+endforeach
+
+summary({
+    'Plugins': plugin_names,
+}, list_sep: ', ')

@@ -95,9 +95,11 @@
 #endif
 
 #include <gst/gst.h>
-#include <stdio.h>
-#include "gstmultiqueue.h"
 #include <gst/glib-compat-private.h>
+#include <stdio.h>
+
+#include "gstmultiqueue.h"
+#include "gstcoreelementselements.h"
 
 /* GstSingleQueue:
  * @sinkpad: associated sink #GstPad
@@ -629,6 +631,8 @@ static void gst_multi_queue_loop (GstPad * pad);
 #define gst_multi_queue_parent_class parent_class
 G_DEFINE_TYPE_WITH_CODE (GstMultiQueue, gst_multi_queue, GST_TYPE_ELEMENT,
     _do_init);
+GST_ELEMENT_REGISTER_DEFINE (multiqueue, "multiqueue", GST_RANK_NONE,
+    GST_TYPE_MULTI_QUEUE);
 
 static guint gst_multi_queue_signals[LAST_SIGNAL] = { 0 };
 
@@ -1384,7 +1388,7 @@ gst_single_queue_flush (GstMultiQueue * mq, GstSingleQueue * sq, gboolean flush,
     gst_segment_init (&sq->sink_segment, GST_FORMAT_TIME);
     gst_segment_init (&sq->src_segment, GST_FORMAT_TIME);
     sq->has_src_segment = FALSE;
-    /* All pads start off not-linked for a smooth kick-off */
+    /* All pads start off OK for a smooth kick-off */
     sq->srcresult = GST_FLOW_OK;
     sq->pushed = FALSE;
     sq->cur_time = 0;
@@ -2088,6 +2092,7 @@ gst_multi_queue_loop (GstPad * pad)
   GstFlowReturn result;
   GstClockTimeDiff next_time;
   gboolean is_buffer;
+  gboolean is_query = FALSE;
   gboolean do_update_buffering = FALSE;
   gboolean dropping = FALSE;
   GstPad *srcpad = NULL;
@@ -2097,7 +2102,7 @@ gst_multi_queue_loop (GstPad * pad)
   srcpad = g_weak_ref_get (&sq->srcpad);
 
   if (!mq || !srcpad)
-    goto out_flushing;
+    goto done;
 
 next:
   GST_DEBUG_OBJECT (mq, "SingleQueue %d : trying to pop an object", sq->id);
@@ -2112,6 +2117,8 @@ next:
 
   item = (GstMultiQueueItem *) sitem;
   newid = item->posid;
+
+  is_query = item->is_query;
 
   /* steal the object and destroy the item */
   object = gst_multi_queue_item_steal_object (item);
@@ -2358,7 +2365,7 @@ done:
 
 out_flushing:
   {
-    if (object && !GST_IS_QUERY (object))
+    if (object && !is_query)
       gst_mini_object_unref (object);
 
     GST_MULTI_QUEUE_MUTEX_LOCK (mq);
@@ -2412,7 +2419,7 @@ gst_multi_queue_chain (GstPad * pad, GstObject * parent, GstBuffer * buffer)
   mq = g_weak_ref_get (&sq->mqueue);
 
   if (!mq)
-    goto flushing;
+    goto done;
 
   /* if eos, we are always full, so avoid hanging incoming indefinitely */
   if (sq->is_eos)
@@ -2972,14 +2979,14 @@ compute_high_id (GstMultiQueue * mq)
     GST_LOG_OBJECT (mq, "inspecting sq:%d , nextid:%d, oldid:%d, srcresult:%s",
         sq->id, sq->nextid, sq->oldid, gst_flow_get_name (sq->srcresult));
 
-    if (sq->srcresult == GST_FLOW_NOT_LINKED) {
-      /* No need to consider queues which are not waiting */
-      if (sq->nextid == 0) {
-        GST_LOG_OBJECT (mq, "sq:%d is not waiting - ignoring", sq->id);
-        gst_object_unref (srcpad);
-        continue;
-      }
+    /* No need to consider queues which are not waiting */
+    if (sq->nextid == 0) {
+      GST_LOG_OBJECT (mq, "sq:%d is not waiting - ignoring", sq->id);
+      gst_object_unref (srcpad);
+      continue;
+    }
 
+    if (sq->srcresult == GST_FLOW_NOT_LINKED) {
       if (sq->nextid < lowest)
         lowest = sq->nextid;
     } else if (!GST_PAD_IS_EOS (srcpad) && sq->srcresult != GST_FLOW_EOS) {

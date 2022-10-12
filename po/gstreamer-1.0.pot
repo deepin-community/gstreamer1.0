@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gstreamer-1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-09-08 20:01+0100\n"
+"POT-Creation-Date: 2022-06-15 23:36+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,94 +18,94 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: gst/gst.c:250
+#: gst/gst.c:255
 msgid "Print the GStreamer version"
 msgstr ""
 
-#: gst/gst.c:252
+#: gst/gst.c:257
 msgid "Make all warnings fatal"
 msgstr ""
 
-#: gst/gst.c:256
+#: gst/gst.c:261
 msgid "Print available debug categories and exit"
 msgstr ""
 
-#: gst/gst.c:260
+#: gst/gst.c:265
 msgid ""
 "Default debug level from 1 (only error) to 9 (anything) or 0 for no output"
 msgstr ""
 
-#: gst/gst.c:262
+#: gst/gst.c:267
 msgid "LEVEL"
 msgstr ""
 
-#: gst/gst.c:264
+#: gst/gst.c:269
 msgid ""
 "Comma-separated list of category_name:level pairs to set specific levels for "
 "the individual categories. Example: GST_AUTOPLUG:5,GST_ELEMENT_*:3"
 msgstr ""
 
-#: gst/gst.c:267
+#: gst/gst.c:272
 msgid "LIST"
 msgstr ""
 
-#: gst/gst.c:269
+#: gst/gst.c:274
 msgid "Disable colored debugging output"
 msgstr ""
 
-#: gst/gst.c:273
+#: gst/gst.c:278
 msgid ""
 "Changes coloring mode of the debug log. Possible modes: off, on, disable, "
 "auto, unix"
 msgstr ""
 
-#: gst/gst.c:277
+#: gst/gst.c:282
 msgid "Disable debugging"
 msgstr ""
 
-#: gst/gst.c:281
+#: gst/gst.c:286
 msgid "Enable verbose plugin loading diagnostics"
 msgstr ""
 
-#: gst/gst.c:285
+#: gst/gst.c:290
 msgid "Colon-separated paths containing plugins"
 msgstr ""
 
-#: gst/gst.c:285
+#: gst/gst.c:290
 msgid "PATHS"
 msgstr ""
 
-#: gst/gst.c:288
+#: gst/gst.c:293
 msgid ""
 "Comma-separated list of plugins to preload in addition to the list stored in "
 "environment variable GST_PLUGIN_PATH"
 msgstr ""
 
-#: gst/gst.c:290
+#: gst/gst.c:295
 msgid "PLUGINS"
 msgstr ""
 
-#: gst/gst.c:293
+#: gst/gst.c:298
 msgid "Disable trapping of segmentation faults during plugin loading"
 msgstr ""
 
-#: gst/gst.c:298
+#: gst/gst.c:303
 msgid "Disable updating the registry"
 msgstr ""
 
-#: gst/gst.c:303
+#: gst/gst.c:308
 msgid "Disable spawning a helper process while scanning the registry"
 msgstr ""
 
-#: gst/gst.c:308
+#: gst/gst.c:313
 msgid "GStreamer Options"
 msgstr ""
 
-#: gst/gst.c:309
+#: gst/gst.c:314
 msgid "Show GStreamer Options"
 msgstr ""
 
-#: gst/gst.c:1016
+#: gst/gst.c:1043
 #, c-format
 msgid "Unknown option"
 msgstr ""
@@ -307,11 +307,11 @@ msgstr ""
 msgid "No standard error message for domain %s and code %d."
 msgstr ""
 
-#: gst/gstpipeline.c:589
+#: gst/gstpipeline.c:593
 msgid "Selected clock cannot be used in pipeline."
 msgstr ""
 
-#: gst/gstregistry.c:1726
+#: gst/gstregistry.c:1798
 #, c-format
 msgid "Error writing registry cache to %s: %s"
 msgstr ""
@@ -1026,22 +1026,27 @@ msgstr ""
 msgid ", "
 msgstr ""
 
-#: gst/gsturi.c:649
+#: gst/gsturi.c:642 gst/gsturi.c:815
+#, c-format
+msgid "Invalid URI: %s"
+msgstr ""
+
+#: gst/gsturi.c:657
 #, c-format
 msgid "No URI handler for the %s protocol found"
 msgstr ""
 
-#: gst/gsturi.c:824
+#: gst/gsturi.c:837
 #, c-format
 msgid "URI scheme '%s' not supported"
 msgstr ""
 
-#: gst/gstutils.c:2677 tools/gst-launch.c:343
+#: gst/gstutils.c:2677 tools/gst-launch.c:346
 #, c-format
 msgid "ERROR: from element %s: %s\n"
 msgstr ""
 
-#: gst/gstutils.c:2679 tools/gst-launch.c:345 tools/gst-launch.c:707
+#: gst/gstutils.c:2679 tools/gst-launch.c:348 tools/gst-launch.c:710
 #, c-format
 msgid ""
 "Additional debug info:\n"
@@ -1061,95 +1066,95 @@ msgstr ""
 msgid "link has no sink [source=%s@%p]"
 msgstr ""
 
-#: gst/parse/grammar.y.in:419
+#: gst/parse/grammar.y.in:413
 #, c-format
 msgid "no property \"%s\" in element \"%s\""
 msgstr ""
 
-#: gst/parse/grammar.y.in:460
+#: gst/parse/grammar.y.in:454
 #, c-format
 msgid "could not set property \"%s\" in element \"%s\" to \"%s\""
 msgstr ""
 
-#: gst/parse/grammar.y.in:488
+#: gst/parse/grammar.y.in:482
 #, c-format
 msgid "Element \"%s\" is not a GstPreset"
 msgstr ""
 
-#: gst/parse/grammar.y.in:494
+#: gst/parse/grammar.y.in:488
 #, c-format
 msgid "could not set preset \"%s\" in element \"%s\""
 msgstr ""
 
-#: gst/parse/grammar.y.in:547
+#: gst/parse/grammar.y.in:541
 msgid "Delayed linking failed."
 msgstr ""
 
-#: gst/parse/grammar.y.in:760 gst/parse/grammar.y.in:765
+#: gst/parse/grammar.y.in:754 gst/parse/grammar.y.in:759
 #, c-format
 msgid "could not link %s to %s, %s can't handle caps %s"
 msgstr ""
 
-#: gst/parse/grammar.y.in:770
+#: gst/parse/grammar.y.in:764
 #, c-format
 msgid "could not link %s to %s, neither element can handle caps %s"
 msgstr ""
 
-#: gst/parse/grammar.y.in:774
+#: gst/parse/grammar.y.in:768
 #, c-format
 msgid "could not link %s to %s with caps %s"
 msgstr ""
 
-#: gst/parse/grammar.y.in:780
+#: gst/parse/grammar.y.in:774
 #, c-format
 msgid "could not link %s to %s"
 msgstr ""
 
-#: gst/parse/grammar.y.in:857
+#: gst/parse/grammar.y.in:851
 #, c-format
 msgid "no element \"%s\""
 msgstr ""
 
-#: gst/parse/grammar.y.in:921
+#: gst/parse/grammar.y.in:915
 #, c-format
 msgid "unexpected reference \"%s\" - ignoring"
 msgstr ""
 
-#: gst/parse/grammar.y.in:927
+#: gst/parse/grammar.y.in:921
 #, c-format
 msgid "unexpected pad-reference \"%s\" - ignoring"
 msgstr ""
 
-#: gst/parse/grammar.y.in:959 gst/parse/grammar.y.in:968
+#: gst/parse/grammar.y.in:953 gst/parse/grammar.y.in:962
 #, c-format
 msgid "could not parse caps \"%s\""
 msgstr ""
 
-#: gst/parse/grammar.y.in:996
+#: gst/parse/grammar.y.in:990
 #, c-format
 msgid "no sink element for URI \"%s\""
 msgstr ""
 
-#: gst/parse/grammar.y.in:1015
+#: gst/parse/grammar.y.in:1009
 #, c-format
 msgid "no source element for URI \"%s\""
 msgstr ""
 
-#: gst/parse/grammar.y.in:1105
+#: gst/parse/grammar.y.in:1099
 msgid "syntax error"
 msgstr ""
 
-#: gst/parse/grammar.y.in:1128
+#: gst/parse/grammar.y.in:1122
 #, c-format
 msgid "specified empty bin \"%s\", not allowed"
 msgstr ""
 
-#: gst/parse/grammar.y.in:1138
+#: gst/parse/grammar.y.in:1132
 #, c-format
 msgid "no bin \"%s\", unpacking elements"
 msgstr ""
 
-#: gst/parse/grammar.y.in:1169
+#: gst/parse/grammar.y.in:1163
 msgid "empty pipeline not allowed"
 msgstr ""
 
@@ -1157,15 +1162,15 @@ msgstr ""
 msgid "Pipeline construction is invalid, please add queues."
 msgstr ""
 
-#: libs/gst/base/gstbasesink.c:3137
+#: libs/gst/base/gstbasesink.c:3144
 msgid "A lot of buffers are being dropped."
 msgstr ""
 
-#: libs/gst/base/gstbasesink.c:3792
+#: libs/gst/base/gstbasesink.c:3799
 msgid "Internal data flow problem."
 msgstr ""
 
-#: libs/gst/base/gstbasesink.c:4626 libs/gst/base/gstbasesrc.c:2768
+#: libs/gst/base/gstbasesink.c:4633 libs/gst/base/gstbasesrc.c:2768
 msgid "Internal data flow error."
 msgstr ""
 
@@ -1173,212 +1178,212 @@ msgstr ""
 msgid "Internal clock error."
 msgstr ""
 
-#: libs/gst/base/gstbasesrc.c:2726 plugins/elements/gstdownloadbuffer.c:847
-#: plugins/elements/gstdownloadbuffer.c:1272
+#: libs/gst/base/gstbasesrc.c:2726 plugins/elements/gstdownloadbuffer.c:850
+#: plugins/elements/gstdownloadbuffer.c:1275
 msgid "Failed to map buffer."
 msgstr ""
 
-#: plugins/elements/gstcapsfilter.c:128
+#: plugins/elements/gstcapsfilter.c:131
 msgid "Filter caps"
 msgstr ""
 
-#: plugins/elements/gstcapsfilter.c:129
+#: plugins/elements/gstcapsfilter.c:132
 msgid ""
 "Restrict the possible allowed capabilities (NULL means ANY). Setting this "
 "property takes a reference to the supplied GstCaps object."
 msgstr ""
 
-#: plugins/elements/gstcapsfilter.c:136
+#: plugins/elements/gstcapsfilter.c:139
 msgid "Caps Change Mode"
 msgstr ""
 
-#: plugins/elements/gstcapsfilter.c:137
+#: plugins/elements/gstcapsfilter.c:140
 msgid "Filter caps change behaviour"
 msgstr ""
 
-#: plugins/elements/gstdownloadbuffer.c:932 plugins/elements/gstqueue2.c:1810
+#: plugins/elements/gstdownloadbuffer.c:935 plugins/elements/gstqueue2.c:1812
 msgid "No Temp directory specified."
 msgstr ""
 
-#: plugins/elements/gstdownloadbuffer.c:938 plugins/elements/gstqueue2.c:1816
+#: plugins/elements/gstdownloadbuffer.c:941 plugins/elements/gstqueue2.c:1818
 #, c-format
 msgid "Could not create temp file \"%s\"."
 msgstr ""
 
-#: plugins/elements/gstdownloadbuffer.c:946 plugins/elements/gstfilesrc.c:541
-#: plugins/elements/gstqueue2.c:1824
+#: plugins/elements/gstdownloadbuffer.c:949 plugins/elements/gstfilesrc.c:558
+#: plugins/elements/gstqueue2.c:1826
 #, c-format
 msgid "Could not open file \"%s\" for reading."
 msgstr ""
 
-#: plugins/elements/gstdownloadbuffer.c:1281 plugins/elements/gstqueue2.c:2262
+#: plugins/elements/gstdownloadbuffer.c:1284 plugins/elements/gstqueue2.c:2264
 msgid "Error while writing to download file."
 msgstr ""
 
-#: plugins/elements/gstfilesink.c:466
+#: plugins/elements/gstfilesink.c:453
 msgid "No file name specified for writing."
 msgstr ""
 
-#: plugins/elements/gstfilesink.c:472
+#: plugins/elements/gstfilesink.c:459
 #, c-format
 msgid "Could not open file \"%s\" for writing."
 msgstr ""
 
-#: plugins/elements/gstfilesink.c:484 plugins/elements/gstfilesink.c:488
+#: plugins/elements/gstfilesink.c:471 plugins/elements/gstfilesink.c:475
 #, c-format
 msgid "Error closing file \"%s\"."
 msgstr ""
 
-#: plugins/elements/gstfilesink.c:673
+#: plugins/elements/gstfilesink.c:660
 #, c-format
 msgid "Error while seeking in file \"%s\"."
 msgstr ""
 
-#: plugins/elements/gstfilesink.c:681 plugins/elements/gstfilesink.c:688
-#: plugins/elements/gstfilesink.c:941 plugins/elements/gstfilesink.c:1025
+#: plugins/elements/gstfilesink.c:668 plugins/elements/gstfilesink.c:675
+#: plugins/elements/gstfilesink.c:928 plugins/elements/gstfilesink.c:1012
 #, c-format
 msgid "Error while writing to file \"%s\"."
 msgstr ""
 
-#: plugins/elements/gstfilesrc.c:529
+#: plugins/elements/gstfilesrc.c:546
 msgid "No file name specified for reading."
 msgstr ""
 
-#: plugins/elements/gstfilesrc.c:550
+#: plugins/elements/gstfilesrc.c:567
 #, c-format
 msgid "Could not get info on \"%s\"."
 msgstr ""
 
-#: plugins/elements/gstfilesrc.c:556
+#: plugins/elements/gstfilesrc.c:573
 #, c-format
 msgid "\"%s\" is a directory."
 msgstr ""
 
-#: plugins/elements/gstfilesrc.c:562
+#: plugins/elements/gstfilesrc.c:580
 #, c-format
 msgid "File \"%s\" is a socket."
 msgstr ""
 
-#: plugins/elements/gstidentity.c:794
+#: plugins/elements/gstidentity.c:849
 msgid "Failed after iterations as requested."
 msgstr ""
 
-#: plugins/elements/gstidentity.c:995
+#: plugins/elements/gstidentity.c:1067
 msgid "eos-after and error-after can't both be defined."
 msgstr ""
 
-#: plugins/elements/gsttypefindelement.c:251
+#: plugins/elements/gsttypefindelement.c:254
 msgid "caps"
 msgstr ""
 
-#: plugins/elements/gsttypefindelement.c:252
+#: plugins/elements/gsttypefindelement.c:255
 msgid "detected capabilities in stream"
 msgstr ""
 
-#: plugins/elements/gsttypefindelement.c:255
+#: plugins/elements/gsttypefindelement.c:258
 msgid "minimum"
 msgstr ""
 
-#: plugins/elements/gsttypefindelement.c:260
+#: plugins/elements/gsttypefindelement.c:263
 msgid "force caps"
 msgstr ""
 
-#: plugins/elements/gsttypefindelement.c:261
+#: plugins/elements/gsttypefindelement.c:264
 msgid "force caps without doing a typefind"
 msgstr ""
 
-#: plugins/elements/gsttypefindelement.c:988
-#: plugins/elements/gsttypefindelement.c:1010
+#: plugins/elements/gsttypefindelement.c:1013
+#: plugins/elements/gsttypefindelement.c:1035
 msgid "Stream doesn't contain enough data."
 msgstr ""
 
-#: plugins/elements/gsttypefindelement.c:1130
+#: plugins/elements/gsttypefindelement.c:1155
 msgid "Stream contains no data."
 msgstr ""
 
-#: tools/gst-inspect.c:297
+#: tools/gst-inspect.c:308
 #, c-format
 msgid "%sImplemented Interfaces%s:\n"
 msgstr ""
 
-#: tools/gst-inspect.c:408
+#: tools/gst-inspect.c:419
 msgid "readable"
 msgstr ""
 
-#: tools/gst-inspect.c:413
+#: tools/gst-inspect.c:424
 msgid "writable"
 msgstr ""
 
-#: tools/gst-inspect.c:418
+#: tools/gst-inspect.c:429
 msgid "deprecated"
 msgstr ""
 
-#: tools/gst-inspect.c:422
+#: tools/gst-inspect.c:433
 msgid "controllable"
 msgstr ""
 
-#: tools/gst-inspect.c:427
+#: tools/gst-inspect.c:438
 msgid "conditionally available"
 msgstr ""
 
-#: tools/gst-inspect.c:433
+#: tools/gst-inspect.c:444
 msgid "changeable in NULL, READY, PAUSED or PLAYING state"
 msgstr ""
 
-#: tools/gst-inspect.c:436
+#: tools/gst-inspect.c:447
 msgid "changeable only in NULL, READY or PAUSED state"
 msgstr ""
 
-#: tools/gst-inspect.c:439
+#: tools/gst-inspect.c:450
 msgid "changeable only in NULL or READY state"
 msgstr ""
 
-#: tools/gst-inspect.c:1151
+#: tools/gst-inspect.c:1189
 msgid "Blacklisted files:"
 msgstr ""
 
-#: tools/gst-inspect.c:1163 tools/gst-inspect.c:1296
+#: tools/gst-inspect.c:1204 tools/gst-inspect.c:1341
 #, c-format
 msgid "%sTotal count%s: %s"
 msgstr ""
 
-#: tools/gst-inspect.c:1165
+#: tools/gst-inspect.c:1206
 #, c-format
 msgid "%d blacklisted file"
 msgid_plural "%d blacklisted files"
 msgstr[0] ""
 msgstr[1] ""
 
-#: tools/gst-inspect.c:1298
+#: tools/gst-inspect.c:1343
 #, c-format
 msgid "%d plugin"
 msgid_plural "%d plugins"
 msgstr[0] ""
 msgstr[1] ""
 
-#: tools/gst-inspect.c:1301
+#: tools/gst-inspect.c:1346
 #, c-format
 msgid "%d blacklist entry"
 msgid_plural "%d blacklist entries"
 msgstr[0] ""
 msgstr[1] ""
 
-#: tools/gst-inspect.c:1306
+#: tools/gst-inspect.c:1351
 #, c-format
 msgid "%d feature"
 msgid_plural "%d features"
 msgstr[0] ""
 msgstr[1] ""
 
-#: tools/gst-inspect.c:1974
+#: tools/gst-inspect.c:2043
 msgid "Print all elements"
 msgstr ""
 
-#: tools/gst-inspect.c:1976
+#: tools/gst-inspect.c:2045
 msgid "Print list of blacklisted files"
 msgstr ""
 
-#: tools/gst-inspect.c:1978
+#: tools/gst-inspect.c:2047
 msgid ""
 "Print a machine-parsable list of features the specified plugin or all "
 "plugins provide.\n"
@@ -1386,308 +1391,313 @@ msgid ""
 "automatic plugin installation mechanisms"
 msgstr ""
 
-#: tools/gst-inspect.c:1983
+#: tools/gst-inspect.c:2052
 msgid "List the plugin contents"
 msgstr ""
 
-#: tools/gst-inspect.c:1985
+#: tools/gst-inspect.c:2054
 msgid ""
 "A slashes ('/') separated list of types of elements (also known as klass) to "
 "list. (unordered)"
 msgstr ""
 
-#: tools/gst-inspect.c:1988
+#: tools/gst-inspect.c:2057
 msgid "Check if the specified element or plugin exists"
 msgstr ""
 
-#: tools/gst-inspect.c:1991
+#: tools/gst-inspect.c:2060
 msgid ""
 "When checking if an element or plugin exists, also check that its version is "
 "at least the version specified"
 msgstr ""
 
-#: tools/gst-inspect.c:1995
+#: tools/gst-inspect.c:2064
 msgid "Print supported URI schemes, with the elements that implement them"
 msgstr ""
 
-#: tools/gst-inspect.c:2000
+#: tools/gst-inspect.c:2069
 msgid ""
-"Disable colors in output. You can also achieve the same by "
-"setting'GST_INSPECT_NO_COLORS' environment variable to any value."
+"Disable colors in output. You can also achieve the same by setting "
+"'GST_INSPECT_NO_COLORS' environment variable to any value."
 msgstr ""
 
-#: tools/gst-inspect.c:2004
+#: tools/gst-inspect.c:2077
 msgid "Color output, even when not sending to a tty."
 msgstr ""
 
-#: tools/gst-inspect.c:2166
+#: tools/gst-inspect.c:2235
 #, c-format
 msgid "Could not load plugin file: %s\n"
 msgstr ""
 
-#: tools/gst-inspect.c:2172
+#: tools/gst-inspect.c:2241
 #, c-format
 msgid "No such element or plugin '%s'\n"
 msgstr ""
 
-#: tools/gst-launch.c:270
+#: tools/gst-launch.c:273
 msgid "Index statistics"
 msgstr ""
 
-#: tools/gst-launch.c:553
+#: tools/gst-launch.c:556
 msgid "Setting pipeline to PLAYING ...\n"
 msgstr ""
 
-#: tools/gst-launch.c:559
+#: tools/gst-launch.c:562
 msgid "ERROR: pipeline doesn't want to play.\n"
 msgstr ""
 
-#: tools/gst-launch.c:585
+#: tools/gst-launch.c:588
 #, c-format
 msgid "Got message #%u from element \"%s\" (%s): "
 msgstr ""
 
-#: tools/gst-launch.c:589
+#: tools/gst-launch.c:592
 #, c-format
 msgid "Got message #%u from pad \"%s:%s\" (%s): "
 msgstr ""
 
-#: tools/gst-launch.c:593
+#: tools/gst-launch.c:596
 #, c-format
 msgid "Got message #%u from object \"%s\" (%s): "
 msgstr ""
 
-#: tools/gst-launch.c:597
+#: tools/gst-launch.c:600
 #, c-format
 msgid "Got message #%u (%s): "
 msgstr ""
 
-#: tools/gst-launch.c:628
+#: tools/gst-launch.c:631
 #, c-format
 msgid "Got EOS from element \"%s\".\n"
 msgstr ""
 
-#: tools/gst-launch.c:632
+#: tools/gst-launch.c:635
 msgid "EOS received - stopping pipeline...\n"
-msgstr ""
-
-#: tools/gst-launch.c:641
-#, c-format
-msgid "FOUND TAG      : found by element \"%s\".\n"
 msgstr ""
 
 #: tools/gst-launch.c:644
 #, c-format
-msgid "FOUND TAG      : found by pad \"%s:%s\".\n"
+msgid "FOUND TAG      : found by element \"%s\".\n"
 msgstr ""
 
 #: tools/gst-launch.c:647
 #, c-format
-msgid "FOUND TAG      : found by object \"%s\".\n"
+msgid "FOUND TAG      : found by pad \"%s:%s\".\n"
 msgstr ""
 
 #: tools/gst-launch.c:650
-msgid "FOUND TAG\n"
+#, c-format
+msgid "FOUND TAG      : found by object \"%s\".\n"
 msgstr ""
 
-#: tools/gst-launch.c:665
-#, c-format
-msgid "FOUND TOC      : found by element \"%s\".\n"
+#: tools/gst-launch.c:653
+msgid "FOUND TAG\n"
 msgstr ""
 
 #: tools/gst-launch.c:668
 #, c-format
-msgid "FOUND TOC      : found by object \"%s\".\n"
+msgid "FOUND TOC      : found by element \"%s\".\n"
 msgstr ""
 
 #: tools/gst-launch.c:671
+#, c-format
+msgid "FOUND TOC      : found by object \"%s\".\n"
+msgstr ""
+
+#: tools/gst-launch.c:674
 msgid "FOUND TOC\n"
 msgstr ""
 
-#: tools/gst-launch.c:688
+#: tools/gst-launch.c:691
 #, c-format
 msgid ""
 "INFO:\n"
 "%s\n"
 msgstr ""
 
-#: tools/gst-launch.c:705
+#: tools/gst-launch.c:708
 #, c-format
 msgid "WARNING: from element %s: %s\n"
 msgstr ""
 
-#: tools/gst-launch.c:726
+#: tools/gst-launch.c:729
 msgid "Pipeline is PREROLLED ...\n"
 msgstr ""
 
-#: tools/gst-launch.c:730
+#: tools/gst-launch.c:733
 msgid "Prerolled, waiting for buffering to finish...\n"
 msgstr ""
 
-#: tools/gst-launch.c:734
+#: tools/gst-launch.c:737
 msgid "Prerolled, waiting for progress to finish...\n"
 msgstr ""
 
-#: tools/gst-launch.c:747
+#: tools/gst-launch.c:750
 msgid "buffering..."
 msgstr ""
 
-#: tools/gst-launch.c:764
+#: tools/gst-launch.c:767
 msgid "Done buffering, setting pipeline to PLAYING ...\n"
 msgstr ""
 
 #. we were not buffering but PLAYING, PAUSE  the pipeline.
-#: tools/gst-launch.c:771
+#: tools/gst-launch.c:774
 msgid "Buffering, setting pipeline to PAUSED ...\n"
 msgstr ""
 
-#: tools/gst-launch.c:780
+#: tools/gst-launch.c:783
 msgid "Redistribute latency...\n"
 msgstr ""
 
-#: tools/gst-launch.c:791
+#: tools/gst-launch.c:794
 #, c-format
 msgid "Setting state to %s as requested by %s...\n"
 msgstr ""
 
 #. this application message is posted when we caught an interrupt and
 #. * we need to stop the pipeline.
-#: tools/gst-launch.c:807
+#: tools/gst-launch.c:810
 msgid "Interrupt: Stopping pipeline ...\n"
 msgstr ""
 
-#: tools/gst-launch.c:813
+#: tools/gst-launch.c:816
 msgid "Interrupt while waiting for EOS - stopping pipeline...\n"
 msgstr ""
 
-#: tools/gst-launch.c:818
+#: tools/gst-launch.c:821
 msgid "EOS on shutdown enabled -- Forcing EOS on the pipeline\n"
 msgstr ""
 
-#: tools/gst-launch.c:821
+#: tools/gst-launch.c:824
 msgid "Waiting for EOS...\n"
 msgstr ""
 
-#: tools/gst-launch.c:851
+#: tools/gst-launch.c:854
 #, c-format
 msgid "Progress: (%s) %s\n"
 msgstr ""
 
-#: tools/gst-launch.c:865
+#: tools/gst-launch.c:868
 #, c-format
 msgid "Missing element: %s\n"
 msgstr ""
 
-#: tools/gst-launch.c:879
+#: tools/gst-launch.c:882
 #, c-format
 msgid "Got context from element '%s': %s=%s\n"
 msgstr ""
 
-#: tools/gst-launch.c:983
+#: tools/gst-launch.c:986
 msgid "ERROR: pipeline doesn't want to preroll.\n"
 msgstr ""
 
-#: tools/gst-launch.c:985
+#: tools/gst-launch.c:988
 msgid "An error happened while waiting for EOS\n"
 msgstr ""
 
-#: tools/gst-launch.c:1048
+#: tools/gst-launch.c:1057
+#, c-format
+msgid "Use Windows high-resolution clock, precision: %u ms\n"
+msgstr ""
+
+#: tools/gst-launch.c:1088
 msgid "Output tags (also known as metadata)"
 msgstr ""
 
-#: tools/gst-launch.c:1050
+#: tools/gst-launch.c:1090
 msgid "Output TOC (chapters and editions)"
 msgstr ""
 
-#: tools/gst-launch.c:1052
+#: tools/gst-launch.c:1092
 msgid "Output status information and property notifications"
 msgstr ""
 
-#: tools/gst-launch.c:1054
+#: tools/gst-launch.c:1094
 msgid "Do not print any progress information"
 msgstr ""
 
-#: tools/gst-launch.c:1056
+#: tools/gst-launch.c:1096
 msgid "Output messages"
 msgstr ""
 
-#: tools/gst-launch.c:1058
+#: tools/gst-launch.c:1098
 msgid ""
 "Do not output status information for the specified property if verbose "
 "output is enabled (can be used multiple times)"
 msgstr ""
 
-#: tools/gst-launch.c:1060
+#: tools/gst-launch.c:1100
 msgid "PROPERTY-NAME"
 msgstr ""
 
-#: tools/gst-launch.c:1062
+#: tools/gst-launch.c:1102
 msgid "Do not install a fault handler"
 msgstr ""
 
-#: tools/gst-launch.c:1064
+#: tools/gst-launch.c:1104
 msgid "Force EOS on sources before shutting the pipeline down"
 msgstr ""
 
-#: tools/gst-launch.c:1067
+#: tools/gst-launch.c:1107
 msgid "Gather and print index statistics"
 msgstr ""
 
-#: tools/gst-launch.c:1071
+#: tools/gst-launch.c:1111
 msgid ""
 "Do not print current position of pipeline. If this option is unspecified, "
 "the position will be printed when stdout is a TTY. To enable printing "
 "position when stdout is not a TTY, use \"force-position\" option"
 msgstr ""
 
-#: tools/gst-launch.c:1077
+#: tools/gst-launch.c:1117
 msgid ""
 "Allow printing current position of pipeline even if stdout is not a TTY. "
 "This option has no effect if the \"no-position\" option is specified"
 msgstr ""
 
-#: tools/gst-launch.c:1146
+#: tools/gst-launch.c:1189
 #, c-format
 msgid "ERROR: pipeline could not be constructed: %s.\n"
 msgstr ""
 
-#: tools/gst-launch.c:1150
+#: tools/gst-launch.c:1193
 msgid "ERROR: pipeline could not be constructed.\n"
 msgstr ""
 
-#: tools/gst-launch.c:1154
+#: tools/gst-launch.c:1197
 #, c-format
 msgid "WARNING: erroneous pipeline: %s\n"
 msgstr ""
 
-#: tools/gst-launch.c:1171
+#: tools/gst-launch.c:1214
 msgid "ERROR: the 'pipeline' element wasn't found.\n"
 msgstr ""
 
-#: tools/gst-launch.c:1203
+#: tools/gst-launch.c:1263
 msgid "Setting pipeline to PAUSED ...\n"
 msgstr ""
 
-#: tools/gst-launch.c:1208
+#: tools/gst-launch.c:1268
 msgid "Failed to set pipeline to PAUSED.\n"
 msgstr ""
 
-#: tools/gst-launch.c:1212
+#: tools/gst-launch.c:1272
 msgid "Pipeline is live and does not need PREROLL ...\n"
 msgstr ""
 
-#: tools/gst-launch.c:1216
+#: tools/gst-launch.c:1276
 msgid "Pipeline is PREROLLING ...\n"
 msgstr ""
 
-#: tools/gst-launch.c:1260
+#: tools/gst-launch.c:1320
 msgid "Execution ended after %"
 msgstr ""
 
-#: tools/gst-launch.c:1277
+#: tools/gst-launch.c:1337
 msgid "Setting pipeline to NULL ...\n"
 msgstr ""
 
-#: tools/gst-launch.c:1290
+#: tools/gst-launch.c:1355
 msgid "Freeing pipeline ...\n"
 msgstr ""

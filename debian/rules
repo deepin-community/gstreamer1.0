@@ -59,8 +59,13 @@ override_dh_auto_install:
 	gcc -o debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/gstreamer1.0/gstreamer-1.0/gst-codec-info-1.0 -Wall debian/gst-codec-info.c $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) `pkg-config --libs --cflags glib-2.0 gthread-2.0 gmodule-no-export-2.0 gobject-2.0` debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/libgstreamer-1.0.so -Idebian/tmp/usr/include/gstreamer-1.0 -Idebian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/gstreamer-1.0/include
 	perldoc -o man debian/dh_gstscancodecs > debian/tmp/usr/share/man/man1/dh_gstscancodecs.1
 
+# Only make the tests fail for key architectures
 override_dh_auto_test:
+ifneq (,$(filter $(DEB_HOST_ARCH), amd64 arm64))
+	dh_auto_test
+else
 	dh_auto_test || true
+endif
 
 override_dh_strip:
 	dh_strip --dbgsym-migration='libgstreamer1.0-0-dbg (<< 1.17.1-1~)'

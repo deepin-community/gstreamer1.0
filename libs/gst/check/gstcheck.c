@@ -332,6 +332,52 @@ gst_check_deinit (void)
   gst_check_clear_log_filter ();
 }
 
+static const gchar *log_domains[] = {
+  "GLib-GObject",
+  "GLib-GIO",
+  "GLib",
+  "GStreamer-AdaptiveDemux",
+  "GStreamer-Allocators",
+  "GStreamer-App",
+  "GStreamer-Audio",
+  "GStreamer-AudioBad",
+  "GStreamer-Base",
+  "GStreamer-BaseCameraBinSrc",
+  "GStreamer-Check",
+  "GStreamer-CodecParsers",
+  "GStreamer-Codecs",
+  "GStreamer-Controller",
+  "GStreamer-D3D11",
+  "GStreamer",
+  "GStreamer-FFT",
+  "GStreamer-GL",
+  "GStreamer-InsertBin",
+  "GStreamer-ISOFF",
+  "GStreamer-MpegTS",
+  "GStreamer-Net",
+  "GStreamer-OpenCV",
+  "GStreamer-PBUtils",
+  "GStreamer-Photography",
+  "GStreamer-Play",
+  "GStreamer-Player",
+  "GStreamer-RIFF",
+  "GStreamer-RTP",
+  "GStreamer-RTSP",
+  "GStreamer-RTSP-Server",
+  "GStreamer-SCTP",
+  "GStreamer-SDP",
+  "GStreamer-Tag",
+  "GStreamer-Transcoder",
+  "GStreamer-UriDownloader",
+  "GStreamer-VA",
+  "GStreamer-Video",
+  "GStreamer-Vulkan",
+  "GStreamer-Vulkan",
+  "GStreamer-Wayland",
+  "GStreamer-WebRTC",
+  "GStreamer-WinRT",
+};
+
 /* gst_check_init:
  * @argc: (inout) (allow-none): pointer to application's argc
  * @argv: (inout) (array length=argc) (allow-none): pointer to application's argv
@@ -352,6 +398,7 @@ gst_check_init (int *argc, char **argv[])
         "List tests present in the testsuite", NULL},
     {NULL}
   };
+  guint i;
 
   ctx = g_option_context_new ("gst-check");
   g_option_context_add_main_entries (ctx, options, NULL);
@@ -379,14 +426,13 @@ gst_check_init (int *argc, char **argv[])
       NULL);
   g_log_set_handler (NULL, G_LOG_LEVEL_CRITICAL | G_LOG_LEVEL_WARNING,
       gst_check_log_critical_func, NULL);
-  g_log_set_handler ("GStreamer", G_LOG_LEVEL_CRITICAL | G_LOG_LEVEL_WARNING,
-      gst_check_log_critical_func, NULL);
-  g_log_set_handler ("GLib-GObject", G_LOG_LEVEL_CRITICAL | G_LOG_LEVEL_WARNING,
-      gst_check_log_critical_func, NULL);
-  g_log_set_handler ("GLib-GIO", G_LOG_LEVEL_CRITICAL | G_LOG_LEVEL_WARNING,
-      gst_check_log_critical_func, NULL);
-  g_log_set_handler ("GLib", G_LOG_LEVEL_CRITICAL | G_LOG_LEVEL_WARNING,
-      gst_check_log_critical_func, NULL);
+
+  for (i = 0; i < G_N_ELEMENTS (log_domains); ++i) {
+    g_log_set_handler (log_domains[i],
+        G_LOG_LEVEL_CRITICAL | G_LOG_LEVEL_WARNING,
+        gst_check_log_critical_func, NULL);
+  }
+
   g_test_log_set_fatal_handler (gst_check_log_fatal_func, NULL);
 
   print_plugins ();
@@ -596,7 +642,7 @@ gst_check_setup_src_pad_by_name_from_template (GstElement * element,
 
   sinkpad = gst_element_get_static_pad (element, name);
   if (sinkpad == NULL)
-    sinkpad = gst_element_get_request_pad (element, name);
+    sinkpad = gst_element_request_pad_simple (element, name);
   fail_if (sinkpad == NULL, "Could not get sink pad from %s",
       GST_ELEMENT_NAME (element));
   fail_unless (gst_pad_link (srcpad, sinkpad) == GST_PAD_LINK_OK,
@@ -721,7 +767,7 @@ gst_check_setup_sink_pad_by_name_from_template (GstElement * element,
 
   srcpad = gst_element_get_static_pad (element, name);
   if (srcpad == NULL)
-    srcpad = gst_element_get_request_pad (element, name);
+    srcpad = gst_element_request_pad_simple (element, name);
   fail_if (srcpad == NULL, "Could not get source pad from %s",
       GST_ELEMENT_NAME (element));
   gst_pad_set_chain_function (sinkpad, gst_check_chain_func);
@@ -1090,6 +1136,7 @@ gst_check_run_suite (Suite * suite, const gchar * name, const gchar * fname)
   g_timer_destroy (timer);
   g_free (xmlfilename);
   srunner_free (sr);
+  g_thread_pool_stop_unused_threads ();
   return nf;
 }
 

@@ -328,7 +328,7 @@ static void gst_parse_new_child(GstChildProxy *child_proxy, GObject *object,
     GST_CAT_LOG_OBJECT (GST_CAT_PIPELINE, child_proxy, "parsing delayed property %s as a %s from %s",
       pspec->name, g_type_name (value_type), set->value_str);
     g_value_init (&v, value_type);
-    if (gst_value_deserialize (&v, set->value_str))
+    if (gst_value_deserialize_with_pspec (&v, set->value_str, pspec))
       got_value = TRUE;
     else if (g_type_is_a (value_type, GST_TYPE_ELEMENT)) {
        GstElement *bin;
@@ -398,7 +398,7 @@ static void gst_parse_element_set (gchar *value, GstElement *element, graph_t *g
   }
   gst_parse_unescape (pos);
 
-  if (GST_IS_CHILD_PROXY (element) && strstr (value, "::")) {
+  if (GST_IS_CHILD_PROXY (element) && strstr (value, "::") != NULL) {
     if (!gst_child_proxy_lookup (GST_CHILD_PROXY (element), value, &target, &pspec)) {
       /* do a delayed set */
       gst_parse_add_delayed_set (element, value, pos);
@@ -408,12 +408,6 @@ static void gst_parse_element_set (gchar *value, GstElement *element, graph_t *g
     if (pspec != NULL) {
       target = G_OBJECT (g_object_ref (element));
       GST_CAT_LOG_OBJECT (GST_CAT_PIPELINE, target, "found %s property", value);
-    } else if (GST_IS_CHILD_PROXY (element)) {
-      /* https://gitlab.freedesktop.org/gstreamer/gstreamer/-/merge_requests/832 made it
-       * a hard error to try and set a top-level property that doesn't exist on a bin,
-       * but here in 1.18 we just want to output a debug ERROR but not fail */
-      GST_ERROR("No property \"%s\" in element \"%s\" that is a child proxy. This will be a hard error in 1.20",
-          value, GST_ELEMENT_NAME (element));
     } else {
       SET_ERROR (graph->error, GST_PARSE_ERROR_NO_SUCH_PROPERTY, \
           _("no property \"%s\" in element \"%s\""), value, \
@@ -430,7 +424,7 @@ static void gst_parse_element_set (gchar *value, GstElement *element, graph_t *g
         pspec->name, g_type_name (value_type));
 
     g_value_init (&v, value_type);
-    if (gst_value_deserialize (&v, pos))
+    if (gst_value_deserialize_with_pspec (&v, pos, pspec))
       got_value = TRUE;
     else if (g_type_is_a (value_type, GST_TYPE_ELEMENT)) {
        GstElement *bin;

@@ -182,6 +182,8 @@ struct _GstHarnessPrivate
 
   GstClockTime latency_min;
   GstClockTime latency_max;
+  gboolean is_live;
+
   gboolean has_clock_wait;
   gboolean drop_buffers;
   GstClockTime last_push_ts;
@@ -359,7 +361,8 @@ gst_harness_negotiate (GstHarness * h)
     gst_harness_decide_allocation (h, caps);
     gst_caps_unref (caps);
   } else {
-    GST_FIXME_OBJECT (h, "Cannot negotiate allocation because caps is not set");
+    GST_FIXME_OBJECT (h->srcpad,
+        "Cannot negotiate allocation because caps is not set");
   }
 }
 
@@ -375,7 +378,8 @@ gst_harness_sink_query (GstPad * pad, GstObject * parent, GstQuery * query)
 
   switch (GST_QUERY_TYPE (query)) {
     case GST_QUERY_LATENCY:
-      gst_query_set_latency (query, TRUE, priv->latency_min, priv->latency_max);
+      gst_query_set_latency (query, priv->is_live, priv->latency_min,
+          priv->latency_max);
       break;
     case GST_QUERY_CAPS:
     {
@@ -465,7 +469,8 @@ gst_harness_src_query (GstPad * pad, GstObject * parent, GstQuery * query)
 
   switch (GST_QUERY_TYPE (query)) {
     case GST_QUERY_LATENCY:
-      gst_query_set_latency (query, TRUE, priv->latency_min, priv->latency_max);
+      gst_query_set_latency (query, priv->is_live, priv->latency_min,
+          priv->latency_max);
       break;
     case GST_QUERY_CAPS:
     {
@@ -535,7 +540,7 @@ gst_harness_link_element_srcpad (GstHarness * h,
       element_srcpad_name);
   GstPadLinkReturn link;
   if (srcpad == NULL)
-    srcpad = gst_element_get_request_pad (h->element, element_srcpad_name);
+    srcpad = gst_element_request_pad_simple (h->element, element_srcpad_name);
   g_assert (srcpad);
   link = gst_pad_link (srcpad, h->sinkpad);
   g_assert_cmpint (link, ==, GST_PAD_LINK_OK);
@@ -554,7 +559,7 @@ gst_harness_link_element_sinkpad (GstHarness * h,
       element_sinkpad_name);
   GstPadLinkReturn link;
   if (sinkpad == NULL)
-    sinkpad = gst_element_get_request_pad (h->element, element_sinkpad_name);
+    sinkpad = gst_element_request_pad_simple (h->element, element_sinkpad_name);
   g_assert (sinkpad);
   link = gst_pad_link (h->srcpad, sinkpad);
   g_assert_cmpint (link, ==, GST_PAD_LINK_OK);
@@ -683,6 +688,7 @@ gst_harness_new_empty (void)
   priv->last_push_ts = GST_CLOCK_TIME_NONE;
   priv->latency_min = 0;
   priv->latency_max = GST_CLOCK_TIME_NONE;
+  priv->is_live = TRUE;
   priv->drop_buffers = FALSE;
   priv->testclock = GST_TEST_CLOCK_CAST (gst_test_clock_new ());
 
@@ -2220,8 +2226,26 @@ gst_harness_query_latency (GstHarness * h)
 void
 gst_harness_set_upstream_latency (GstHarness * h, GstClockTime latency)
 {
+  g_return_if_fail (GST_CLOCK_TIME_IS_VALID (latency));
+
+  h->priv->latency_min = latency;
+}
+
+/**
+ * gst_harness_set_live:
+ * @h: a #GstHarness
+ * @is_live: %TRUE for live, %FALSE for non-live
+ *
+ * Sets the liveness reported by #GstHarness when receiving a latency-query.
+ * The default is %TRUE.
+ *
+ * Since: 1.20
+ */
+void
+gst_harness_set_live (GstHarness * h, gboolean is_live)
+{
   GstHarnessPrivate *priv = h->priv;
-  priv->latency_min = latency;
+  priv->is_live = is_live;
 }
 
 /**

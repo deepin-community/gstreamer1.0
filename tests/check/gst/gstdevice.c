@@ -174,8 +174,12 @@ gst_test_device_provider_init (GstTestDeviceProvider * self)
 {
 }
 
-static void
-register_test_device_provider (void)
+GST_DEVICE_PROVIDER_REGISTER_DECLARE (testdeviceprovider);
+
+GST_DEVICE_PROVIDER_REGISTER_DEFINE (testdeviceprovider, "testdeviceprovider",
+    1, gst_test_device_provider_get_type ())
+
+     static void register_test_device_provider (void)
 {
   gst_device_provider_register (NULL, "testdeviceprovider", 1,
       gst_test_device_provider_get_type ());
@@ -187,7 +191,7 @@ GST_START_TEST (test_device_provider_factory)
   GList *factories;
   GstDeviceProviderFactory *f;
 
-  register_test_device_provider ();
+  GST_DEVICE_PROVIDER_REGISTER (testdeviceprovider, NULL);
 
   factories = gst_device_provider_factory_list_get_device_providers (1);
 
@@ -244,12 +248,14 @@ GST_START_TEST (test_device_provider)
   g_list_free_full (devs, (GDestroyNotify) gst_object_unref);
 
   fail_if (gst_device_provider_can_monitor (dp));
+  fail_if (gst_device_provider_is_started (dp));
   fail_unless (gst_device_provider_start (dp));
 
   bus = gst_device_provider_get_bus (dp);
   fail_unless (GST_IS_BUS (bus));
   gst_object_unref (bus);
 
+  fail_unless (gst_device_provider_is_started (dp));
   gst_device_provider_stop (dp);
 
   gst_object_unref (dp);

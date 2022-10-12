@@ -48,6 +48,7 @@
 #include <string.h>
 
 #include "gstinputselector.h"
+#include "gstcoreelementselements.h"
 
 #define DEBUG_CACHED_BUFFERS 0
 
@@ -913,7 +914,6 @@ gst_input_selector_cleanup_old_cached_buffers (GstInputSelector * sel,
   GST_DEBUG_OBJECT (sel, "Cleaning up old cached buffers");
   for (walk = GST_ELEMENT_CAST (sel)->sinkpads; walk; walk = g_list_next (walk)) {
     GstSelectorPad *selpad;
-    GstSegment *seg;
     GstSelectorPadCachedBuffer *cached_buffer;
     GSList *maybe_remove;
     guint queue_position;
@@ -922,13 +922,12 @@ gst_input_selector_cleanup_old_cached_buffers (GstInputSelector * sel,
     if (!selpad->cached_buffers)
       continue;
 
-    seg = &selpad->segment;
-
     maybe_remove = NULL;
     queue_position = 0;
     while ((cached_buffer = g_queue_peek_nth (selpad->cached_buffers,
                 queue_position))) {
       GstBuffer *buffer = cached_buffer->buffer;
+      GstSegment *seg = &cached_buffer->segment;
       GstClockTime running_time;
       GSList *l;
 
@@ -1213,6 +1212,8 @@ static gboolean gst_input_selector_query (GstPad * pad, GstObject * parent,
 #define gst_input_selector_parent_class parent_class
 G_DEFINE_TYPE_WITH_CODE (GstInputSelector, gst_input_selector, GST_TYPE_ELEMENT,
     _do_init);
+GST_ELEMENT_REGISTER_DEFINE (input_selector, "input-selector", GST_RANK_NONE,
+    GST_TYPE_INPUT_SELECTOR);
 
 static void
 gst_input_selector_class_init (GstInputSelectorClass * klass)

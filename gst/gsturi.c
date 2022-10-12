@@ -405,8 +405,8 @@ gst_uri_get_protocol (const gchar * uri)
 {
   gchar *colon;
 
-  g_return_val_if_fail (uri != NULL, NULL);
-  g_return_val_if_fail (gst_uri_is_valid (uri), NULL);
+  if (!gst_uri_is_valid (uri))
+    return NULL;
 
   colon = strstr (uri, ":");
 
@@ -427,9 +427,11 @@ gst_uri_has_protocol (const gchar * uri, const gchar * protocol)
 {
   gchar *colon;
 
-  g_return_val_if_fail (uri != NULL, FALSE);
   g_return_val_if_fail (protocol != NULL, FALSE);
-  g_return_val_if_fail (gst_uri_is_valid (uri), FALSE);
+
+  if (!gst_uri_is_valid (uri)) {
+    return FALSE;
+  }
 
   colon = strstr (uri, ":");
 
@@ -460,8 +462,9 @@ gst_uri_get_location (const gchar * uri)
   const gchar *colon;
   gchar *unescaped = NULL;
 
-  g_return_val_if_fail (uri != NULL, NULL);
-  g_return_val_if_fail (gst_uri_is_valid (uri), NULL);
+  if (!gst_uri_is_valid (uri)) {
+    return NULL;
+  }
 
   colon = strstr (uri, "://");
   if (!colon)
@@ -632,8 +635,13 @@ gst_element_make_from_uri (const GstURIType type, const gchar * uri,
 
   g_return_val_if_fail (gst_is_initialized (), NULL);
   g_return_val_if_fail (GST_URI_TYPE_IS_VALID (type), NULL);
-  g_return_val_if_fail (gst_uri_is_valid (uri), NULL);
   g_return_val_if_fail (error == NULL || *error == NULL, NULL);
+
+  if (!gst_uri_is_valid (uri)) {
+    g_set_error (error, GST_URI_ERROR, GST_URI_ERROR_BAD_URI,
+        _("Invalid URI: %s"), uri);
+    return NULL;
+  }
 
   GST_DEBUG ("type:%d, uri:%s, elementname:%s", type, uri, elementname);
 
@@ -796,12 +804,17 @@ gst_uri_handler_set_uri (GstURIHandler * handler, const gchar * uri,
   gchar *protocol;
 
   g_return_val_if_fail (GST_IS_URI_HANDLER (handler), FALSE);
-  g_return_val_if_fail (gst_uri_is_valid (uri), FALSE);
   g_return_val_if_fail (error == NULL || *error == NULL, FALSE);
 
   iface = GST_URI_HANDLER_GET_INTERFACE (handler);
   g_return_val_if_fail (iface != NULL, FALSE);
   g_return_val_if_fail (iface->set_uri != NULL, FALSE);
+
+  if (!gst_uri_is_valid (uri)) {
+    g_set_error (error, GST_URI_ERROR, GST_URI_ERROR_BAD_URI,
+        _("Invalid URI: %s"), uri);
+    return FALSE;
+  }
 
   protocol = gst_uri_get_protocol (uri);
 
@@ -1302,7 +1315,7 @@ _gst_uri_string_to_list (const gchar * str, const gchar * sep, gboolean convert,
       for (next_elem = split_str; *next_elem; next_elem += 1) {
         gchar *elem = *next_elem;
         if (*elem == '\0') {
-          new_list = g_list_append (new_list, NULL);
+          new_list = g_list_prepend (new_list, NULL);
         } else {
           if (convert && !unescape) {
             gchar *next_sep;
@@ -1318,7 +1331,7 @@ _gst_uri_string_to_list (const gchar * str, const gchar * sep, gboolean convert,
             g_free (elem);
             elem = *next_elem;
           }
-          new_list = g_list_append (new_list, g_strdup (elem));
+          new_list = g_list_prepend (new_list, g_strdup (elem));
         }
       }
     }
@@ -1327,7 +1340,7 @@ _gst_uri_string_to_list (const gchar * str, const gchar * sep, gboolean convert,
       g_free (pct_sep);
   }
 
-  return new_list;
+  return g_list_reverse (new_list);
 }
 
 static GHashTable *
