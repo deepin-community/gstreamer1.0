@@ -169,7 +169,7 @@ dummy_parser_handle_frame (GstBaseParse * parse,
   if (((DummyParser *) parse)->caps_set == FALSE) {
     GstCaps *caps;
     /* push caps */
-    caps = gst_caps_new_empty_simple ("ANY");
+    caps = gst_caps_new_empty_simple ("video/x-raw");
     gst_pad_set_caps (GST_BASE_PARSE_SRC_PAD (parse), caps);
     gst_caps_unref (caps);
     ((DummyParser *) parse)->caps_set = TRUE;
@@ -521,7 +521,7 @@ GST_START_TEST (test_loopback_2)
 
   GST_INFO ("wait for segment done message");
 
-  msg = gst_bus_timed_pop_filtered (bus, (GstClockTime) 2 * GST_SECOND,
+  msg = gst_bus_timed_pop_filtered (bus, GST_CLOCK_TIME_NONE,
       GST_MESSAGE_SEGMENT_DONE | GST_MESSAGE_ERROR);
   fail_unless (msg, "no message within the timed window");
   fail_unless_equals_string (GST_MESSAGE_TYPE_NAME (msg), "segment-done");

@@ -105,7 +105,7 @@
  * with different configurations, by simply doing:
  *
  * |[<!-- language="C" -->
- *   GstHarness * h = gst_harness_new (h, "vp8dec");
+ *   GstHarness * h = gst_harness_new ("vp8dec");
  *   gst_harness_add_src_parse (h, "videotestsrc is-live=1 ! vp8enc", TRUE);
  * ]|
  *
@@ -182,6 +182,8 @@ struct _GstHarnessPrivate
 
   GstClockTime latency_min;
   GstClockTime latency_max;
+  gboolean is_live;
+
   gboolean has_clock_wait;
   gboolean drop_buffers;
   GstClockTime last_push_ts;
@@ -359,7 +361,8 @@ gst_harness_negotiate (GstHarness * h)
     gst_harness_decide_allocation (h, caps);
     gst_caps_unref (caps);
   } else {
-    GST_FIXME_OBJECT (h, "Cannot negotiate allocation because caps is not set");
+    GST_FIXME_OBJECT (h->srcpad,
+        "Cannot negotiate allocation because caps is not set");
   }
 }
 
@@ -375,7 +378,8 @@ gst_harness_sink_query (GstPad * pad, GstObject * parent, GstQuery * query)
 
   switch (GST_QUERY_TYPE (query)) {
     case GST_QUERY_LATENCY:
-      gst_query_set_latency (query, TRUE, priv->latency_min, priv->latency_max);
+      gst_query_set_latency (query, priv->is_live, priv->latency_min,
+          priv->latency_max);
       break;
     case GST_QUERY_CAPS:
     {
@@ -465,7 +469,8 @@ gst_harness_src_query (GstPad * pad, GstObject * parent, GstQuery * query)
 
   switch (GST_QUERY_TYPE (query)) {
     case GST_QUERY_LATENCY:
-      gst_query_set_latency (query, TRUE, priv->latency_min, priv->latency_max);
+      gst_query_set_latency (query, priv->is_live, priv->latency_min,
+          priv->latency_max);
       break;
     case GST_QUERY_CAPS:
     {
@@ -535,7 +540,7 @@ gst_harness_link_element_srcpad (GstHarness * h,
       element_srcpad_name);
   GstPadLinkReturn link;
   if (srcpad == NULL)
-    srcpad = gst_element_get_request_pad (h->element, element_srcpad_name);
+    srcpad = gst_element_request_pad_simple (h->element, element_srcpad_name);
   g_assert (srcpad);
   link = gst_pad_link (srcpad, h->sinkpad);
   g_assert_cmpint (link, ==, GST_PAD_LINK_OK);
@@ -554,7 +559,7 @@ gst_harness_link_element_sinkpad (GstHarness * h,
       element_sinkpad_name);
   GstPadLinkReturn link;
   if (sinkpad == NULL)
-    sinkpad = gst_element_get_request_pad (h->element, element_sinkpad_name);
+    sinkpad = gst_element_request_pad_simple (h->element, element_sinkpad_name);
   g_assert (sinkpad);
   link = gst_pad_link (h->srcpad, sinkpad);
   g_assert_cmpint (link, ==, GST_PAD_LINK_OK);
@@ -663,7 +668,7 @@ gst_pad_is_request_pad (GstPad * pad)
  *
  * MT safe.
  *
- * Returns: (transfer full): a #GstHarness, or %NULL if the harness could
+ * Returns: (transfer full) (nullable): a #GstHarness, or %NULL if the harness could
  * not be created
  *
  * Since: 1.8
@@ -683,6 +688,7 @@ gst_harness_new_empty (void)
   priv->last_push_ts = GST_CLOCK_TIME_NONE;
   priv->latency_min = 0;
   priv->latency_max = GST_CLOCK_TIME_NONE;
+  priv->is_live = TRUE;
   priv->drop_buffers = FALSE;
   priv->testclock = GST_TEST_CLOCK_CAST (gst_test_clock_new ());
 
@@ -717,15 +723,15 @@ gst_harness_new_empty (void)
  * gst_harness_add_element_full: (skip)
  * @h: a #GstHarness
  * @element: a #GstElement to add to the harness (transfer none)
- * @hsrc: (allow-none): a #GstStaticPadTemplate describing the harness srcpad.
+ * @hsrc: (nullable): a #GstStaticPadTemplate describing the harness srcpad.
  * %NULL will not create a harness srcpad.
- * @element_sinkpad_name: (allow-none): a #gchar with the name of the element
+ * @element_sinkpad_name: (nullable): a #gchar with the name of the element
  * sinkpad that is then linked to the harness srcpad. Can be a static or request
  * or a sometimes pad that has been added. %NULL will not get/request a sinkpad
  * from the element. (Like if the element is a src.)
- * @hsink: (allow-none): a #GstStaticPadTemplate describing the harness sinkpad.
+ * @hsink: (nullable): a #GstStaticPadTemplate describing the harness sinkpad.
  * %NULL will not create a harness sinkpad.
- * @element_srcpad_name: (allow-none): a #gchar with the name of the element
+ * @element_srcpad_name: (nullable): a #gchar with the name of the element
  * srcpad that is then linked to the harness sinkpad, similar to the
  * @element_sinkpad_name.
  *
@@ -798,15 +804,15 @@ gst_harness_add_element_full (GstHarness * h, GstElement * element,
 /**
  * gst_harness_new_full: (skip)
  * @element: a #GstElement to attach the harness to (transfer none)
- * @hsrc: (allow-none): a #GstStaticPadTemplate describing the harness srcpad.
+ * @hsrc: (nullable): a #GstStaticPadTemplate describing the harness srcpad.
  * %NULL will not create a harness srcpad.
- * @element_sinkpad_name: (allow-none): a #gchar with the name of the element
+ * @element_sinkpad_name: (nullable): a #gchar with the name of the element
  * sinkpad that is then linked to the harness srcpad. Can be a static or request
  * or a sometimes pad that has been added. %NULL will not get/request a sinkpad
  * from the element. (Like if the element is a src.)
- * @hsink: (allow-none): a #GstStaticPadTemplate describing the harness sinkpad.
+ * @hsink: (nullable): a #GstStaticPadTemplate describing the harness sinkpad.
  * %NULL will not create a harness sinkpad.
- * @element_srcpad_name: (allow-none): a #gchar with the name of the element
+ * @element_srcpad_name: (nullable): a #gchar with the name of the element
  * srcpad that is then linked to the harness sinkpad, similar to the
  * @element_sinkpad_name.
  *
@@ -814,7 +820,7 @@ gst_harness_add_element_full (GstHarness * h, GstElement * element,
  *
  * MT safe.
  *
- * Returns: (transfer full): a #GstHarness, or %NULL if the harness could
+ * Returns: (transfer full) (nullable): a #GstHarness, or %NULL if the harness could
  * not be created
  *
  * Since: 1.6
@@ -834,10 +840,10 @@ gst_harness_new_full (GstElement * element,
 /**
  * gst_harness_new_with_element: (skip)
  * @element: a #GstElement to attach the harness to (transfer none)
- * @element_sinkpad_name: (allow-none): a #gchar with the name of the element
+ * @element_sinkpad_name: (nullable): a #gchar with the name of the element
  * sinkpad that is then linked to the harness srcpad. %NULL does not attach a
  * sinkpad
- * @element_srcpad_name: (allow-none): a #gchar with the name of the element
+ * @element_srcpad_name: (nullable): a #gchar with the name of the element
  * srcpad that is then linked to the harness sinkpad. %NULL does not attach a
  * srcpad
  *
@@ -847,7 +853,7 @@ gst_harness_new_full (GstElement * element,
  *
  * MT safe.
  *
- * Returns: (transfer full): a #GstHarness, or %NULL if the harness could
+ * Returns: (transfer full) (nullable): a #GstHarness, or %NULL if the harness could
  * not be created
  *
  * Since: 1.6
@@ -863,10 +869,10 @@ gst_harness_new_with_element (GstElement * element,
 /**
  * gst_harness_new_with_padnames: (skip)
  * @element_name: a #gchar describing the #GstElement name
- * @element_sinkpad_name: (allow-none): a #gchar with the name of the element
+ * @element_sinkpad_name: (nullable): a #gchar with the name of the element
  * sinkpad that is then linked to the harness srcpad. %NULL does not attach a
  * sinkpad
- * @element_srcpad_name: (allow-none): a #gchar with the name of the element
+ * @element_srcpad_name: (nullable): a #gchar with the name of the element
  * srcpad that is then linked to the harness sinkpad. %NULL does not attach a
  * srcpad
  *
@@ -875,7 +881,7 @@ gst_harness_new_with_element (GstElement * element,
  *
  * MT safe.
  *
- * Returns: (transfer full): a #GstHarness, or %NULL if the harness could
+ * Returns: (transfer full) (nullable): a #GstHarness, or %NULL if the harness could
  * not be created
  *
  * Since: 1.6
@@ -897,9 +903,9 @@ gst_harness_new_with_padnames (const gchar * element_name,
 /**
  * gst_harness_new_with_templates: (skip)
  * @element_name: a #gchar describing the #GstElement name
- * @hsrc: (allow-none): a #GstStaticPadTemplate describing the harness srcpad.
+ * @hsrc: (nullable): a #GstStaticPadTemplate describing the harness srcpad.
  * %NULL will not create a harness srcpad.
- * @hsink: (allow-none): a #GstStaticPadTemplate describing the harness sinkpad.
+ * @hsink: (nullable): a #GstStaticPadTemplate describing the harness sinkpad.
  * %NULL will not create a harness sinkpad.
  *
  * Creates a new harness, like gst_harness_new_full(), except it
@@ -907,7 +913,7 @@ gst_harness_new_with_padnames (const gchar * element_name,
  *
  * MT safe.
  *
- * Returns: (transfer full): a #GstHarness, or %NULL if the harness could
+ * Returns: (transfer full) (nullable): a #GstHarness, or %NULL if the harness could
  * not be created
  *
  * Since: 1.6
@@ -934,7 +940,7 @@ gst_harness_new_with_templates (const gchar * element_name,
  *
  * MT safe.
  *
- * Returns: (transfer full): a #GstHarness, or %NULL if the harness could
+ * Returns: (transfer full) (nullable): a #GstHarness, or %NULL if the harness could
  * not be created
  *
  * Since: 1.6
@@ -1027,7 +1033,7 @@ gst_harness_add_parse (GstHarness * h, const gchar * launchline)
  *
  * MT safe.
  *
- * Returns: (transfer full): a #GstHarness, or %NULL if the harness could
+ * Returns: (transfer full) (nullable): a #GstHarness, or %NULL if the harness could
  * not be created
  *
  * Since: 1.6
@@ -1384,7 +1390,7 @@ gst_harness_use_testclock (GstHarness * h)
  *
  * MT safe.
  *
- * Returns: (transfer full): a #GstTestClock, or %NULL if the testclock is not
+ * Returns: (transfer full) (nullable): a #GstTestClock, or %NULL if the testclock is not
  * present.
  *
  * Since: 1.6
@@ -1670,7 +1676,7 @@ gst_harness_push (GstHarness * h, GstBuffer * buffer)
  *
  * MT safe.
  *
- * Returns: (transfer full): a #GstBuffer or %NULL if timed out.
+ * Returns: (transfer full) (nullable): a #GstBuffer or %NULL if timed out.
  *
  * Since: 1.6
  */
@@ -1693,7 +1699,7 @@ gst_harness_pull (GstHarness * h)
 /**
  * gst_harness_pull_until_eos:
  * @h: a #GstHarness
- * @buf: (out) (transfer full): A #GstBuffer, or %NULL if EOS or timeout occures
+ * @buf: (out) (nullable) (transfer full): A #GstBuffer, or %NULL if EOS or timeout occures
  *   first.
  *
  * Pulls a #GstBuffer from the #GAsyncQueue on the #GstHarness sinkpad. The pull
@@ -1734,7 +1740,7 @@ gst_harness_pull_until_eos (GstHarness * h, GstBuffer ** buf)
  *
  * MT safe.
  *
- * Returns: (transfer full): a #GstBuffer or %NULL if no buffers are present in the #GAsyncQueue
+ * Returns: (transfer full) (nullable): a #GstBuffer or %NULL if no buffers are present in the #GAsyncQueue
  *
  * Since: 1.6
  */
@@ -1764,7 +1770,7 @@ gst_harness_try_pull (GstHarness * h)
  *
  * MT safe.
  *
- * Returns: (transfer full): a #GstBuffer or %NULL if timed out.
+ * Returns: (transfer full) (nullable): a #GstBuffer or %NULL if timed out.
  *
  * Since: 1.6
  */
@@ -1978,7 +1984,7 @@ gst_harness_get_last_pushed_timestamp (GstHarness * h)
 /**
  * gst_harness_push_event:
  * @h: a #GstHarness
- * @event: a #GstEvent to push
+ * @event: (transfer full): a #GstEvent to push
  *
  * Pushes an #GstEvent on the #GstHarness srcpad.
  *
@@ -2003,7 +2009,7 @@ gst_harness_push_event (GstHarness * h, GstEvent * event)
  *
  * MT safe.
  *
- * Returns: a #GstEvent or %NULL if timed out.
+ * Returns: (transfer full) (nullable): a #GstEvent or %NULL if timed out.
  *
  * Since: 1.6
  */
@@ -2024,7 +2030,7 @@ gst_harness_pull_event (GstHarness * h)
  *
  * MT safe.
  *
- * Returns: a #GstEvent or %NULL if no buffers are present in the #GAsyncQueue
+ * Returns: (transfer full) (nullable): a #GstEvent or %NULL if no buffers are present in the #GAsyncQueue
  *
  * Since: 1.6
  */
@@ -2078,7 +2084,7 @@ gst_harness_events_in_queue (GstHarness * h)
 /**
  * gst_harness_push_upstream_event:
  * @h: a #GstHarness
- * @event: a #GstEvent to push
+ * @event: (transfer full): a #GstEvent to push
  *
  * Pushes an #GstEvent on the #GstHarness sinkpad.
  *
@@ -2106,7 +2112,7 @@ gst_harness_push_upstream_event (GstHarness * h, GstEvent * event)
  *
  * MT safe.
  *
- * Returns: a #GstEvent or %NULL if timed out.
+ * Returns: (transfer full) (nullable): a #GstEvent or %NULL if timed out.
  *
  * Since: 1.6
  */
@@ -2127,7 +2133,7 @@ gst_harness_pull_upstream_event (GstHarness * h)
  *
  * MT safe.
  *
- * Returns: a #GstEvent or %NULL if no buffers are present in the #GAsyncQueue
+ * Returns: (transfer full) (nullable): a #GstEvent or %NULL if no buffers are present in the #GAsyncQueue
  *
  * Since: 1.6
  */
@@ -2220,15 +2226,33 @@ gst_harness_query_latency (GstHarness * h)
 void
 gst_harness_set_upstream_latency (GstHarness * h, GstClockTime latency)
 {
+  g_return_if_fail (GST_CLOCK_TIME_IS_VALID (latency));
+
+  h->priv->latency_min = latency;
+}
+
+/**
+ * gst_harness_set_live:
+ * @h: a #GstHarness
+ * @is_live: %TRUE for live, %FALSE for non-live
+ *
+ * Sets the liveness reported by #GstHarness when receiving a latency-query.
+ * The default is %TRUE.
+ *
+ * Since: 1.20
+ */
+void
+gst_harness_set_live (GstHarness * h, gboolean is_live)
+{
   GstHarnessPrivate *priv = h->priv;
-  priv->latency_min = latency;
+  priv->is_live = is_live;
 }
 
 /**
  * gst_harness_get_allocator:
  * @h: a #GstHarness
- * @allocator: (out) (allow-none) (transfer none): the #GstAllocator used
- * @params: (out) (allow-none) (transfer full): the #GstAllocationParams of
+ * @allocator: (out) (optional) (nullable) (transfer none): the #GstAllocator used
+ * @params: (out) (optional): the #GstAllocationParams of
  *   @allocator
  *
  * Gets the @allocator and its @params that has been decided to use after an
@@ -2253,8 +2277,8 @@ gst_harness_get_allocator (GstHarness * h, GstAllocator ** allocator,
 /**
  * gst_harness_set_propose_allocator:
  * @h: a #GstHarness
- * @allocator: (allow-none) (transfer full): a #GstAllocator
- * @params: (allow-none) (transfer none): a #GstAllocationParams
+ * @allocator: (nullable) (transfer full): a #GstAllocator
+ * @params: (nullable) (transfer none): a #GstAllocationParams
  *
  * Sets the @allocator and @params to propose when receiving an allocation
  * query.
@@ -2278,7 +2302,7 @@ gst_harness_set_propose_allocator (GstHarness * h, GstAllocator * allocator,
  * gst_harness_add_propose_allocation_meta:
  * @h: a #GstHarness
  * @api: a metadata API
- * @params: (allow-none) (transfer none): API specific parameters
+ * @params: (nullable) (transfer none): API specific parameters
  *
  * Add api with params as one of the supported metadata API to propose when
  * receiving an allocation query.
@@ -2656,7 +2680,7 @@ gst_harness_sink_push_many (GstHarness * h, gint pushes)
  *
  * MT safe.
  *
- * Returns: (transfer full) (allow-none): a #GstElement or %NULL if not found
+ * Returns: (transfer full) (nullable): a #GstElement or %NULL if not found
  *
  * Since: 1.6
  */
@@ -3166,7 +3190,7 @@ gst_harness_stress_thread_stop (GstHarnessThread * t)
 /**
  * gst_harness_stress_custom_start: (skip)
  * @h: a #GstHarness
- * @init: (allow-none): a #GFunc that is called initially and only once
+ * @init: (nullable): a #GFunc that is called initially and only once
  * @callback: a #GFunc that is called as often as possible
  * @data: a #gpointer with custom data to pass to the @callback function
  * @sleep: a #gulong specifying how long to sleep in (microseconds) for

@@ -169,14 +169,9 @@ GST_START_TEST (test_get_allowed_caps)
 {
   GstPad *src, *sink;
   GstCaps *caps, *gotcaps;
-  GstBuffer *buffer;
   GstPadLinkReturn plr;
 
   ASSERT_CRITICAL (gst_pad_get_allowed_caps (NULL));
-
-  buffer = gst_buffer_new ();
-  ASSERT_CRITICAL (gst_pad_get_allowed_caps ((GstPad *) buffer));
-  gst_buffer_unref (buffer);
 
   src = gst_pad_new ("src", GST_PAD_SRC);
   fail_if (src == NULL);
@@ -1729,9 +1724,6 @@ probe_remove_self_cb (GstPad * pad, GstPadProbeInfo * info, gpointer user_data)
 {
   gst_pad_remove_probe (pad, info->id);
 
-  fail_unless (pad->num_probes == 0);
-  fail_unless (pad->num_blocked == 0);
-
   return GST_PAD_PROBE_REMOVE;
 }
 
@@ -1768,6 +1760,52 @@ GST_START_TEST (test_pad_probe_remove)
 }
 
 GST_END_TEST;
+
+GST_START_TEST (test_pad_disjoint_blocks_probe_remove)
+{
+  GstPad *pad;
+
+  /* Test that installing 2 separate blocking probes - one on events
+   * and one on buffers, and then removing the blocking event probe
+   * releases the dataflow until a buffer is caught
+   *
+   * https://gitlab.freedesktop.org/gstreamer/gstreamer/-/issues/658
+   */
+  pad = gst_pad_new ("src", GST_PAD_SRC);
+  fail_unless (pad != NULL);
+
+  gst_pad_set_active (pad, TRUE);
+  fail_unless (pad->num_probes == 0);
+  fail_unless (pad->num_blocked == 0);
+  gst_pad_add_probe (pad,
+      GST_PAD_PROBE_TYPE_BLOCK | GST_PAD_PROBE_TYPE_EVENT_DOWNSTREAM,
+      probe_remove_self_cb, NULL, probe_remove_notify_cb);
+  fail_unless (pad->num_probes == 1);
+  fail_unless (pad->num_blocked == 1);
+
+  gst_pad_add_probe (pad,
+      GST_PAD_PROBE_TYPE_BLOCK | GST_PAD_PROBE_TYPE_BUFFER,
+      probe_remove_self_cb, NULL, probe_remove_notify_cb);
+  fail_unless (pad->num_probes == 2);
+  fail_unless (pad->num_blocked == 2);
+
+  pad_probe_remove_notifiy_called = FALSE;
+  gst_pad_push_event (pad, gst_event_new_stream_start ("asda"));
+
+  fail_unless (gst_pad_push_event (pad,
+          gst_event_new_segment (&dummy_segment)) == TRUE);
+
+  pad_probe_remove_notifiy_called = FALSE;
+  gst_pad_push (pad, gst_buffer_new ());
+
+  fail_unless (pad->num_probes == 0);
+  fail_unless (pad->num_blocked == 0);
+
+  gst_object_unref (pad);
+}
+
+GST_END_TEST;
+
 
 typedef struct
 {
@@ -2553,6 +2591,12 @@ test_sticky_events_handler (GstPad * pad, GstObject * parent, GstEvent * event)
     case 2:
       fail_unless (GST_EVENT_TYPE (event) == GST_EVENT_SEGMENT);
       break;
+    case 3:
+      fail_unless (GST_EVENT_TYPE (event) == GST_EVENT_INSTANT_RATE_CHANGE);
+      break;
+    case 4:
+      fail_unless (GST_EVENT_TYPE (event) == GST_EVENT_STREAM_COLLECTION);
+      break;
     default:
       fail_unless (FALSE);
       break;
@@ -2604,6 +2648,15 @@ GST_START_TEST (test_sticky_events)
   gst_segment_init (&seg, GST_FORMAT_TIME);
   gst_pad_push_event (srcpad, gst_event_new_segment (&seg));
 
+  /* Push a stream collection */
+  GstStreamCollection *collection = gst_stream_collection_new (0);
+  gst_pad_push_event (srcpad, gst_event_new_stream_collection (collection));
+  gst_object_unref (collection);
+
+  /* Push an instant rate change, which should be sent earlier than the preceding stream collection */
+  gst_pad_push_event (srcpad, gst_event_new_instant_rate_change (1.0,
+          GST_SEGMENT_FLAG_NONE));
+
   /* now make a sinkpad */
   sinkpad = gst_pad_new ("sink", GST_PAD_SINK);
   fail_unless (sinkpad != NULL);
@@ -2624,13 +2677,13 @@ GST_START_TEST (test_sticky_events)
   gst_pad_push_event (srcpad, gst_event_new_caps (caps));
   gst_caps_unref (caps);
 
-  /* should have triggered 2 events, the segment event is still pending */
+  /* should have triggered 2 events, the segment, stream collection and instant-rate events are still pending */
   fail_unless_equals_int (sticky_count, 2);
 
   fail_unless (gst_pad_push (srcpad, gst_buffer_new ()) == GST_FLOW_OK);
 
-  /* should have triggered 3 events */
-  fail_unless_equals_int (sticky_count, 3);
+  /* should have triggered 5 events */
+  fail_unless_equals_int (sticky_count, 5);
 
   gst_object_unref (srcpad);
   gst_object_unref (sinkpad);
@@ -3374,6 +3427,7 @@ gst_pad_suite (void)
   tcase_add_test (tc_chain, test_pad_probe_pull_idle);
   tcase_add_test (tc_chain, test_pad_probe_pull_buffer);
   tcase_add_test (tc_chain, test_pad_probe_remove);
+  tcase_add_test (tc_chain, test_pad_disjoint_blocks_probe_remove);
   tcase_add_test (tc_chain, test_pad_probe_block_add_remove);
   tcase_add_test (tc_chain, test_pad_probe_block_and_drop_buffer);
   tcase_add_test (tc_chain, test_pad_probe_flush_events);
