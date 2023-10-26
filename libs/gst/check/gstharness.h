@@ -260,6 +260,9 @@ GstClockTime gst_harness_query_latency (GstHarness * h);
 GST_CHECK_API
 void         gst_harness_set_upstream_latency (GstHarness * h, GstClockTime latency);
 
+GST_CHECK_API
+void         gst_harness_set_live (GstHarness * h, gboolean is_live);
+
 /* allocation query parameters */
 
 GST_CHECK_API
@@ -334,12 +337,12 @@ GstElement *  gst_harness_find_element (GstHarness * h,
 GST_CHECK_API
 void          gst_harness_set (GstHarness  * h,
                                const gchar * element_name,
-                               const gchar * first_property_name, ...);
+                               const gchar * first_property_name, ...) G_GNUC_NULL_TERMINATED;
 
 GST_CHECK_API
 void          gst_harness_get (GstHarness  * h,
                                const gchar * element_name,
-                               const gchar * first_property_name, ...);
+                               const gchar * first_property_name, ...) G_GNUC_NULL_TERMINATED;
 
 GST_CHECK_API
 void          gst_harness_add_probe (GstHarness        * h,

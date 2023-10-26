@@ -40,8 +40,12 @@
  * methods like gst_bin_add() and gst_bin_remove() (see #GstBin).
  *
  * Before changing the state of the #GstPipeline (see #GstElement) a #GstBus
- * can be retrieved with gst_pipeline_get_bus(). This bus can then be
- * used to receive #GstMessage from the elements in the pipeline.
+ * should be retrieved with gst_pipeline_get_bus(). This #GstBus should then
+ * be used to receive #GstMessage from the elements in the pipeline. Listening
+ * to the #GstBus is necessary for retrieving error messages from the
+ * #GstPipeline and otherwise the #GstPipeline might stop without any
+ * indication, why. Furthermore, the #GstPipeline posts messages even if
+ * nobody listens on the #GstBus, which will pile up and use up memory.
  *
  * By default, a #GstPipeline will automatically flush the pending #GstBus
  * messages when going to the NULL state to ensure that no circular
@@ -76,7 +80,7 @@
 
 #include "gst_private.h"
 #include "gsterror.h"
-#include "gst-i18n-lib.h"
+#include <glib/gi18n-lib.h>
 
 #include "gstpipeline.h"
 #include "gstinfo.h"
@@ -330,7 +334,7 @@ reset_start_time (GstPipeline * pipeline, GstClockTime start_time)
 
 /**
  * gst_pipeline_new:
- * @name: (allow-none): name of new pipeline
+ * @name: (nullable): name of new pipeline
  *
  * Create a new pipeline with the given name.
  *
@@ -863,7 +867,7 @@ gst_pipeline_use_clock (GstPipeline * pipeline, GstClock * clock)
 /**
  * gst_pipeline_set_clock: (skip)
  * @pipeline: a #GstPipeline
- * @clock: (transfer none): the clock to set
+ * @clock: (transfer none) (nullable): the clock to set
  *
  * Set the clock for @pipeline. The clock will be distributed
  * to all the elements managed by the pipeline.

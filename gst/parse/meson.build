@@ -15,7 +15,7 @@ else
   message('flex version @0@ >= @1@: YES'.format(flexversion, flex_min_version))
 endif
 
-flex_cdata.set('FLEX', flex.path())
+flex_cdata.set('FLEX', flex.full_path())
 if cc.get_id() == 'msvc'
   flex_cdata.set('FLEX_ARGS', '--nounistd')
 else
@@ -33,11 +33,7 @@ bison_cdata = configuration_data()
 bison_min_version='2.4'
 bison = find_program('bison', 'win_bison')
 
-bversion_res = run_command([bison, '--version'])
-if bversion_res.returncode() != 0
-  error('Could not get bison version (@0@)'.format(bversion_res.stderr()))
-endif
-
+bversion_res = run_command([bison, '--version'], check: true)
 bversion = bversion_res.stdout().split('\n')[0].split(' ')[-1].strip()
 if bversion.version_compare('<' + bison_min_version)
   error('bison version @0@ >= @1@: NO'.format(bversion, bison_min_version))
@@ -55,7 +51,7 @@ gen_grammar_file = configure_file(input : 'grammar.y.in',
   output : 'grammar.y',
   configuration : bison_parser_cdata)
 
-bison_cdata.set('BISON', bison.path())
+bison_cdata.set('BISON', bison.full_path())
 bison_cdata.set('BISON_ARGS', '')
 
 gen_grammar = configure_file(input : 'gen_grammar.py.in',

@@ -24,6 +24,9 @@
  * @title: GstAllocator
  * @short_description: allocate memory blocks
  * @see_also: #GstMemory
+ * @auto-sort: false
+ * @symbols:
+ * - GstAllocator
  *
  * Memory is usually created by allocators with a gst_allocator_alloc()
  * method call. When %NULL is used as the allocator, the default allocator will
@@ -140,6 +143,31 @@ G_DEFINE_BOXED_TYPE (GstAllocationParams, gst_allocation_params,
     (GBoxedFreeFunc) gst_allocation_params_free);
 
 /**
+ * gst_allocation_params_new:
+ *
+ * Create a new #GstAllocationParams on the heap.  This function is for
+ * use in GStreamer language bindings.  In your own code, you can just
+ * declare a #GstAllocationParams on the stack or in a struct, and
+ * call gst_allocation_params_init() to initialize it.
+ *
+ * You do not need to call gst_allocation_params_init() on the instance
+ * returned by this function.
+ *
+ * Returns: (transfer full) (not nullable): a new #GstAllocationParams
+ *
+ * Since: 1.20
+ */
+GstAllocationParams *
+gst_allocation_params_new (void)
+{
+  /* Call new() and then init(), rather than calling new0(), in case
+   * init() ever changes to something other than a memset(). */
+  GstAllocationParams *result = g_slice_new (GstAllocationParams);
+  gst_allocation_params_init (result);
+  return result;
+}
+
+/**
  * gst_allocation_params_init:
  * @params: a #GstAllocationParams
  *
@@ -159,10 +187,7 @@ gst_allocation_params_init (GstAllocationParams * params)
  *
  * Create a copy of @params.
  *
- * Free-function: gst_allocation_params_free
- *
- * Returns: (transfer full) (nullable): a new ##GstAllocationParams, free with
- * gst_allocation_params_free().
+ * Returns: (transfer full) (nullable): a new #GstAllocationParams.
  */
 GstAllocationParams *
 gst_allocation_params_copy (const GstAllocationParams * params)
@@ -194,8 +219,7 @@ gst_allocation_params_free (GstAllocationParams * params)
  * @name: the name of the allocator
  * @allocator: (transfer full): #GstAllocator
  *
- * Registers the memory @allocator with @name. This function takes ownership of
- * @allocator.
+ * Registers the memory @allocator with @name.
  */
 void
 gst_allocator_register (const gchar * name, GstAllocator * allocator)
@@ -209,20 +233,20 @@ gst_allocator_register (const gchar * name, GstAllocator * allocator)
   g_rw_lock_writer_lock (&lock);
   /* The ref will never be released */
   GST_OBJECT_FLAG_SET (allocator, GST_OBJECT_FLAG_MAY_BE_LEAKED);
-  g_hash_table_insert (allocators, (gpointer) name, (gpointer) allocator);
+  g_hash_table_insert (allocators, (gpointer) g_strdup (name),
+      (gpointer) allocator);
   g_rw_lock_writer_unlock (&lock);
 }
 
 /**
  * gst_allocator_find:
- * @name: (allow-none): the name of the allocator
+ * @name: (nullable): the name of the allocator
  *
  * Find a previously registered allocator with @name. When @name is %NULL, the
  * default allocator will be returned.
  *
  * Returns: (transfer full) (nullable): a #GstAllocator or %NULL when
- * the allocator with @name was not registered. Use gst_object_unref()
- * to release the allocator after usage.
+ * the allocator with @name was not registered.
  */
 GstAllocator *
 gst_allocator_find (const gchar * name)
@@ -246,7 +270,7 @@ gst_allocator_find (const gchar * name)
  * gst_allocator_set_default:
  * @allocator: (transfer full): a #GstAllocator
  *
- * Set the default allocator. This function takes ownership of @allocator.
+ * Set the default allocator.
  */
 void
 gst_allocator_set_default (GstAllocator * allocator)
@@ -266,9 +290,9 @@ gst_allocator_set_default (GstAllocator * allocator)
 
 /**
  * gst_allocator_alloc:
- * @allocator: (transfer none) (allow-none): a #GstAllocator to use
+ * @allocator: (transfer none) (nullable): a #GstAllocator to use
  * @size: size of the visible memory area
- * @params: (transfer none) (allow-none): optional parameters
+ * @params: (transfer none) (nullable): optional parameters
  *
  * Use @allocator to allocate a new memory block with memory that is at least
  * @size big.
@@ -576,7 +600,7 @@ void
 _priv_gst_allocator_initialize (void)
 {
   g_rw_lock_init (&lock);
-  allocators = g_hash_table_new_full (g_str_hash, g_str_equal, NULL,
+  allocators = g_hash_table_new_full (g_str_hash, g_str_equal, g_free,
       gst_object_unref);
 
 #ifdef HAVE_GETPAGESIZE
@@ -619,8 +643,8 @@ _priv_gst_allocator_cleanup (void)
  * @maxsize: allocated size of @data
  * @offset: offset in @data
  * @size: size of valid data
- * @user_data: (allow-none): user_data
- * @notify: (allow-none) (scope async) (closure user_data): called with @user_data when the memory is freed
+ * @user_data: (nullable): user_data
+ * @notify: (nullable) (scope async) (closure user_data): called with @user_data when the memory is freed
  *
  * Allocate a new memory block that wraps the given @data.
  *
