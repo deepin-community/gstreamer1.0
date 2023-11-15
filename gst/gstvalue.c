@@ -98,9 +98,9 @@ static void gst_value_register_subtract_func (GType minuend_type,
     GType subtrahend_type, GstValueSubtractFunc func);
 
 static gboolean _priv_gst_value_parse_list (gchar * s, gchar ** after,
-    GValue * value, GType type);
+    GValue * value, GType type, GParamSpec * pspec);
 static gboolean _priv_gst_value_parse_array (gchar * s, gchar ** after,
-    GValue * value, GType type);
+    GValue * value, GType type, GParamSpec * pspec);
 
 typedef struct _GstValueUnionInfo GstValueUnionInfo;
 struct _GstValueUnionInfo
@@ -348,7 +348,7 @@ gst_value_array_init (GValue * value, guint prealloc)
  */
 gchar *
 _priv_gst_value_serialize_any_list (const GValue * value, const gchar * begin,
-    const gchar * end, gboolean print_type)
+    const gchar * end, gboolean print_type, GstSerializeFlags flags)
 {
   guint i;
   GstValueList *vlist = value->data[0].v_pointer;
@@ -361,21 +361,36 @@ _priv_gst_value_serialize_any_list (const GValue * value, const gchar * begin,
   s = g_string_sized_new (2 + (6 * alen) + 2);
   g_string_append (s, begin);
   for (i = 0; i < alen; i++) {
+    gboolean nested_structs_brackets;
     v = &vlist->fields[i];
-    s_val = gst_value_serialize (v);
+    nested_structs_brackets = !(flags & GST_SERIALIZE_FLAG_BACKWARD_COMPAT)
+        && (GST_VALUE_HOLDS_STRUCTURE (v) || GST_VALUE_HOLDS_CAPS (v));
+    if (!nested_structs_brackets) {
+      s_val = gst_value_serialize (v);
+    } else {
+      if (GST_VALUE_HOLDS_STRUCTURE (v))
+        s_val = gst_structure_serialize (gst_value_get_structure (v), flags);
+      else if (GST_VALUE_HOLDS_CAPS (v))
+        s_val = gst_caps_serialize (gst_value_get_caps (v), flags);
+    }
     if (s_val != NULL) {
       if (print_type) {
         g_string_append_c (s, '(');
         g_string_append (s, _priv_gst_value_gtype_to_abbr (G_VALUE_TYPE (v)));
         g_string_append_c (s, ')');
       }
+
+      if (nested_structs_brackets)
+        g_string_append_c (s, '[');
       g_string_append (s, s_val);
+      if (nested_structs_brackets)
+        g_string_append_c (s, ']');
       g_free (s_val);
       if (i < alen - 1) {
         g_string_append_len (s, ", ", 2);
       }
     } else {
-      GST_WARNING ("Could not serialize list/array value of type '%s'",
+      g_critical ("Could not serialize list/array value of type '%s'",
           G_VALUE_TYPE_NAME (v));
     }
   }
@@ -442,7 +457,7 @@ _gst_value_serialize_g_value_array (const GValue * value, const gchar * begin,
         g_string_append_len (s, ", ", 2);
       }
     } else {
-      GST_WARNING ("Could not serialize list/array value of type '%s'",
+      g_critical ("Could not serialize list/array value of type '%s'",
           G_VALUE_TYPE_NAME (v));
     }
   }
@@ -1240,27 +1255,31 @@ gst_value_compare_g_value_array (const GValue * value1, const GValue * value2)
 static gchar *
 gst_value_serialize_value_list (const GValue * value)
 {
-  return _priv_gst_value_serialize_any_list (value, "{ ", " }", TRUE);
+  return _priv_gst_value_serialize_any_list (value, "{ ", " }", TRUE,
+      GST_SERIALIZE_FLAG_BACKWARD_COMPAT);
 }
 
 static gboolean
-gst_value_deserialize_value_list (GValue * dest, const gchar * s)
+gst_value_deserialize_value_list (GValue * dest, const gchar * s,
+    GParamSpec * pspec)
 {
   gchar *s2 = (gchar *) s;
-  return _priv_gst_value_parse_list (s2, &s2, dest, G_TYPE_INVALID);
+  return _priv_gst_value_parse_list (s2, &s2, dest, G_TYPE_INVALID, pspec);
 }
 
 static gchar *
 gst_value_serialize_value_array (const GValue * value)
 {
-  return _priv_gst_value_serialize_any_list (value, "< ", " >", TRUE);
+  return _priv_gst_value_serialize_any_list (value, "< ", " >", TRUE,
+      GST_SERIALIZE_FLAG_BACKWARD_COMPAT);
 }
 
 static gboolean
-gst_value_deserialize_value_array (GValue * dest, const gchar * s)
+gst_value_deserialize_value_array (GValue * dest, const gchar * s,
+    GParamSpec * pspec)
 {
   gchar *s2 = (gchar *) s;
-  return _priv_gst_value_parse_array (s2, &s2, dest, G_TYPE_INVALID);
+  return _priv_gst_value_parse_array (s2, &s2, dest, G_TYPE_INVALID, pspec);
 }
 
 static gchar *
@@ -2241,6 +2260,8 @@ gst_value_deserialize_caps (GValue * dest, const gchar * s)
   GstCaps *caps;
 
   if (*s != '"') {
+    /* this can happen if caps are ANY, EMPTY, or only contains a single
+     * empty structure */
     caps = gst_caps_from_string (s);
   } else {
     gchar *str = gst_string_unwrap (s);
@@ -2310,6 +2331,8 @@ _priv_gst_value_get_abbrs (gint * n_abbrs)
       {"date", G_TYPE_DATE}
       ,
       {"datetime", GST_TYPE_DATE_TIME}
+      ,
+      {"gdatetime", G_TYPE_DATE_TIME}
       ,
       {"bitmask", GST_TYPE_BITMASK}
       ,
@@ -2469,23 +2492,23 @@ _priv_gst_value_parse_range (gchar * s, gchar ** after, GValue * value,
     return FALSE;
   s++;
 
-  ret = _priv_gst_value_parse_value (s, &s, &value1, type);
+  ret = _priv_gst_value_parse_value (s, &s, &value1, type, NULL);
   if (!ret)
-    return FALSE;
+    goto err;
 
   while (g_ascii_isspace (*s))
     s++;
 
   if (*s != ',')
-    return FALSE;
+    goto err;
   s++;
 
   while (g_ascii_isspace (*s))
     s++;
 
-  ret = _priv_gst_value_parse_value (s, &s, &value2, type);
+  ret = _priv_gst_value_parse_value (s, &s, &value2, type, NULL);
   if (!ret)
-    return FALSE;
+    goto err;
 
   while (g_ascii_isspace (*s))
     s++;
@@ -2499,9 +2522,9 @@ _priv_gst_value_parse_range (gchar * s, gchar ** after, GValue * value,
       while (g_ascii_isspace (*s))
         s++;
 
-      ret = _priv_gst_value_parse_value (s, &s, &value3, type);
+      ret = _priv_gst_value_parse_value (s, &s, &value3, type, NULL);
       if (!ret)
-        return FALSE;
+        goto err;
 
       while (g_ascii_isspace (*s))
         s++;
@@ -2511,7 +2534,7 @@ _priv_gst_value_parse_range (gchar * s, gchar ** after, GValue * value,
   }
 
   if (*s != ']')
-    return FALSE;
+    goto err;
   s++;
 
   if (G_VALUE_TYPE (&value1) != G_VALUE_TYPE (&value2))
@@ -2553,20 +2576,31 @@ _priv_gst_value_parse_range (gchar * s, gchar ** after, GValue * value,
     g_value_init (value, range_type);
     gst_value_set_fraction_range (value, &value1, &value2);
   } else {
-    return FALSE;
+    goto err;
   }
 
   *after = s;
   return TRUE;
+
+err:
+  g_value_unset (value);
+  g_value_unset (&value1);
+  g_value_unset (&value2);
+  g_value_unset (&value3);
+  return FALSE;
 }
 
 static gboolean
 _priv_gst_value_parse_any_list (gchar * s, gchar ** after, GValue * value,
-    GType type, char begin, char end)
+    GType type, char begin, char end, GParamSpec * pspec)
 {
   GValue list_value = { 0 };
   gboolean ret;
   GstValueList *vlist = VALUE_LIST_ARRAY (value);
+  GParamSpec *element_spec = NULL;
+
+  if (pspec)
+    element_spec = GST_PARAM_SPEC_ARRAY_LIST (pspec)->element_spec;
 
   if (*s != begin)
     return FALSE;
@@ -2588,7 +2622,8 @@ _priv_gst_value_parse_any_list (gchar * s, gchar ** after, GValue * value,
     }
 
     memset (&list_value, 0, sizeof (list_value));
-    ret = _priv_gst_value_parse_value (s, &s, &list_value, type);
+
+    ret = _priv_gst_value_parse_value (s, &s, &list_value, type, element_spec);
     if (!ret)
       return FALSE;
 
@@ -2609,16 +2644,18 @@ _priv_gst_value_parse_any_list (gchar * s, gchar ** after, GValue * value,
 
 static gboolean
 _priv_gst_value_parse_list (gchar * s, gchar ** after, GValue * value,
-    GType type)
+    GType type, GParamSpec * pspec)
 {
-  return _priv_gst_value_parse_any_list (s, after, value, type, '{', '}');
+  return _priv_gst_value_parse_any_list (s, after, value, type, '{', '}',
+      pspec);
 }
 
 static gboolean
 _priv_gst_value_parse_array (gchar * s, gchar ** after, GValue * value,
-    GType type)
+    GType type, GParamSpec * pspec)
 {
-  return _priv_gst_value_parse_any_list (s, after, value, type, '<', '>');
+  return _priv_gst_value_parse_any_list (s, after, value, type, '<', '>',
+      pspec);
 }
 
 gboolean
@@ -2635,9 +2672,90 @@ _priv_gst_value_parse_simple_string (gchar * str, gchar ** end)
   return (s != str);
 }
 
+static gboolean
+_priv_gst_value_parse_struct_or_caps (gchar * str, gchar ** after, GType type,
+    GValue * value)
+{
+  gint openers = 1;
+  gboolean ret = FALSE;
+  gchar *s = str, t, *start, *end, *next;
+
+  if (*s != '[')
+    return FALSE;
+
+  s++;
+  str = s;
+  for (; *s; s++) {
+    if (*s == ']')
+      openers--;
+    else if (*s == '[')
+      openers++;
+
+    if (openers == 0) {
+      *after = s + 1;
+      break;
+    }
+  }
+
+  if (*after == NULL)
+    return FALSE;
+
+  t = *s;
+  *s = '\0';
+  g_value_init (value, type);
+  if (priv_gst_structure_parse_name (str, &start, &end, &next, TRUE))
+    ret = gst_value_deserialize (value, str);
+  if (G_UNLIKELY (!ret)) {
+    *s = t;
+    g_value_unset (value);
+  }
+
+  return ret;
+}
+
+static gboolean
+_priv_gst_value_parse_range_struct_caps (gchar * s, gchar ** after,
+    GValue * value, GType type)
+{
+  gint i;
+  gchar *tmp = s;
+  gboolean ret = FALSE;
+  GType try_types[] = {
+    GST_TYPE_STRUCTURE,
+    GST_TYPE_CAPS,
+  };
+
+  if (type == GST_TYPE_CAPS || type == GST_TYPE_STRUCTURE)
+    ret = _priv_gst_value_parse_struct_or_caps (tmp, &tmp, type, value);
+
+  if (ret)
+    goto ok;
+
+  tmp = s;
+  ret = _priv_gst_value_parse_range (tmp, &tmp, value, type);
+  if (ret)
+    goto ok;
+
+  if (type != G_TYPE_INVALID)
+    return ret;
+
+  for (i = 0; i < G_N_ELEMENTS (try_types); i++) {
+    tmp = s;
+    ret = _priv_gst_value_parse_struct_or_caps (tmp, &tmp, try_types[i], value);
+    if (ret)
+      goto ok;
+  }
+
+  return ret;
+
+ok:
+  *after = tmp;
+  return ret;
+}
+
 gboolean
 _priv_gst_value_parse_value (gchar * str,
-    gchar ** after, GValue * value, GType default_type)
+    gchar ** after, GValue * value, GType default_type, GParamSpec * pspec)
 {
   gchar *type_name;
   gchar *type_end;
@@ -2654,6 +2772,7 @@ _priv_gst_value_parse_value (gchar * str,
 
   /* check if there's a (type_name) 'cast' */
   type_name = NULL;
+
   if (*s == '(') {
     s++;
     while (g_ascii_isspace (*s))
@@ -2680,18 +2799,20 @@ _priv_gst_value_parse_value (gchar * str,
       GST_WARNING ("invalid type");
       return FALSE;
     }
+  } else if (pspec) {
+    type = G_PARAM_SPEC_VALUE_TYPE (pspec);
   }
 
   while (g_ascii_isspace (*s))
     s++;
   if (*s == '[') {
-    ret = _priv_gst_value_parse_range (s, &s, value, type);
+    ret = _priv_gst_value_parse_range_struct_caps (s, &s, value, type);
   } else if (*s == '{') {
     g_value_init (value, GST_TYPE_LIST);
-    ret = _priv_gst_value_parse_list (s, &s, value, type);
+    ret = _priv_gst_value_parse_list (s, &s, value, type, pspec);
   } else if (*s == '<') {
     g_value_init (value, GST_TYPE_ARRAY);
-    ret = _priv_gst_value_parse_array (s, &s, value, type);
+    ret = _priv_gst_value_parse_array (s, &s, value, type, pspec);
   } else {
     value_s = s;
 
@@ -2701,29 +2822,54 @@ _priv_gst_value_parse_value (gchar * str,
         G_TYPE_BOOLEAN, G_TYPE_STRING
       };
       int i;
+      int value_size;
+      gboolean check_wrapped_non_string;
 
-      if (G_UNLIKELY (!_priv_gst_value_parse_string (s, &value_end, &s, TRUE)))
+      if (G_UNLIKELY (!_priv_gst_value_parse_string (s, &value_end, &s, FALSE)))
         return FALSE;
       /* Set NULL terminator for deserialization */
+      value_size = value_end - value_s;
       value_s = g_strndup (value_s, value_end - value_s);
+      /* Keep old broken behavior where "2" could be interpretted as an int */
+      check_wrapped_non_string = value_s[0] == '"' &&
+          strlen (value_s) >= 2 && value_end[-1] == '"';
 
       for (i = 0; i < G_N_ELEMENTS (try_types); i++) {
         g_value_init (value, try_types[i]);
-        ret = gst_value_deserialize (value, value_s);
-        if (ret)
-          break;
+        if (try_types[i] != G_TYPE_STRING && check_wrapped_non_string) {
+          value_s[value_size - 1] = '\0';
+          ret = gst_value_deserialize (value, value_s + 1);
+          value_s[value_size - 1] = '"';
+          if (ret) {
+            const gchar *type_name = g_type_name (try_types[i]);
+
+            g_warning ("Received a structure string that contains "
+                "'=%s'. Reading as a %s value, rather than a string "
+                "value. This is undesired behaviour, and with GStreamer 1.22 "
+                " onward, this will be interpreted as a string value instead "
+                "because it is wrapped in '\"' quotes. If you want to "
+                "guarantee this value is read as a string, before this "
+                "change, use '=(string)%s' instead. If you want to read "
+                "in a %s value, leave its value unquoted.",
+                value_s, type_name, value_s, type_name);
+            break;
+          }
+        } else {
+          ret = gst_value_deserialize (value, value_s);
+          if (ret)
+            break;
+        }
         g_value_unset (value);
       }
     } else {
       g_value_init (value, type);
 
-      if (G_UNLIKELY (!_priv_gst_value_parse_string (s, &value_end, &s,
-                  (type != G_TYPE_STRING))))
+      if (G_UNLIKELY (!_priv_gst_value_parse_string (s, &value_end, &s, FALSE)))
         return FALSE;
       /* Set NULL terminator for deserialization */
       value_s = g_strndup (value_s, value_end - value_s);
 
-      ret = gst_value_deserialize (value, value_s);
+      ret = gst_value_deserialize_with_pspec (value, value_s, pspec);
       if (G_UNLIKELY (!ret))
         g_value_unset (value);
     }
@@ -2778,14 +2924,32 @@ gst_value_serialize_segment (const GValue * value)
 }
 
 static gboolean
-gst_value_deserialize_segment (GValue * dest, const gchar * s)
+gst_value_deserialize_segment_internal (GValue * dest, const gchar * s,
+    gboolean unescape)
 {
   GstStructure *str;
   GstSegment seg;
   gboolean res;
+  gsize len;
+  gchar *t;
 
-  str = gst_structure_from_string (s, NULL);
-  if (str == NULL)
+  if (unescape) {
+    len = strlen (s);
+    if (G_UNLIKELY (*s != '"' || len < 2 || s[len - 1] != '"')) {
+      /* "\"" is not an accepted string, so len must be at least 2 */
+      GST_ERROR ("Failed deserializing segement: expected string to start and "
+          "end with '\"'");
+      return FALSE;
+    }
+    t = g_strdup (s + 1);
+    t[len - 2] = '\0';
+    /* removed trailing '"' */
+    str = gst_structure_from_string (t, NULL);
+    g_free (t);
+  } else {
+    str = gst_structure_from_string (s, NULL);
+  }
+  if (G_UNLIKELY (str == NULL))
     return FALSE;
 
   res = gst_structure_id_get (str,
@@ -2806,6 +2970,12 @@ gst_value_deserialize_segment (GValue * dest, const gchar * s)
     g_value_set_boxed (dest, &seg);
 
   return res;
+}
+
+static gboolean
+gst_value_deserialize_segment (GValue * dest, const gchar * s)
+{
+  return gst_value_deserialize_segment_internal (dest, s, TRUE);
 }
 
 /****************
@@ -2852,6 +3022,8 @@ gst_value_serialize_structure (const GValue * value)
   GstStructure *structure = g_value_get_boxed (value);
 
   return priv_gst_string_take_and_wrap (gst_structure_to_string (structure));
+  /* string should always end up being wrapped, since a structure string
+   * ends in a ';' character */
 }
 
 static gboolean
@@ -2860,6 +3032,14 @@ gst_value_deserialize_structure (GValue * dest, const gchar * s)
   GstStructure *structure;
 
   if (*s != '"') {
+    /* the output of gst_value_serialize_structure would never produce
+     * such a string, but a user may pass to gst_structure_from_string
+     * the string:
+     *     name, sub=(GstStructure)sub-name, val=(int)5;
+     * and expect sub to be read as an *empty* structure with the name
+     * sub-name. Similar to
+     *     name, caps=(GstCaps)video/x-raw, val=(int)5;
+     * which gst_structure_to_string can produce. */
     structure = gst_structure_from_string (s, NULL);
   } else {
     gchar *str = gst_string_unwrap (s);
@@ -2948,6 +3128,9 @@ gst_value_deserialize_caps_features (GValue * dest, const gchar * s)
   GstCapsFeatures *features;
 
   if (*s != '"') {
+    /* This can happen if gst_caps_features_to_string only returns
+     * ALL, NONE, or a single features name, which means it is not
+     * actually wrapped by priv_gst_string_take_and_wrap */
     features = gst_caps_features_from_string (s);
   } else {
     gchar *str = gst_string_unwrap (s);
@@ -2986,6 +3169,13 @@ gst_value_deserialize_tag_list (GValue * dest, const gchar * s)
   GstTagList *taglist;
 
   if (*s != '"') {
+    /* the output of gst_value_serialize_tag_list would never produce
+     * such a string, but a user may pass to gst_structure_from_string
+     * the string:
+     *     name, list=(GstTagList)taglist, val=(int)5;
+     * and expect list to be read as an *empty* tag list. Similar to
+     *     name, caps=(GstCaps)video/x-raw, val=(int)5;
+     * which gst_structure_to_string can produce. */
     taglist = gst_tag_list_new_from_string (s);
   } else {
     gchar *str = gst_string_unwrap (s);
@@ -3010,6 +3200,8 @@ gst_value_serialize_tag_list (const GValue * value)
   GstTagList *taglist = g_value_get_boxed (value);
 
   return priv_gst_string_take_and_wrap (gst_tag_list_to_string (taglist));
+  /* string should always end up being wrapped, since a taglist (structure)
+   * string ends in a ';' character */
 }
 
 
@@ -3267,7 +3459,7 @@ gst_value_deserialize_sample (GValue * dest, const gchar * s)
     g_strdelimit (fields[2], "_", '=');
     g_base64_decode_inplace (fields[2], &outlen);
     GST_TRACE ("segment : %s", fields[2]);
-    if (!gst_value_deserialize_segment (&sval, fields[2]))
+    if (!gst_value_deserialize_segment_internal (&sval, fields[2], FALSE))
       goto fail;
   }
 
@@ -3784,13 +3976,13 @@ gst_string_unwrap (const gchar * s)
         /* if we run into a \0 here, we definitely won't get a quote later */
         if (*read == 0)
           goto beach;
-
         /* else copy \X sequence */
         *write++ = *read++;
       }
-    } else {
-      /* weird character, error */
+    } else if (*read == '\0') {
       goto beach;
+    } else {
+      *write++ = *read++;
     }
   }
   /* if the string is not ending in " and zero terminated, we error */
@@ -3828,6 +4020,10 @@ gst_value_deserialize_string (GValue * dest, const gchar * s)
     gchar *str = gst_string_unwrap (s);
     if (G_UNLIKELY (!str))
       return FALSE;
+    if (!g_utf8_validate (str, -1, NULL)) {
+      g_free (str);
+      return FALSE;
+    }
     g_value_take_string (dest, str);
   }
 
@@ -4001,15 +4197,23 @@ gst_value_serialize_gflags (const GValue * value)
   result = g_strdup ("");
   while (flags) {
     fl = g_flags_get_first_value (klass, flags);
-    if (fl != NULL) {
-      tmp = g_strconcat (result, (first ? "" : "+"), fl->value_name, NULL);
-      g_free (result);
-      result = tmp;
-      first = FALSE;
-
-      /* clear flag */
-      flags &= ~fl->value;
+    if (fl == NULL) {
+      if (flags) {
+        g_critical ("Could not serialize invalid flags 0x%x of type %s",
+            flags, G_VALUE_TYPE_NAME (value));
+        g_free (result);
+        result = g_strdup ("0");
+      }
+      break;
     }
+
+    tmp = g_strconcat (result, (first ? "" : "+"), fl->value_name, NULL);
+    g_free (result);
+    result = tmp;
+    first = FALSE;
+
+    /* clear flag */
+    flags &= ~fl->value;
   }
   g_type_class_unref (klass);
 
@@ -6437,19 +6641,80 @@ gst_value_deserialize (GValue * dest, const gchar * src)
   type = G_VALUE_TYPE (dest);
 
   best = gst_value_hash_lookup_type (type);
-  if (G_UNLIKELY (!best || !best->deserialize)) {
+  if (G_UNLIKELY (!best || (!best->deserialize
+              && !best->deserialize_with_pspec))) {
     len = gst_value_table->len;
     best = NULL;
     for (i = 0; i < len; i++) {
       table = &g_array_index (gst_value_table, GstValueTable, i);
-      if (table->deserialize && g_type_is_a (type, table->type)) {
+      if ((table->deserialize || table->deserialize_with_pspec) &&
+          g_type_is_a (type, table->type)) {
         if (!best || g_type_is_a (table->type, best->type))
           best = table;
       }
     }
   }
-  if (G_LIKELY (best))
-    return best->deserialize (dest, src);
+  if (G_LIKELY (best)) {
+    if (best->deserialize_with_pspec)
+      return best->deserialize_with_pspec (dest, src, NULL);
+    else
+      return best->deserialize (dest, src);
+  }
+
+  return FALSE;
+}
+
+/**
+ * gst_value_deserialize_with_pspec:
+ * @dest: (out caller-allocates): #GValue to fill with contents of
+ *     deserialization
+ * @src: string to deserialize
+ * @pspec: (nullable): the #GParamSpec describing the expected value
+ *
+ * Tries to deserialize a string into the type specified by the given GValue.
+ * @pspec may be used to guide the deserializing of nested members.
+ * If the operation succeeds, %TRUE is returned, %FALSE otherwise.
+ *
+ * Returns: %TRUE on success
+ * Since: 1.20
+ */
+gboolean
+gst_value_deserialize_with_pspec (GValue * dest, const gchar * src,
+    GParamSpec * pspec)
+{
+  GstValueTable *table, *best;
+  guint i, len;
+  GType type;
+
+  g_return_val_if_fail (src != NULL, FALSE);
+  g_return_val_if_fail (G_IS_VALUE (dest), FALSE);
+
+  if (pspec)
+    g_return_val_if_fail (G_VALUE_TYPE (dest) ==
+        G_PARAM_SPEC_VALUE_TYPE (pspec), FALSE);
+
+  type = G_VALUE_TYPE (dest);
+
+  best = gst_value_hash_lookup_type (type);
+  if (G_UNLIKELY (!best || (!best->deserialize
+              && !best->deserialize_with_pspec))) {
+    len = gst_value_table->len;
+    best = NULL;
+    for (i = 0; i < len; i++) {
+      table = &g_array_index (gst_value_table, GstValueTable, i);
+      if ((table->deserialize || table->deserialize_with_pspec) &&
+          g_type_is_a (type, table->type)) {
+        if (!best || g_type_is_a (table->type, best->type))
+          best = table;
+      }
+    }
+  }
+  if (G_LIKELY (best)) {
+    if (best->deserialize_with_pspec)
+      return best->deserialize_with_pspec (dest, src, pspec);
+    else
+      return best->deserialize (dest, src);
+  }
 
   return FALSE;
 }
@@ -7020,9 +7285,9 @@ gst_value_deserialize_date (GValue * dest, const gchar * s)
   return TRUE;
 }
 
-/*************
+/***************
  * GstDateTime *
- *************/
+ ***************/
 
 static gint
 gst_value_compare_date_time (const GValue * value1, const GValue * value2)
@@ -7083,6 +7348,109 @@ static void
 gst_value_transform_string_date (const GValue * src_value, GValue * dest_value)
 {
   gst_value_deserialize_date (dest_value, src_value->data[0].v_pointer);
+}
+
+/*************
+ * GDateTime *
+ *************/
+
+static gint
+gst_value_compare_g_date_time (const GValue * value1, const GValue * value2)
+{
+  const GDateTime *date1 = (const GDateTime *) g_value_get_boxed (value1);
+  const GDateTime *date2 = (const GDateTime *) g_value_get_boxed (value2);
+
+  if (date1 == date2)
+    return GST_VALUE_EQUAL;
+
+  if ((date1 == NULL) && (date2 != NULL)) {
+    return GST_VALUE_LESS_THAN;
+  }
+  if ((date2 == NULL) && (date1 != NULL)) {
+    return GST_VALUE_LESS_THAN;
+  }
+
+  return g_date_time_compare (date1, date2);
+}
+
+static gchar *
+gst_value_serialize_g_date_time (const GValue * val)
+{
+  GDateTime *date = (GDateTime *) g_value_get_boxed (val);
+
+  if (date == NULL)
+    return g_strdup ("null");
+
+  return g_date_time_format_iso8601 (date);
+}
+
+static gboolean
+gst_value_deserialize_g_date_time (GValue * dest, const gchar * s)
+{
+  GDateTime *datetime;
+
+  if (!s || strcmp (s, "null") == 0) {
+    return FALSE;
+  }
+
+  /* The Gstreamer iso8601 parser is a bit more forgiving */
+  datetime =
+      gst_date_time_to_g_date_time (gst_date_time_new_from_iso8601_string (s));
+  if (datetime != NULL) {
+    g_value_take_boxed (dest, datetime);
+    return TRUE;
+  }
+  GST_WARNING ("Failed to deserialize date time string '%s' to GLibDateTime",
+      s);
+  return FALSE;
+}
+
+/*********
+ * bytes *
+ *********/
+
+static gint
+gst_value_compare_bytes (const GValue * value1, const GValue * value2)
+{
+  GBytes *bytes1 = (GBytes *) g_value_get_boxed (value1);
+  GBytes *bytes2 = (GBytes *) g_value_get_boxed (value2);
+
+  if (G_UNLIKELY (!bytes1 || !bytes2)) {
+    if (bytes1 == bytes2)
+      return GST_VALUE_EQUAL;
+    else
+      return GST_VALUE_UNORDERED;
+  }
+
+  return g_bytes_compare (bytes1, bytes2);
+}
+
+static gchar *
+gst_value_serialize_bytes (const GValue * value)
+{
+  GBytes *bytes = (GBytes *) g_value_get_boxed (value);
+  gsize len = 0;
+  const guint8 *data;
+
+  data = bytes ? g_bytes_get_data (bytes, &len) : NULL;
+
+  return g_base64_encode (data, len);
+}
+
+static gboolean
+gst_value_deserialize_bytes (GValue * dest, const gchar * s)
+{
+  gsize len;
+  guint8 *data;
+
+  if (!s) {
+    g_value_set_boxed (dest, g_bytes_new (NULL, 0));
+    return TRUE;
+  }
+
+  data = g_base64_decode (s, &len);
+  g_value_set_boxed (dest, g_bytes_new_take (data, len));
+  return TRUE;
 }
 
 
@@ -7480,12 +7848,12 @@ try_as_flags_string:
     if (end != NULL) {
       gchar *class_name = g_strndup (set_class, end - set_class);
       GType flags_type = g_type_from_name (class_name);
-      if (flags_type == 0) {
+      if (flags_type == G_TYPE_INVALID) {
         GST_TRACE ("Looking for dynamic type %s", class_name);
         gst_dynamic_type_factory_load (class_name);
       }
 
-      if (flags_type != 0) {
+      if (flags_type != G_TYPE_INVALID) {
         flags_klass = g_type_class_ref (flags_type);
         GST_TRACE ("Going to parse %s as %s", s, class_name);
       }
@@ -7748,7 +8116,8 @@ gst_g_thread_get_type (void)
   return G_TYPE_THREAD;
 }
 
-#define SERIAL_VTABLE(t,c,s,d) { t, c, s, d }
+#define SERIAL_VTABLE(t,c,s,d) { t, c, s, d, NULL }
+#define SERIAL_VTABLE_PSPEC(t,c,s,d) { t, c, s, NULL, d }
 
 #define REGISTER_SERIALIZATION_CONST(_gtype, _type)                     \
 G_STMT_START {                                                          \
@@ -7762,6 +8131,15 @@ G_STMT_START {                                                          \
 G_STMT_START {                                                          \
   static GstValueTable gst_value =                                      \
     SERIAL_VTABLE (0, gst_value_compare_ ## _type,                      \
+    gst_value_serialize_ ## _type, gst_value_deserialize_ ## _type);    \
+  gst_value.type = _gtype;                                              \
+  gst_value_register (&gst_value);                                      \
+} G_STMT_END
+
+#define REGISTER_SERIALIZATION_WITH_PSPEC(_gtype, _type)                \
+G_STMT_START {                                                          \
+  static GstValueTable gst_value =                                      \
+    SERIAL_VTABLE_PSPEC (0, gst_value_compare_ ## _type,                \
     gst_value_serialize_ ## _type, gst_value_deserialize_ ## _type);    \
   gst_value.type = _gtype;                                              \
   gst_value_register (&gst_value);                                      \
@@ -7811,8 +8189,6 @@ _priv_gst_value_initialize (void)
   REGISTER_SERIALIZATION (gst_int64_range_get_type (), int64_range);
   REGISTER_SERIALIZATION (gst_double_range_get_type (), double_range);
   REGISTER_SERIALIZATION (gst_fraction_range_get_type (), fraction_range);
-  REGISTER_SERIALIZATION (gst_value_list_get_type (), value_list);
-  REGISTER_SERIALIZATION (gst_value_array_get_type (), value_array);
   REGISTER_SERIALIZATION (g_value_array_get_type (), g_value_array);
   REGISTER_SERIALIZATION (gst_buffer_get_type (), buffer);
   REGISTER_SERIALIZATION (gst_sample_get_type (), sample);
@@ -7820,7 +8196,9 @@ _priv_gst_value_initialize (void)
   REGISTER_SERIALIZATION (gst_caps_get_type (), caps);
   REGISTER_SERIALIZATION (gst_tag_list_get_type (), tag_list);
   REGISTER_SERIALIZATION (G_TYPE_DATE, date);
+  REGISTER_SERIALIZATION (G_TYPE_BYTES, bytes);
   REGISTER_SERIALIZATION (gst_date_time_get_type (), date_time);
+  REGISTER_SERIALIZATION (G_TYPE_DATE_TIME, g_date_time);
   REGISTER_SERIALIZATION (gst_bitmask_get_type (), bitmask);
   REGISTER_SERIALIZATION (gst_structure_get_type (), structure);
   REGISTER_SERIALIZATION (gst_flagset_get_type (), flagset);
@@ -7854,6 +8232,9 @@ _priv_gst_value_initialize (void)
   REGISTER_SERIALIZATION_CONST (G_TYPE_UCHAR, uchar);
 
   REGISTER_SERIALIZATION (G_TYPE_GTYPE, gtype);
+
+  REGISTER_SERIALIZATION_WITH_PSPEC (gst_value_list_get_type (), value_list);
+  REGISTER_SERIALIZATION_WITH_PSPEC (gst_value_array_get_type (), value_array);
 
   g_value_register_transform_func (GST_TYPE_INT_RANGE, G_TYPE_STRING,
       gst_value_transform_int_range_string);

@@ -135,8 +135,7 @@ if get_option('check').disabled()
   endif
 endif
 
-glib_deps = [gio_dep, gobject_dep, gmodule_dep, glib_dep]
-gst_deps = [gst_dep, gst_base_dep, gst_check_dep, gst_net_dep, gst_controller_dep]
+gst_deps = [gst_dep, gst_base_dep, gst_check_dep, gst_net_dep, gst_controller_dep, gio_dep, gmodule_dep]
 
 foreach t : core_tests
   fname = t[0]
@@ -150,11 +149,11 @@ foreach t : core_tests
         cpp_args : gst_c_args + test_defines,
         include_directories : [configinc],
         link_with : link_with_libs,
-        dependencies : test_deps + glib_deps + gst_deps,
+        dependencies : gst_deps + test_deps,
     )
 
     env = environment()
-    env.set('GST_PLUGIN_PATH_1_0', meson.build_root())
+    env.set('GST_PLUGIN_PATH_1_0', meson.project_build_root())
     env.set('GST_PLUGIN_SYSTEM_PATH_1_0', '')
     env.set('GST_STATE_IGNORE_ELEMENTS', '')
     env.set('CK_DEFAULT_TIMEOUT', '20')

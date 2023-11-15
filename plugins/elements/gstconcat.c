@@ -50,6 +50,7 @@
 #endif
 
 #include "gstconcat.h"
+#include "gstcoreelementselements.h"
 
 GST_DEBUG_CATEGORY_STATIC (gst_concat_debug);
 #define GST_CAT_DEFAULT gst_concat_debug
@@ -118,6 +119,7 @@ enum
   GST_DEBUG_CATEGORY_INIT (gst_concat_debug, "concat", 0, "concat element");
 #define gst_concat_parent_class parent_class
 G_DEFINE_TYPE_WITH_CODE (GstConcat, gst_concat, GST_TYPE_ELEMENT, _do_init);
+GST_ELEMENT_REGISTER_DEFINE (concat, "concat", GST_RANK_NONE, GST_TYPE_CONCAT);
 
 static void gst_concat_dispose (GObject * object);
 static void gst_concat_finalize (GObject * object);
@@ -163,7 +165,7 @@ gst_concat_class_init (GstConcatClass * klass)
   gobject_class->set_property = gst_concat_set_property;
 
   pspec_active_pad = g_param_spec_object ("active-pad", "Active pad",
-      "Currently active src pad", GST_TYPE_PAD, G_PARAM_READABLE |
+      "Currently active sink pad", GST_TYPE_PAD, G_PARAM_READABLE |
       G_PARAM_STATIC_STRINGS);
   g_object_class_install_property (gobject_class, PROP_ACTIVE_PAD,
       pspec_active_pad);
@@ -614,6 +616,7 @@ gst_concat_sink_event (GstPad * pad, GstObject * parent, GstEvent * event)
       break;
     }
     case GST_EVENT_EOS:{
+      guint32 seqnum = gst_event_get_seqnum (event);
       gst_event_replace (&event, NULL);
 
       if (!gst_concat_pad_wait (spad, self)) {
@@ -630,6 +633,7 @@ gst_concat_sink_event (GstPad * pad, GstObject * parent, GstEvent * event)
 
         if (!next) {
           event = gst_event_new_eos ();
+          gst_event_set_seqnum (event, seqnum);
         } else {
           gst_element_post_message (GST_ELEMENT_CAST (self),
               gst_message_new_duration_changed (GST_OBJECT_CAST (self)));
@@ -756,13 +760,10 @@ gst_concat_src_event (GstPad * pad, GstObject * parent, GstEvent * event)
       break;
     }
     case GST_EVENT_QOS:{
-      GstPad *sinkpad = NULL;
-
       g_mutex_lock (&self->lock);
       if ((sinkpad = self->current_sinkpad))
         gst_object_ref (sinkpad);
       g_mutex_unlock (&self->lock);
-
 
       if (!sinkpad) {
         gst_event_replace (&event, NULL);

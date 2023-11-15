@@ -92,6 +92,18 @@
                         "type": "gboolean",
                         "writable": true
                     },
+                    "sync-to-first": {
+                        "blurb": "Automatically set ts-offset based on running time of the first buffer and pipeline's running time (i.e., ts-offset = \"pipeline running time\" - \"buffer running time\"). When enabled, clocksync element will update ts-offset on the first buffer per flush event or READY to PAUSED state change. This property can be useful in case that buffer timestamp does not necessarily have to be synchronized with pipeline's running time, but duration of the buffer through clocksync element needs to be synchronized with the amount of clock time go. Note that mixed use of ts-offset and this property would be racy if clocksync element is running already.",
+                        "conditionally-available": false,
+                        "construct": false,
+                        "construct-only": false,
+                        "controllable": false,
+                        "default": "false",
+                        "mutable": "null",
+                        "readable": true,
+                        "type": "gboolean",
+                        "writable": true
+                    },
                     "ts-offset": {
                         "blurb": "Timestamp offset in nanoseconds for synchronisation, negative for earlier sync",
                         "conditionally-available": false,
@@ -135,7 +147,7 @@
                 },
                 "properties": {
                     "active-pad": {
-                        "blurb": "Currently active src pad",
+                        "blurb": "Currently active sink pad",
                         "conditionally-available": false,
                         "construct": false,
                         "construct-only": false,
@@ -1218,6 +1230,18 @@
                         "type": "guint",
                         "writable": true
                     },
+                    "stats": {
+                        "blurb": "Statistics",
+                        "conditionally-available": false,
+                        "construct": false,
+                        "construct-only": false,
+                        "controllable": false,
+                        "default": "application/x-identity-stats, num-bytes=(guint64)0, num-buffers=(guint64)0;",
+                        "mutable": "null",
+                        "readable": true,
+                        "type": "GstStructure",
+                        "writable": false
+                    },
                     "sync": {
                         "blurb": "Synchronize to pipeline clock",
                         "conditionally-available": false,
@@ -1298,6 +1322,18 @@
                     },
                     "cache-buffers": {
                         "blurb": "Cache buffers for active-pad",
+                        "conditionally-available": false,
+                        "construct": false,
+                        "construct-only": false,
+                        "controllable": false,
+                        "default": "false",
+                        "mutable": "ready",
+                        "readable": true,
+                        "type": "gboolean",
+                        "writable": true
+                    },
+                    "drop-backwards": {
+                        "blurb": "Drop backwards buffers on pad switch",
                         "conditionally-available": false,
                         "construct": false,
                         "construct-only": false,
@@ -2445,6 +2481,18 @@
                         "readable": true,
                         "type": "gboolean",
                         "writable": true
+                    },
+                    "drop-mode": {
+                        "blurb": "The drop mode to use",
+                        "conditionally-available": false,
+                        "construct": false,
+                        "construct-only": false,
+                        "controllable": false,
+                        "default": "drop-all (0)",
+                        "mutable": "ready",
+                        "readable": true,
+                        "type": "GstValveDropMode",
+                        "writable": true
                     }
                 },
                 "rank": "none"
@@ -2796,6 +2844,26 @@
                         "value": "1"
                     }
                 ]
+            },
+            "GstValveDropMode": {
+                "kind": "enum",
+                "values": [
+                    {
+                        "desc": "Drop all buffers and events",
+                        "name": "drop-all",
+                        "value": "0"
+                    },
+                    {
+                        "desc": "Drop all buffers but forward sticky events",
+                        "name": "forward-sticky-events",
+                        "value": "1"
+                    },
+                    {
+                        "desc": "Convert all dropped buffers into gap events and forward sticky events",
+                        "name": "transform-to-gap",
+                        "value": "2"
+                    }
+                ]
             }
         },
         "package": "GStreamer",
@@ -2812,6 +2880,7 @@
         "package": "GStreamer",
         "source": "gstreamer",
         "tracers": {
+            "factories": {},
             "latency": {},
             "leaks": {},
             "log": {},

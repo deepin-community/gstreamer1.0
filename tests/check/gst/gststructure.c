@@ -161,6 +161,37 @@ GST_START_TEST (test_from_string)
   fail_unless_equals_int (g_value_get_boolean (val), TRUE);
   gst_structure_free (structure);
 
+  /* Test trailing comas */
+  s = "test-string,";
+  structure = gst_structure_from_string (s, NULL);
+  fail_if (structure == NULL, "Could not get structure from string %s", s);
+  gst_structure_free (structure);
+
+  s = "test-string,;";
+  structure = gst_structure_from_string (s, NULL);
+  fail_if (structure == NULL, "Could not get structure from string %s", s);
+  gst_structure_free (structure);
+
+  s = "test-string,value=true,";
+  structure = gst_structure_from_string (s, NULL);
+  fail_if (structure == NULL, "Could not get structure from string %s", s);
+  fail_unless ((val = gst_structure_get_value (structure, "value")) != NULL);
+  fail_unless (G_VALUE_HOLDS_BOOLEAN (val));
+  fail_unless_equals_int (g_value_get_boolean (val), TRUE);
+  gst_structure_free (structure);
+
+  s = "test-string,value=true,;";
+  structure = gst_structure_from_string (s, NULL);
+  fail_if (structure == NULL, "Could not get structure from string %s", s);
+  fail_unless ((val = gst_structure_get_value (structure, "value")) != NULL);
+  fail_unless (G_VALUE_HOLDS_BOOLEAN (val));
+  fail_unless_equals_int (g_value_get_boolean (val), TRUE);
+  gst_structure_free (structure);
+
+  s = "test-string,value=true,,";
+  structure = gst_structure_from_string (s, NULL);
+  fail_unless (structure == NULL, "Created structure from string %s", s);
+
   /* Tests for flagset deserialisation */
   s = "foobar,value=0010:ffff";
   structure = gst_structure_from_string (s, NULL);
@@ -191,6 +222,21 @@ GST_START_TEST (test_from_string)
   structure = NULL;
   ASSERT_CRITICAL (structure = gst_structure_from_string (s, NULL));
   fail_unless (structure == NULL, "Could not get structure from string %s", s);
+
+  /* Test that escaping works both with and without a type */
+  s = "foo/bar, value=\"raven \\\"nevermore\\\"\"";
+  structure = gst_structure_from_string (s, NULL);
+  fail_if (structure == NULL, "Could not get structure from string %s", s);
+  fail_unless ((val = gst_structure_get_value (structure, "value")) != NULL);
+  fail_unless (G_VALUE_HOLDS_STRING (val));
+  gst_structure_free (structure);
+
+  s = "foo/bar, value=(string)\"raven \\\"nevermore\\\"\"";
+  structure = gst_structure_from_string (s, NULL);
+  fail_if (structure == NULL, "Could not get structure from string %s", s);
+  fail_unless ((val = gst_structure_get_value (structure, "value")) != NULL);
+  fail_unless (G_VALUE_HOLDS_STRING (val));
+  gst_structure_free (structure);
 
   /* make sure we bail out correctly in case of an error or if parsing fails */
   s = "***foo***, abc=(boolean)false";
@@ -723,6 +769,41 @@ GST_START_TEST (test_structure_nested_from_and_to_string)
 
 GST_END_TEST;
 
+GST_START_TEST (test_serialize_nested_structures)
+{
+  GstStructure *s;
+  const gchar *str1;
+  gchar *str2, *end = NULL;
+
+  str1 = "main"
+      ", main-sub1=(structure)[type-b, machine-type=(int)0;]"
+      ", main-sub2=(structure)[type-a, plugin-filename=(string)\"/home/user/lib/lib\\ with\\ spaces.dll\", machine-type=(int)1;]"
+      ", main-sub3=(structure)[type-b, plugin-filename=(string)/home/user/lib/lib_no_spaces.so, machine-type=(int)1;]"
+      ", main-sub4=(structure){ [s1, a=(int)1;], [s2, b=(int)2;] }" ";";
+
+  s = gst_structure_from_string (str1, &end);
+  fail_unless (s != NULL);
+
+  GST_DEBUG ("not parsed part : %s", end);
+  fail_unless (*end == '\0');
+
+  fail_unless (gst_structure_n_fields (s) == 4);
+
+  fail_unless (gst_structure_has_field_typed (s, "main-sub1",
+          GST_TYPE_STRUCTURE));
+
+  str2 = gst_structure_serialize (s, GST_SERIALIZE_FLAG_NONE);
+  fail_unless (str2 != NULL);
+
+  fail_unless_equals_string (str1, str2);
+
+  g_free (str2);
+
+  gst_structure_free (s);
+}
+
+GST_END_TEST;
+
 GST_START_TEST (test_vararg_getters)
 {
   GstStructure *s;
@@ -937,6 +1018,22 @@ GST_START_TEST (test_flagset)
 
 GST_END_TEST;
 
+GST_START_TEST (test_flags)
+{
+  GstStructure *s;
+  GstSeekFlags flags = GST_SEEK_FLAG_FLUSH | GST_SEEK_FLAG_KEY_UNIT;
+  guint parsed_flags = 0;
+
+  s = gst_structure_new ("test-struct", "test-seek-flags",
+      GST_TYPE_SEEK_FLAGS, flags, NULL);
+  fail_unless (gst_structure_get_flags (s, "test-seek-flags",
+          GST_TYPE_SEEK_FLAGS, &parsed_flags));
+  fail_unless (flags == (GstSeekFlags) parsed_flags);
+  gst_structure_free (s);
+}
+
+GST_END_TEST;
+
 static Suite *
 gst_structure_suite (void)
 {
@@ -963,11 +1060,13 @@ gst_structure_suite (void)
   tcase_add_test (tc_chain, test_is_subset_superset_extra_values);
   tcase_add_test (tc_chain, test_structure_nested);
   tcase_add_test (tc_chain, test_structure_nested_from_and_to_string);
+  tcase_add_test (tc_chain, test_serialize_nested_structures);
   tcase_add_test (tc_chain, test_vararg_getters);
   tcase_add_test (tc_chain, test_foreach);
   tcase_add_test (tc_chain, test_map_in_place);
   tcase_add_test (tc_chain, test_filter_and_map_in_place);
   tcase_add_test (tc_chain, test_flagset);
+  tcase_add_test (tc_chain, test_flags);
   return s;
 }
 
