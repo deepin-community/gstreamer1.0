@@ -46,10 +46,17 @@
 #endif
 #include <locale.h>             /* for LC_ALL */
 #include "tools.h"
+#ifdef HAVE_WINMM
+#include <mmsystem.h>
+#endif
+
+#ifdef __APPLE__
+#include <TargetConditionals.h>
+#endif
 
 extern volatile gboolean glib_on_error_halt;
 
-#ifdef G_OS_UNIX
+#if defined (G_OS_UNIX) && !defined (__APPLE__)
 static void fault_restore (void);
 static void fault_spin (void);
 #endif
@@ -88,7 +95,7 @@ static gboolean waiting_eos = FALSE;
 /* convenience macro so we don't have to litter the code with if(!quiet) */
 #define PRINT if(!quiet)gst_print
 
-#ifdef G_OS_UNIX
+#if defined (G_OS_UNIX) && !defined (__APPLE__)
 static void
 fault_handler_sighandler (int signum)
 {
@@ -154,7 +161,7 @@ fault_setup (void)
   sigaction (SIGSEGV, &action, NULL);
   sigaction (SIGQUIT, &action, NULL);
 }
-#endif /* G_OS_UNIX */
+#endif /* G_OS_UNIX && !__APPLE__ */
 
 #if 0
 typedef struct _GstIndexStats
@@ -1030,8 +1037,45 @@ query_pipeline_position (gpointer user_data)
   return G_SOURCE_CONTINUE;
 }
 
-int
-main (int argc, char *argv[])
+#ifdef HAVE_WINMM
+static guint
+enable_winmm_timer_resolution (void)
+{
+  TIMECAPS time_caps;
+  guint resolution = 0;
+  MMRESULT res;
+
+  res = timeGetDevCaps (&time_caps, sizeof (TIMECAPS));
+  if (res != TIMERR_NOERROR) {
+    g_warning ("timeGetDevCaps() returned non-zero code %d", res);
+    return 0;
+  }
+
+  resolution = MIN (MAX (time_caps.wPeriodMin, 1), time_caps.wPeriodMax);
+  res = timeBeginPeriod (resolution);
+  if (res != TIMERR_NOERROR) {
+    g_warning ("timeBeginPeriod() returned non-zero code %d", res);
+    return 0;
+  }
+
+  PRINT (_("Use Windows high-resolution clock, precision: %u ms\n"),
+      resolution);
+
+  return resolution;
+}
+
+static void
+clear_winmm_timer_resolution (guint resolution)
+{
+  if (resolution == 0)
+    return;
+
+  timeEndPeriod (resolution);
+}
+#endif
+
+static int
+real_main (int argc, char *argv[])
 {
   /* options */
   gboolean verbose = FALSE;
@@ -1092,6 +1136,9 @@ main (int argc, char *argv[])
   gulong deep_notify_id = 0;
   guint bus_watch_id = 0;
   GSource *position_source = NULL;
+#ifdef HAVE_WINMM
+  guint winmm_timer_resolution = 0;
+#endif
 
   free (malloc (8));            /* -lefence */
 
@@ -1106,12 +1153,18 @@ main (int argc, char *argv[])
   g_set_prgname ("gst-launch-" GST_API_VERSION);
   /* Ensure XInitThreads() is called if/when needed */
   g_setenv ("GST_GL_XINITTHREADS", "1", TRUE);
+  g_setenv ("GST_XINITTHREADS", "1", TRUE);
 
 #ifndef GST_DISABLE_OPTION_PARSING
   ctx = g_option_context_new ("PIPELINE-DESCRIPTION");
   g_option_context_add_main_entries (ctx, options, GETTEXT_PACKAGE);
   g_option_context_add_group (ctx, gst_init_get_option_group ());
-  if (!g_option_context_parse (ctx, &argc, &argv, &err)) {
+#ifdef G_OS_WIN32
+  if (!g_option_context_parse_strv (ctx, &argv, &err))
+#else
+  if (!g_option_context_parse (ctx, &argc, &argv, &err))
+#endif
+  {
     if (err)
       gst_printerr ("Error initializing: %s\n", GST_STR_NULL (err->message));
     else
@@ -1125,9 +1178,13 @@ main (int argc, char *argv[])
   gst_init (&argc, &argv);
 #endif
 
+#ifdef G_OS_WIN32
+  argc = g_strv_length (argv);
+#endif
+
   gst_tools_print_version ();
 
-#ifdef G_OS_UNIX
+#if defined (G_OS_UNIX) && !defined (__APPLE__)
   if (!no_fault)
     fault_setup ();
 #endif
@@ -1174,6 +1231,23 @@ main (int argc, char *argv[])
       gst_bin_add (GST_BIN (real_pipeline), pipeline);
       pipeline = real_pipeline;
     }
+#ifdef HAVE_WINMM
+    /* Enable high-precision clock which will improve accuracy of various
+     * Windows timer APIs (e.g., Sleep()), and it will increase the precision
+     * of GstSystemClock as well
+     */
+
+    /* NOTE: Once timer resolution is updated via timeBeginPeriod(),
+     * application should undo it by calling timeEndPeriod()
+     *
+     * Prior to Windows 10, version 2004, timeBeginPeriod() affects global
+     * Windows setting (meaning that it will affect other processes),
+     * but starting with Windows 10, version 2004, this function no longer
+     * affects global timer resolution
+     */
+    winmm_timer_resolution = enable_winmm_timer_resolution ();
+#endif
+
     if (verbose) {
       deep_notify_id =
           gst_element_add_property_deep_notify_watch (pipeline, NULL, TRUE);
@@ -1285,6 +1359,11 @@ main (int argc, char *argv[])
 #endif
     g_source_remove (bus_watch_id);
     g_main_loop_unref (loop);
+
+#ifdef HAVE_WINMM
+    /* Undo timeBeginPeriod() if required */
+    clear_winmm_timer_resolution (winmm_timer_resolution);
+#endif
   }
 
   PRINT (_("Freeing pipeline ...\n"));
@@ -1293,4 +1372,26 @@ main (int argc, char *argv[])
   gst_deinit ();
 
   return last_launch_code;
+}
+
+int
+main (int argc, char *argv[])
+{
+  int ret;
+
+#ifdef G_OS_WIN32
+  argv = g_win32_get_command_line ();
+#endif
+
+#if defined(__APPLE__) && TARGET_OS_MAC && !TARGET_OS_IPHONE
+  ret = gst_macos_main ((GstMainFunc) real_main, argc, argv, NULL);
+#else
+  ret = real_main (argc, argv);
+#endif
+
+#ifdef G_OS_WIN32
+  g_strfreev (argv);
+#endif
+
+  return ret;
 }

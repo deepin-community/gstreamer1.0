@@ -36,8 +36,9 @@
 #include <string.h>
 
 #include "gstelements_private.h"
-#include "../../gst/gst-i18n-lib.h"
+#include <glib/gi18n-lib.h>
 #include "gstidentity.h"
+#include "gstcoreelementselements.h"
 
 static GstStaticPadTemplate sinktemplate = GST_STATIC_PAD_TEMPLATE ("sink",
     GST_PAD_SINK,
@@ -95,7 +96,8 @@ enum
   PROP_CHECK_IMPERFECT_OFFSET,
   PROP_SIGNAL_HANDOFFS,
   PROP_DROP_ALLOCATION,
-  PROP_EOS_AFTER
+  PROP_EOS_AFTER,
+  PROP_STATS
 };
 
 
@@ -104,6 +106,8 @@ enum
 #define gst_identity_parent_class parent_class
 G_DEFINE_TYPE_WITH_CODE (GstIdentity, gst_identity, GST_TYPE_BASE_TRANSFORM,
     _do_init);
+GST_ELEMENT_REGISTER_DEFINE (identity, "identity", GST_RANK_NONE,
+    GST_TYPE_IDENTITY);
 
 static void gst_identity_finalize (GObject * object);
 static void gst_identity_set_property (GObject * object, guint prop_id,
@@ -258,7 +262,6 @@ gst_identity_class_init (GstIdentityClass * klass)
    * GstIdentity::handoff:
    * @identity: the identity instance
    * @buffer: the buffer that just has been received
-   * @pad: the pad that received it
    *
    * This signal gets emitted before passing the buffer downstream.
    */
@@ -266,6 +269,36 @@ gst_identity_class_init (GstIdentityClass * klass)
       g_signal_new ("handoff", G_TYPE_FROM_CLASS (klass), G_SIGNAL_RUN_LAST,
       G_STRUCT_OFFSET (GstIdentityClass, handoff), NULL, NULL,
       NULL, G_TYPE_NONE, 1, GST_TYPE_BUFFER | G_SIGNAL_TYPE_STATIC_SCOPE);
+
+  /**
+   * GstIdentity:stats:
+
+   * Various statistics. This property returns a GstStructure
+   * with name application/x-identity-stats with the following fields:
+   *
+   * <itemizedlist>
+   * <listitem>
+   *   <para>
+   *   #guint64
+   *   <classname>&quot;num-buffers&quot;</classname>:
+   *   the number of buffers that passed through.
+   *   </para>
+   * </listitem>
+   * <listitem>
+   *   <para>
+   *   #guint64
+   *   <classname>&quot;num-bytes&quot;</classname>:
+   *   the number of bytes that passed through.
+   *   </para>
+   * </listitem>
+   * </itemizedlist>
+   *
+   * Since: 1.20
+   */
+  g_object_class_install_property (gobject_class, PROP_STATS,
+      g_param_spec_boxed ("stats", "Statistics",
+          "Statistics", GST_TYPE_STRUCTURE,
+          G_PARAM_READABLE | G_PARAM_STATIC_STRINGS));
 
   gobject_class->finalize = gst_identity_finalize;
 
@@ -446,19 +479,34 @@ gst_identity_sink_event (GstBaseTransform * trans, GstEvent * event)
 
   if (GST_EVENT_TYPE (event) == GST_EVENT_GAP &&
       trans->have_segment && trans->segment.format == GST_FORMAT_TIME) {
-    GstClockTime start, dur;
+    GstClockTime start, dur, old_start;
 
-    gst_event_parse_gap (event, &start, &dur);
-    if (GST_CLOCK_TIME_IS_VALID (start)) {
-      start = gst_segment_to_running_time (&trans->segment,
-          GST_FORMAT_TIME, start);
+    gst_event_parse_gap (event, &old_start, &dur);
 
-      gst_identity_do_sync (identity, start);
+    start = gst_segment_to_running_time (&trans->segment,
+        GST_FORMAT_TIME, old_start);
 
-      /* also transform GAP timestamp similar to buffer timestamps */
-      if (identity->single_segment) {
+    gst_identity_do_sync (identity,
+        GST_CLOCK_TIME_IS_VALID (start) ? start : 0);
+
+    /* also transform GAP timestamp similar to buffer timestamps */
+    if (identity->single_segment) {
+      guint64 clip_start, clip_stop;
+      if (GST_CLOCK_TIME_IS_VALID (start)) {
         gst_event_unref (event);
         event = gst_event_new_gap (start, dur);
+      } else if (GST_CLOCK_TIME_IS_VALID (dur) &&
+          gst_segment_clip (&trans->segment, GST_FORMAT_TIME, old_start,
+              old_start + dur, &clip_start, &clip_stop)) {
+        gst_event_unref (event);
+        event = gst_event_new_gap (clip_start, clip_stop - clip_start);
+      } else {
+        /* Gap event is completely outside the segment, drop it */
+        GST_DEBUG_OBJECT (identity,
+            "Dropping GAP event outside segment: %" GST_PTR_FORMAT, event);
+        gst_event_unref (event);
+        ret = TRUE;
+        goto done;
       }
     }
   }
@@ -673,6 +721,7 @@ gst_identity_update_last_message_for_buffer (GstIdentity * identity,
       GST_BUFFER_FLAGS (buf), flag_str, meta_str ? meta_str : "none", buf);
   g_free (flag_str);
   g_free (meta_str);
+  GST_TRACE_OBJECT (identity, "%s", identity->last_message);
 
   GST_OBJECT_UNLOCK (identity);
 
@@ -784,6 +833,11 @@ gst_identity_transform_ip (GstBaseTransform * trans, GstBuffer * buf)
     GST_BUFFER_OFFSET (buf) = GST_CLOCK_TIME_NONE;
     GST_BUFFER_OFFSET_END (buf) = GST_CLOCK_TIME_NONE;
   }
+
+  GST_OBJECT_LOCK (trans);
+  identity->num_bytes += gst_buffer_get_size (buf);
+  identity->num_buffers++;
+  GST_OBJECT_UNLOCK (trans);
 
   return ret;
 
@@ -902,6 +956,20 @@ gst_identity_set_property (GObject * object, guint prop_id,
     gst_base_transform_set_passthrough (GST_BASE_TRANSFORM (identity), TRUE);
 }
 
+static GstStructure *
+gst_identity_create_stats (GstIdentity * identity)
+{
+  GstStructure *s;
+
+  GST_OBJECT_LOCK (identity);
+  s = gst_structure_new ("application/x-identity-stats",
+      "num-bytes", G_TYPE_UINT64, identity->num_bytes,
+      "num-buffers", G_TYPE_UINT64, identity->num_buffers, NULL);
+  GST_OBJECT_UNLOCK (identity);
+
+  return s;
+}
+
 static void
 gst_identity_get_property (GObject * object, guint prop_id, GValue * value,
     GParamSpec * pspec)
@@ -960,6 +1028,9 @@ gst_identity_get_property (GObject * object, guint prop_id, GValue * value,
       break;
     case PROP_EOS_AFTER:
       g_value_set_int (value, identity->eos_after);
+      break;
+    case PROP_STATS:
+      g_value_take_boxed (value, gst_identity_create_stats (identity));
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -1099,6 +1170,8 @@ gst_identity_change_state (GstElement * element, GstStateChange transition)
       GST_OBJECT_UNLOCK (identity);
       if (identity->sync)
         no_preroll = TRUE;
+      identity->num_bytes = 0;
+      identity->num_buffers = 0;
       break;
     case GST_STATE_CHANGE_PAUSED_TO_PLAYING:
       GST_OBJECT_LOCK (identity);

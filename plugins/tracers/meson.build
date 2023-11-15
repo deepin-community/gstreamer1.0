@@ -10,6 +10,7 @@ gst_tracers_sources = [
   'gstleaks.c',
   'gststats.c',
   'gsttracers.c',
+  'gstfactories.c'
 ]
 
 if gst_debug
@@ -30,5 +31,4 @@ gst_tracers = library('gstcoretracers',
   install : true,
   install_dir : plugins_install_dir,
 )
-pkgconfig.generate(gst_tracers, install_dir : plugins_pkgconfig_install_dir)
 plugins += [gst_tracers]

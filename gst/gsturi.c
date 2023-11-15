@@ -49,7 +49,7 @@
 #include "gstinfo.h"
 #include "gstregistry.h"
 
-#include "gst-i18n-lib.h"
+#include <glib/gi18n-lib.h>
 
 #include <string.h>
 #include <glib.h>
@@ -405,8 +405,8 @@ gst_uri_get_protocol (const gchar * uri)
 {
   gchar *colon;
 
-  g_return_val_if_fail (uri != NULL, NULL);
-  g_return_val_if_fail (gst_uri_is_valid (uri), NULL);
+  if (!gst_uri_is_valid (uri))
+    return NULL;
 
   colon = strstr (uri, ":");
 
@@ -427,9 +427,11 @@ gst_uri_has_protocol (const gchar * uri, const gchar * protocol)
 {
   gchar *colon;
 
-  g_return_val_if_fail (uri != NULL, FALSE);
   g_return_val_if_fail (protocol != NULL, FALSE);
-  g_return_val_if_fail (gst_uri_is_valid (uri), FALSE);
+
+  if (!gst_uri_is_valid (uri)) {
+    return FALSE;
+  }
 
   colon = strstr (uri, ":");
 
@@ -460,8 +462,9 @@ gst_uri_get_location (const gchar * uri)
   const gchar *colon;
   gchar *unescaped = NULL;
 
-  g_return_val_if_fail (uri != NULL, NULL);
-  g_return_val_if_fail (gst_uri_is_valid (uri), NULL);
+  if (!gst_uri_is_valid (uri)) {
+    return NULL;
+  }
 
   colon = strstr (uri, "://");
   if (!colon)
@@ -497,8 +500,7 @@ gst_uri_get_location (const gchar * uri)
  *
  * Free-function: g_free
  *
- * Returns: (transfer full): a new string for this URI. Returns %NULL if the
- *     given URI protocol is not valid, or the given location is %NULL.
+ * Returns: (transfer full): a new string for this URI.
  *
  * Deprecated: Use GstURI instead.
  */
@@ -614,8 +616,8 @@ gst_uri_protocol_is_supported (const GstURIType type, const gchar * protocol)
  * gst_element_make_from_uri:
  * @type: Whether to create a source or a sink
  * @uri: URI to create an element for
- * @elementname: (allow-none): Name of created element, can be %NULL.
- * @error: (allow-none): address where to store error information, or %NULL.
+ * @elementname: (nullable): Name of created element, can be %NULL.
+ * @error: address where to store error information, or %NULL.
  *
  * Creates an element for handling the given URI.
  *
@@ -632,8 +634,13 @@ gst_element_make_from_uri (const GstURIType type, const gchar * uri,
 
   g_return_val_if_fail (gst_is_initialized (), NULL);
   g_return_val_if_fail (GST_URI_TYPE_IS_VALID (type), NULL);
-  g_return_val_if_fail (gst_uri_is_valid (uri), NULL);
   g_return_val_if_fail (error == NULL || *error == NULL, NULL);
+
+  if (!gst_uri_is_valid (uri)) {
+    g_set_error (error, GST_URI_ERROR, GST_URI_ERROR_BAD_URI,
+        _("Invalid URI: %s"), uri);
+    return NULL;
+  }
 
   GST_DEBUG ("type:%d, uri:%s, elementname:%s", type, uri, elementname);
 
@@ -724,7 +731,7 @@ gst_uri_handler_get_uri_type (GstURIHandler * handler)
  * Gets the list of protocols supported by @handler. This list may not be
  * modified.
  *
- * Returns: (transfer none) (element-type utf8) (nullable): the
+ * Returns: (transfer none) (element-type utf8) (nullable) (array zero-terminated=1): the
  *     supported protocols.  Returns %NULL if the @handler isn't
  *     implemented properly, or the @handler doesn't support any
  *     protocols.
@@ -780,7 +787,7 @@ gst_uri_handler_get_uri (GstURIHandler * handler)
  * gst_uri_handler_set_uri:
  * @handler: A #GstURIHandler
  * @uri: URI to set
- * @error: (allow-none): address where to store a #GError in case of
+ * @error: address where to store a #GError in case of
  *    an error, or %NULL
  *
  * Tries to set the URI of the given handler.
@@ -796,12 +803,17 @@ gst_uri_handler_set_uri (GstURIHandler * handler, const gchar * uri,
   gchar *protocol;
 
   g_return_val_if_fail (GST_IS_URI_HANDLER (handler), FALSE);
-  g_return_val_if_fail (gst_uri_is_valid (uri), FALSE);
   g_return_val_if_fail (error == NULL || *error == NULL, FALSE);
 
   iface = GST_URI_HANDLER_GET_INTERFACE (handler);
   g_return_val_if_fail (iface != NULL, FALSE);
   g_return_val_if_fail (iface->set_uri != NULL, FALSE);
+
+  if (!gst_uri_is_valid (uri)) {
+    g_set_error (error, GST_URI_ERROR, GST_URI_ERROR_BAD_URI,
+        _("Invalid URI: %s"), uri);
+    return FALSE;
+  }
 
   protocol = gst_uri_get_protocol (uri);
 
@@ -903,7 +915,7 @@ file_path_contains_relatives (const gchar * path)
  *
  * On Windows @filename should be in UTF-8 encoding.
  *
- * Returns: newly-allocated URI string, or NULL on error. The caller must
+ * Returns: (nullable): newly-allocated URI string, or NULL on error. The caller must
  *   free the URI string with g_free() when no longer needed.
  */
 gchar *
@@ -1302,7 +1314,7 @@ _gst_uri_string_to_list (const gchar * str, const gchar * sep, gboolean convert,
       for (next_elem = split_str; *next_elem; next_elem += 1) {
         gchar *elem = *next_elem;
         if (*elem == '\0') {
-          new_list = g_list_append (new_list, NULL);
+          new_list = g_list_prepend (new_list, NULL);
         } else {
           if (convert && !unescape) {
             gchar *next_sep;
@@ -1318,7 +1330,7 @@ _gst_uri_string_to_list (const gchar * str, const gchar * sep, gboolean convert,
             g_free (elem);
             elem = *next_elem;
           }
-          new_list = g_list_append (new_list, g_strdup (elem));
+          new_list = g_list_prepend (new_list, g_strdup (elem));
         }
       }
     }
@@ -1327,7 +1339,7 @@ _gst_uri_string_to_list (const gchar * str, const gchar * sep, gboolean convert,
       g_free (pct_sep);
   }
 
-  return new_list;
+  return g_list_reverse (new_list);
 }
 
 static GHashTable *
@@ -1677,7 +1689,7 @@ gst_uri_from_string_escaped (const gchar * uri)
  *
  * Like gst_uri_from_string() but also joins with a base URI.
  *
- * Returns: (transfer full): A new #GstUri object.
+ * Returns: (transfer full) (nullable): A new #GstUri object.
  *
  * Since: 1.6
  */
@@ -1690,6 +1702,9 @@ gst_uri_from_string_with_base (GstUri * base, const gchar * uri)
   g_return_val_if_fail (base == NULL || GST_IS_URI (base), NULL);
 
   new_rel_uri = gst_uri_from_string (uri);
+  if (!new_rel_uri)
+    return NULL;
+
   new_uri = gst_uri_join (base, new_rel_uri);
   gst_uri_unref (new_rel_uri);
 
@@ -1904,7 +1919,7 @@ gst_uri_join (GstUri * base_uri, GstUri * ref_uri)
  * This is a convenience function to join two URI strings and return the result.
  * The returned string should be g_free()'d after use.
  *
- * Returns: (transfer full): A string representing the percent-encoded join of
+ * Returns: (transfer full) (nullable): A string representing the percent-encoded join of
  *          the two URIs.
  *
  * Since: 1.6
@@ -1916,7 +1931,15 @@ gst_uri_join_strings (const gchar * base_uri, const gchar * ref_uri)
   gchar *result_uri;
 
   base = gst_uri_from_string (base_uri);
+  if (!base)
+    return NULL;
+
   result = gst_uri_from_string_with_base (base, ref_uri);
+  if (!result) {
+    gst_uri_unref (base);
+    return NULL;
+  }
+
   result_uri = gst_uri_to_string (result);
   gst_uri_unref (base);
   gst_uri_unref (result);
@@ -2046,7 +2069,7 @@ gst_uri_to_string (const GstUri * uri)
 
 /**
  * gst_uri_is_normalized:
- * @uri: The #GstUri to test to see if it is normalized.
+ * @uri: (nullable): The #GstUri to test to see if it is normalized.
  *
  * Tests the @uri to see if it is normalized. A %NULL @uri is considered to be
  * normalized.
@@ -2153,6 +2176,9 @@ gst_uri_set_scheme (GstUri * uri, const gchar * scheme)
     return scheme == NULL;
   g_return_val_if_fail (GST_IS_URI (uri) && gst_uri_is_writable (uri), FALSE);
 
+  if (uri->scheme == scheme)
+    return TRUE;
+
   g_free (uri->scheme);
   uri->scheme = g_strdup (scheme);
 
@@ -2195,6 +2221,8 @@ gst_uri_set_userinfo (GstUri * uri, const gchar * userinfo)
     return userinfo == NULL;
   g_return_val_if_fail (GST_IS_URI (uri) && gst_uri_is_writable (uri), FALSE);
 
+  if (uri->userinfo == userinfo)
+    return TRUE;
   g_free (uri->userinfo);
   uri->userinfo = g_strdup (userinfo);
 
@@ -2236,6 +2264,9 @@ gst_uri_set_host (GstUri * uri, const gchar * host)
   if (!uri)
     return host == NULL;
   g_return_val_if_fail (GST_IS_URI (uri) && gst_uri_is_writable (uri), FALSE);
+
+  if (uri->host == host)
+    return TRUE;
 
   g_free (uri->host);
   uri->host = g_strdup (host);
@@ -2286,7 +2317,7 @@ gst_uri_set_port (GstUri * uri, guint port)
 
 /**
  * gst_uri_get_path:
- * @uri: The #GstUri to get the path from.
+ * @uri: (nullable): The #GstUri to get the path from.
  *
  * Extract the path string from the URI object.
  *
@@ -2325,7 +2356,7 @@ gst_uri_get_path (const GstUri * uri)
 /**
  * gst_uri_set_path:
  * @uri: (transfer none) (nullable): The #GstUri to modify.
- * @path: The new path to set with path segments separated by '/', or use %NULL
+ * @path: (nullable): The new path to set with path segments separated by '/', or use %NULL
  *        to unset the path.
  *
  * Sets or unsets the path in the URI.
@@ -2349,7 +2380,7 @@ gst_uri_set_path (GstUri * uri, const gchar * path)
 
 /**
  * gst_uri_get_path_string:
- * @uri: The #GstUri to get the path from.
+ * @uri: (nullable): The #GstUri to get the path from.
  *
  * Extract the path string from the URI object as a percent encoded URI path.
  *
@@ -2471,7 +2502,7 @@ gst_uri_set_path_segments (GstUri * uri, GList * path_segments)
 /**
  * gst_uri_append_path:
  * @uri: (transfer none)(nullable): The #GstUri to modify.
- * @relative_path: Relative path to append to the end of the current path.
+ * @relative_path: (nullable): Relative path to append to the end of the current path.
  *
  * Append a path onto the end of the path in the URI. The path is not
  * normalized, call #gst_uri_normalize() to normalize the path.
@@ -2509,7 +2540,7 @@ gst_uri_append_path (GstUri * uri, const gchar * relative_path)
 /**
  * gst_uri_append_path_segment:
  * @uri: (transfer none)(nullable): The #GstUri to modify.
- * @path_segment: The path segment string to append to the URI path.
+ * @path_segment: (nullable): The path segment string to append to the URI path.
  *
  * Append a single path segment onto the end of the URI path.
  *
@@ -2581,7 +2612,7 @@ gst_uri_get_query_string (const GstUri * uri)
 /**
  * gst_uri_set_query_string:
  * @uri: (transfer none)(nullable): The #GstUri to modify.
- * @query: The new percent encoded query string to use to populate the query
+ * @query: (nullable): The new percent encoded query string to use to populate the query
  *        table, or use %NULL to unset the query table.
  *
  * Sets or unsets the query table in the URI.
@@ -2655,6 +2686,9 @@ gst_uri_set_query_table (GstUri * uri, GHashTable * query_table)
   if (!uri)
     return query_table == NULL;
   g_return_val_if_fail (GST_IS_URI (uri) && gst_uri_is_writable (uri), FALSE);
+
+  if (uri->query == query_table)
+    return TRUE;
 
   old_table = uri->query;
   if (query_table)
@@ -2839,6 +2873,9 @@ gst_uri_set_fragment (GstUri * uri, const gchar * fragment)
   if (!uri)
     return fragment == NULL;
   g_return_val_if_fail (GST_IS_URI (uri) && gst_uri_is_writable (uri), FALSE);
+
+  if (uri->fragment == fragment)
+    return TRUE;
 
   g_free (uri->fragment);
   uri->fragment = g_strdup (fragment);

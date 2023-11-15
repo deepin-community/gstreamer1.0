@@ -70,10 +70,14 @@
 #define GST_SYSTEM_CLOCK_WAIT(clock)            g_cond_wait(GST_SYSTEM_CLOCK_GET_COND(clock),GST_SYSTEM_CLOCK_GET_LOCK(clock))
 #define GST_SYSTEM_CLOCK_BROADCAST(clock)       g_cond_broadcast(GST_SYSTEM_CLOCK_GET_COND(clock))
 
-#if defined(HAVE_FUTEX)
+#if defined(HAVE_FUTEX) || defined(HAVE_FUTEX_TIME64)
 #include <unistd.h>
 #include <linux/futex.h>
 #include <sys/syscall.h>
+
+#if !defined(__NR_futex) && !defined(__NR_futex_time64)
+#error "Neither __NR_futex nor __NR_futex_time64 are defined but were found by meson"
+#endif
 
 #ifndef FUTEX_WAIT_BITSET_PRIVATE
 #define FUTEX_WAIT_BITSET_PRIVATE FUTEX_WAIT_BITSET
@@ -123,14 +127,35 @@ gst_futex_cond_broadcast (guint * cond_val)
 {
   g_atomic_int_inc (cond_val);
 
+#if defined(__NR_futex_time64)
+  {
+    int res;
+    res = syscall (__NR_futex_time64, cond_val, (gsize) FUTEX_WAKE_PRIVATE,
+        (gsize) INT_MAX, NULL);
+
+    /* If the syscall does not exist (`ENOSYS`), we retry again below with the
+     * normal `futex` syscall. This can happen if newer kernel headers are
+     * used than the kernel that is actually running.
+     */
+#ifdef __NR_futex
+    if (res >= 0 || errno != ENOSYS) {
+#else
+    {
+#endif
+      return;
+    }
+  }
+#endif
+
+#if defined(__NR_futex)
   syscall (__NR_futex, cond_val, (gsize) FUTEX_WAKE_PRIVATE, (gsize) INT_MAX,
       NULL);
+#endif
 }
 
 static gboolean
 gst_futex_cond_wait_until (guint * cond_val, GMutex * mutex, gint64 end_time)
 {
-  struct timespec end;
   guint sampled;
   int res;
   gboolean success;
@@ -138,20 +163,92 @@ gst_futex_cond_wait_until (guint * cond_val, GMutex * mutex, gint64 end_time)
   if (end_time < 0)
     return FALSE;
 
-  end.tv_sec = end_time / 1000000000;
-  end.tv_nsec = end_time % 1000000000;
-
   sampled = *cond_val;
   g_mutex_unlock (mutex);
-  /* we use FUTEX_WAIT_BITSET_PRIVATE rather than FUTEX_WAIT_PRIVATE to be
-   * able to use absolute time */
-  res =
-      syscall (__NR_futex, cond_val, (gsize) FUTEX_WAIT_BITSET_PRIVATE,
-      (gsize) sampled, &end, NULL, FUTEX_BITSET_MATCH_ANY);
-  success = (res < 0 && errno == ETIMEDOUT) ? FALSE : TRUE;
-  g_mutex_lock (mutex);
 
-  return success;
+  /* `struct timespec` as defined by the libc headers does not necessarily
+   * have any relation to the one used by the kernel for the `futex` syscall.
+   *
+   * Specifically, the libc headers might use 64-bit `time_t` while the kernel
+   * headers use 32-bit `__kernel_old_time_t` on certain systems.
+   *
+   * To get around this problem we
+   *   a) check if `futex_time64` is available, which only exists on 32-bit
+   *      platforms and always uses 64-bit `time_t`.
+   *   b) otherwise (or if that returns `ENOSYS`), we call the normal `futex`
+   *      syscall with the `struct timespec_t` used by the kernel, which uses
+   *      `__kernel_long_t` for both its fields. We use that instead of
+   *      `__kernel_old_time_t` because it is equivalent and available in the
+   *      kernel headers for a longer time.
+   *
+   * Also some 32-bit systems do not define `__NR_futex` at all and only
+   * define `__NR_futex_time64`.
+   */
+
+#ifdef __NR_futex_time64
+  {
+    struct
+    {
+      gint64 tv_sec;
+      gint64 tv_nsec;
+    } end;
+
+    end.tv_sec = end_time / 1000000000;
+    end.tv_nsec = end_time % 1000000000;
+
+    /* we use FUTEX_WAIT_BITSET_PRIVATE rather than FUTEX_WAIT_PRIVATE to be
+     * able to use absolute time */
+    res =
+        syscall (__NR_futex_time64, cond_val, (gsize) FUTEX_WAIT_BITSET_PRIVATE,
+        (gsize) sampled, &end, NULL, FUTEX_BITSET_MATCH_ANY);
+
+    /* If the syscall does not exist (`ENOSYS`), we retry again below with the
+     * normal `futex` syscall. This can happen if newer kernel headers are
+     * used than the kernel that is actually running.
+     */
+#ifdef __NR_futex
+    if (res >= 0 || errno != ENOSYS) {
+#else
+    {
+#endif
+      success = (res < 0 && errno == ETIMEDOUT) ? FALSE : TRUE;
+      g_mutex_lock (mutex);
+
+      return success;
+    }
+  }
+#endif
+
+#ifdef __NR_futex
+  {
+    struct
+    {
+      __kernel_long_t tv_sec;
+      __kernel_long_t tv_nsec;
+    } end;
+
+    /* Make sure to only ever call this if the end time actually fits into the
+     * target type */
+    g_assert (sizeof (__kernel_long_t) >= 8
+        || end_time / 1000000000 <= G_MAXINT32);
+
+    end.tv_sec = end_time / 1000000000;
+    end.tv_nsec = end_time % 1000000000;
+
+    /* we use FUTEX_WAIT_BITSET_PRIVATE rather than FUTEX_WAIT_PRIVATE to be
+     * able to use absolute time */
+    res =
+        syscall (__NR_futex, cond_val, (gsize) FUTEX_WAIT_BITSET_PRIVATE,
+        (gsize) sampled, &end, NULL, FUTEX_BITSET_MATCH_ANY);
+    success = (res < 0 && errno == ETIMEDOUT) ? FALSE : TRUE;
+    g_mutex_lock (mutex);
+
+    return success;
+  }
+#endif
+
+  /* We can't end up here because of the checks above */
+  g_assert_not_reached ();
 }
 
 #elif defined (G_OS_UNIX)
@@ -365,7 +462,7 @@ struct _GstSystemClockPrivate
 #  define DEFAULT_CLOCK_TYPE GST_CLOCK_TYPE_REALTIME
 # endif
 #else
-#define DEFAULT_CLOCK_TYPE GST_CLOCK_TYPE_REALTIME
+#define DEFAULT_CLOCK_TYPE GST_CLOCK_TYPE_MONOTONIC
 #endif
 
 enum
@@ -386,6 +483,10 @@ static void gst_system_clock_get_property (GObject * object, guint prop_id,
     GValue * value, GParamSpec * pspec);
 
 static GstClockTime gst_system_clock_get_internal_time (GstClock * clock);
+#if !defined HAVE_POSIX_TIMERS || !defined HAVE_CLOCK_GETTIME
+static GstClockTime gst_system_clock_get_mono_time (GstSystemClock * clock);
+static GstClockTime gst_system_clock_get_real_time ();
+#endif
 static guint64 gst_system_clock_get_resolution (GstClock * clock);
 static GstClockReturn gst_system_clock_id_wait_jitter (GstClock * clock,
     GstClockEntry * entry, GstClockTimeDiff * jitter);
@@ -825,15 +926,46 @@ clock_type_to_posix_id (GstClockType clock_type)
 static GstClockTime
 gst_system_clock_get_internal_time (GstClock * clock)
 {
-#if defined __APPLE__
   GstSystemClock *sysclock = GST_SYSTEM_CLOCK_CAST (clock);
+#if defined HAVE_POSIX_TIMERS && defined HAVE_CLOCK_GETTIME
+  // BSD and Linux' Posix timers and clock_gettime cover all of the different clock types
+  // without need for special handling so we'll use those.
+  clockid_t ptype;
+  struct timespec ts;
+
+  ptype = clock_type_to_posix_id (sysclock->priv->clock_type);
+
+  if (G_UNLIKELY (clock_gettime (ptype, &ts)))
+    return GST_CLOCK_TIME_NONE;
+
+  return GST_TIMESPEC_TO_TIME (ts);
+#else
+  if (sysclock->priv->clock_type == GST_CLOCK_TYPE_REALTIME) {
+    return gst_system_clock_get_real_time ();
+  } else {
+    return gst_system_clock_get_mono_time (sysclock);
+  }
+#endif /* !HAVE_POSIX_TIMERS || !HAVE_CLOCK_GETTIME */
+}
+
+#if !defined HAVE_POSIX_TIMERS || !defined HAVE_CLOCK_GETTIME
+static GstClockTime
+gst_system_clock_get_real_time ()
+{
+  gint64 rt_micros = g_get_real_time ();
+  // g_get_real_time returns microseconds but we need nanos, so we'll multiply by 1000
+  return ((guint64) rt_micros) * 1000;
+}
+
+static GstClockTime
+gst_system_clock_get_mono_time (GstSystemClock * sysclock)
+{
+#if defined __APPLE__
   uint64_t mach_t = mach_absolute_time ();
   return gst_util_uint64_scale (mach_t, sysclock->priv->mach_timebase.numer,
       sysclock->priv->mach_timebase.denom);
 #else
-#ifdef G_OS_WIN32
-  GstSystemClock *sysclock = GST_SYSTEM_CLOCK_CAST (clock);
-
+#if defined G_OS_WIN32
   if (sysclock->priv->frequency.QuadPart != 0) {
     LARGE_INTEGER now;
 
@@ -844,7 +976,6 @@ gst_system_clock_get_internal_time (GstClock * clock)
         GST_SECOND, sysclock->priv->frequency.QuadPart);
   } else
 #endif /* G_OS_WIN32 */
-#if !defined HAVE_POSIX_TIMERS || !defined HAVE_CLOCK_GETTIME
   {
     gint64 monotime;
 
@@ -852,56 +983,45 @@ gst_system_clock_get_internal_time (GstClock * clock)
 
     return monotime * 1000;
   }
-#else
-  {
-    GstSystemClock *sysclock = GST_SYSTEM_CLOCK_CAST (clock);
-    clockid_t ptype;
-    struct timespec ts;
-
-    ptype = clock_type_to_posix_id (sysclock->priv->clock_type);
-
-    if (G_UNLIKELY (clock_gettime (ptype, &ts)))
-      return GST_CLOCK_TIME_NONE;
-
-    return GST_TIMESPEC_TO_TIME (ts);
-  }
-#endif
 #endif /* __APPLE__ */
 }
+#endif /* !HAVE_POSIX_TIMERS || !HAVE_CLOCK_GETTIME */
 
 static guint64
 gst_system_clock_get_resolution (GstClock * clock)
 {
-#if defined __APPLE__
   GstSystemClock *sysclock = GST_SYSTEM_CLOCK_CAST (clock);
-  return gst_util_uint64_scale (GST_NSECOND,
-      sysclock->priv->mach_timebase.numer, sysclock->priv->mach_timebase.denom);
-#else
-#ifdef G_OS_WIN32
-  GstSystemClock *sysclock = GST_SYSTEM_CLOCK_CAST (clock);
-
-  if (sysclock->priv->frequency.QuadPart != 0) {
-    return GST_SECOND / sysclock->priv->frequency.QuadPart;
-  } else
-#endif /* G_OS_WIN32 */
-#if defined(HAVE_POSIX_TIMERS) && defined(HAVE_CLOCK_GETTIME)
-  {
-    GstSystemClock *sysclock = GST_SYSTEM_CLOCK_CAST (clock);
-    clockid_t ptype;
-    struct timespec ts;
-
-    ptype = clock_type_to_posix_id (sysclock->priv->clock_type);
-
-    if (G_UNLIKELY (clock_getres (ptype, &ts)))
-      return GST_CLOCK_TIME_NONE;
-
-    return GST_TIMESPEC_TO_TIME (ts);
-  }
-#else
-  {
+#if defined __APPLE__ || defined G_OS_WIN32
+  if (sysclock->priv->clock_type == GST_CLOCK_TYPE_REALTIME) {
     return 1 * GST_USECOND;
-  }
+  } else
 #endif
+#if defined __APPLE__
+  {
+    return gst_util_uint64_scale (GST_NSECOND,
+        sysclock->priv->mach_timebase.numer,
+        sysclock->priv->mach_timebase.denom);
+  }
+#elif defined G_OS_WIN32
+  {
+    if (sysclock->priv->frequency.QuadPart != 0) {
+      return GST_SECOND / sysclock->priv->frequency.QuadPart;
+    } else {
+      return 1 * GST_USECOND;
+    }
+  }
+#elif defined(HAVE_POSIX_TIMERS) && defined(HAVE_CLOCK_GETTIME)
+    clockid_t ptype;
+  struct timespec ts;
+
+  ptype = clock_type_to_posix_id (sysclock->priv->clock_type);
+
+  if (G_UNLIKELY (clock_getres (ptype, &ts)))
+    return GST_CLOCK_TIME_NONE;
+
+  return GST_TIMESPEC_TO_TIME (ts);
+#else
+    return 1 * GST_USECOND;
 #endif /* __APPLE__ */
 }
 
@@ -961,11 +1081,34 @@ gst_system_clock_id_wait_jitter_unlocked (GstClock * clock,
     while (TRUE) {
       gboolean waitret;
 
-      /* now wait on the entry, it either times out or the cond is signalled.
-       * The status of the entry is BUSY only around the wait. */
-      waitret =
-          GST_SYSTEM_CLOCK_ENTRY_WAIT_UNTIL ((GstClockEntryImpl *) entry,
-          mono_ts * 1000 + diff);
+#ifdef HAVE_CLOCK_NANOSLEEP
+      if (diff <= 500 * GST_USECOND) {
+        /* In order to provide more accurate wait, we will use BLOCKING
+           clock_nanosleep for any deadlines at or below 500us */
+        struct timespec end;
+        GST_TIME_TO_TIMESPEC (mono_ts * 1000 + diff, end);
+        GST_SYSTEM_CLOCK_ENTRY_UNLOCK ((GstClockEntryImpl *) entry);
+        waitret =
+            clock_nanosleep (CLOCK_MONOTONIC, TIMER_ABSTIME, &end, NULL) == 0;
+        GST_SYSTEM_CLOCK_ENTRY_LOCK ((GstClockEntryImpl *) entry);
+      } else {
+
+        if (diff < 2 * GST_MSECOND) {
+          /* For any deadline within 2ms, we first use the regular non-blocking
+             wait by reducing the diff accordingly */
+          diff -= 500 * GST_USECOND;
+        }
+#endif
+
+        /* now wait on the entry, it either times out or the cond is signalled.
+         * The status of the entry is BUSY only around the wait. */
+        waitret =
+            GST_SYSTEM_CLOCK_ENTRY_WAIT_UNTIL ((GstClockEntryImpl *) entry,
+            mono_ts * 1000 + diff);
+
+#ifdef HAVE_CLOCK_NANOSLEEP
+      }
+#endif
 
       /* get the new status, mark as DONE. We do this so that the unschedule
        * function knows when we left the poll and doesn't need to wakeup the

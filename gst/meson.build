@@ -1,4 +1,4 @@
-gst_sources = [
+gst_sources = files(
   'gst.c',
   'gstobject.c',
   'gstallocator.c',
@@ -71,9 +71,9 @@ gst_sources = [
   'gstutils.c',
   'gstvalue.c',
   'gstparse.c',
-]
+)
 
-gst_headers = [
+gst_headers = files(
   'gst.h',
   'glib-compat.h',
   'gstobject.h',
@@ -147,12 +147,27 @@ gst_headers = [
   'gstregistry.h',
   'gstparse.h',
   'math-compat.h',
-]
+)
+if host_system == 'darwin'
+  gst_headers += 'gstmacos.h'
+  gst_sources += 'gstmacos.m'
+endif
+
 install_headers(gst_headers, subdir : 'gstreamer-1.0/gst')
+
+extra_deps = []
+if host_system == 'android'
+  gst_sources += 'gstandroid.c'
+  extra_deps += cc.find_library('log')
+endif
+
+if host_system == 'darwin'
+  extra_deps += dependency('appleframeworks', modules : ['Cocoa'])
+endif
 
 gst_registry = get_option('registry')
 if gst_registry
-  gst_registry_sources = ['gstregistrybinary.c']
+  gst_registry_sources = files('gstregistrybinary.c')
 else
   gst_registry_sources = []
 endif
@@ -223,7 +238,7 @@ subdir('printf')
 
 libgst_c_args = gst_c_args + [
   '-D_GNU_SOURCE',
-  '-DG_LOG_DOMAIN=g_log_domain_gstreamer',
+  '-DG_LOG_DOMAIN="GStreamer"',
   '-DGST_DISABLE_DEPRECATED',
 ]
 
@@ -237,7 +252,6 @@ gst_incdirs = [configinc]
 gst_gen_sources = [gstenum_h]
 libgst = library('gstreamer-1.0', gst_sources,
   gstenum_h, gstenum_c, gst_parse_sources, gst_registry_sources,
-  objects : printf_lib.extract_all_objects(),
   version : libversion,
   soversion : soversion,
   darwin_versions : osxversion,
@@ -245,9 +259,21 @@ libgst = library('gstreamer-1.0', gst_sources,
   include_directories : [configinc,
     # HACK, change include paths in .y and .l in final version.
     include_directories('parse')],
+  link_with : printf_lib,
   install : true,
-  dependencies : [gobject_dep, gmodule_dep, glib_dep, mathlib, dl_dep] + backtrace_deps
-                   + platform_deps,
+  dependencies : [gobject_dep, gmodule_dep, glib_dep, mathlib, dl_dep,
+                  backtrace_deps, platform_deps, extra_deps],
+)
+
+pkg_name = 'gstreamer-1.0'
+library_def = {'lib': libgst}
+pkgconfig.generate(libgst,
+  libraries : [glib_dep, gobject_dep] + pkgconfig_libs,
+  variables : pkgconfig_variables,
+  uninstalled_variables: pkgconfig_uninstalled_variables,
+  subdirs : pkgconfig_subdirs,
+  name : pkg_name,
+  description : 'Streaming media framework',
 )
 
 if build_gir
@@ -263,19 +289,29 @@ if build_gir
   endif
 
   gst_incdirs += [configinc]
-  gst_gir = gnome.generate_gir(libgst,
-    sources : gst_sources + gst_headers + gst_enums + [gst_version_h],
-    namespace : 'Gst',
-    nsversion : apiversion,
-    identifier_prefix : 'Gst',
-    symbol_prefix : 'gst',
-    export_packages : 'gstreamer-1.0',
-    includes : ['GLib-2.0', 'GObject-2.0', 'GModule-2.0' ],
-    install : true,
-    extra_args : gst_gir_extra_args,
-  )
-  gst_gen_sources += gst_gir
+  gir = {
+    'sources' : gst_sources + gst_headers + gst_enums + [gst_version_h],
+    'namespace' : 'Gst',
+    'nsversion' : apiversion,
+    'identifier_prefix' : 'Gst',
+    'symbol_prefix' : 'gst',
+    'export_packages' : pkg_name,
+    'includes' : ['GLib-2.0', 'GObject-2.0', 'GModule-2.0' ],
+    'install' : true,
+    'extra_args' : gst_gir_extra_args,
+  }
+  library_def += {'gir': [gir]}
+  # When building statically the information about the gir is going to be
+  # consumed by `gst-build` to generate gir files linked against
+  # `libgstreamer-full-1.0.so`. We do not build it here as it is currently
+  # broken. Once that is fixed we could build it here, even though we would keep
+  # creating another gir which links against gst-full.
+  if not static_build
+    gst_gir = gnome.generate_gir(libgst, kwargs: gir)
+    gst_gen_sources += gst_gir
+  endif
 endif
+gst_libraries += [[pkg_name, library_def]]
 
 gst_compile_args = []
 if get_option('default_library') == 'static'
@@ -289,3 +325,5 @@ gst_dep = declare_dependency(link_with : libgst,
   # Everything that uses libgst needs this built to compile
   sources : gst_gen_sources,
 )
+
+meson.override_dependency(pkg_name, gst_dep)

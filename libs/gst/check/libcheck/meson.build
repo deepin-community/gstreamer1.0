@@ -1,4 +1,4 @@
-libcheck_files = [
+libcheck_files = files(
   'check.c',
   'check_error.c',
   'check_list.c',
@@ -9,7 +9,7 @@ libcheck_files = [
   'check_run.c',
   'check_str.c',
   'libcompat/libcompat.c'
-]
+)
 
 if not cdata.has('HAVE_ALARM')
   libcheck_files += ['libcompat/alarm.c']
@@ -41,11 +41,11 @@ endif
 
 # FIXME: check that timer_create, timer_settime, timer_delete are in rt_lib
 if not rt_lib.found()
-  libcheck_files += [
+  libcheck_files += files(
     'libcompat/timer_create.c',
     'libcompat/timer_settime.c',
     'libcompat/timer_delete.c'
-  ]
+  )
 endif
 
 configure_file(input : 'check.h.in',
@@ -55,14 +55,12 @@ configure_file(input : 'check.h.in',
 internal_check_h_inc = include_directories('..')
 
 # Must explicitly make symbols public if default visibility is hidden
-if have_visibility_hidden
+if host_system in ['windows', 'cygwin'] and not static_build
+  libcheck_visibility_args = ['-DCK_DLL_EXP=extern __declspec(dllexport)']
+elif have_visibility_hidden
   libcheck_visibility_args = ['-DCK_DLL_EXP=extern __attribute__ ((visibility ("default")))']
 else
-  if host_system == 'windows'
-    libcheck_visibility_args = ['-DCK_DLL_EXP=__declspec(dllexport)']
-  else
-    libcheck_visibility_args = ['-DCK_DLL_EXP=extern']
-  endif
+  libcheck_visibility_args = ['-DCK_DLL_EXP=extern']
 endif
 
 no_warn_args = []
@@ -83,7 +81,7 @@ endforeach
 libcheck = static_library('check',
   libcheck_files,
   include_directories : [configinc, internal_check_h_inc],
-  dependencies : [rt_lib, mathlib],
+  dependencies : [rt_lib, mathlib, glib_dep],
   c_args: gst_c_args + libcheck_visibility_args + no_warn_args +
 	  # Don't want libcompat to think we don't have these and substitute
 	  # replacements since we don't check for or define these. See libcompat.h

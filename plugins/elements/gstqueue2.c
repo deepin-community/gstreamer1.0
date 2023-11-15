@@ -62,10 +62,11 @@
 #endif
 
 #include "gstqueue2.h"
+#include "gstcoreelementselements.h"
 
 #include <glib/gstdio.h>
 
-#include "gst/gst-i18n-lib.h"
+#include <glib/gi18n-lib.h>
 #include "gst/glib-compat-private.h"
 
 #include <string.h>
@@ -217,6 +218,9 @@ static GParamSpec *obj_props[PROP_LAST] = { NULL, };
 } G_STMT_END
 
 #define GST_QUEUE2_WAIT_DEL_CHECK(q, res, label) G_STMT_START {         \
+  if (res != GST_FLOW_OK) {                                             \
+    goto label;                                                         \
+  }                                                                     \
   STATUS (queue, q->sinkpad, "wait for DEL");                           \
   q->waiting_del = TRUE;                                                \
   g_cond_wait (&q->item_del, &queue->qlock);                              \
@@ -229,6 +233,9 @@ static GParamSpec *obj_props[PROP_LAST] = { NULL, };
 } G_STMT_END
 
 #define GST_QUEUE2_WAIT_ADD_CHECK(q, res, label) G_STMT_START {         \
+  if (res != GST_FLOW_OK) {                                             \
+    goto label;                                                         \
+  }                                                                     \
   STATUS (queue, q->srcpad, "wait for ADD");                            \
   q->waiting_add = TRUE;                                                \
   g_cond_wait (&q->item_add, &q->qlock);                                  \
@@ -270,6 +277,7 @@ static GParamSpec *obj_props[PROP_LAST] = { NULL, };
         "dataflow inside the queue element");
 #define gst_queue2_parent_class parent_class
 G_DEFINE_TYPE_WITH_CODE (GstQueue2, gst_queue2, GST_TYPE_ELEMENT, _do_init);
+GST_ELEMENT_REGISTER_DEFINE (queue2, "queue2", GST_RANK_NONE, GST_TYPE_QUEUE2);
 
 static void gst_queue2_finalize (GObject * object);
 
@@ -2667,12 +2675,14 @@ gst_queue2_handle_sink_event (GstPad * pad, GstObject * parent,
 
         /* STREAM_START and SEGMENT reset the EOS status of a
          * pad. Change the cached sinkpad flow result accordingly */
+        GST_QUEUE2_MUTEX_LOCK (queue);
         if (queue->sinkresult == GST_FLOW_EOS
             && (GST_EVENT_TYPE (event) == GST_EVENT_STREAM_START
                 || GST_EVENT_TYPE (event) == GST_EVENT_SEGMENT))
           queue->sinkresult = GST_FLOW_OK;
+        else if (queue->sinkresult != GST_FLOW_OK)
+          goto out_flushing;
 
-        GST_QUEUE2_MUTEX_LOCK_CHECK (queue, queue->sinkresult, out_flushing);
         if (queue->srcresult != GST_FLOW_OK) {
           /* Errors in sticky event pushing are no problem and ignored here
            * as they will cause more meaningful errors during data flow.

@@ -63,6 +63,7 @@
 #ifdef G_OS_WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#include <processthreadsapi.h>  /* GetCurrentProcessId */
 #endif
 #include <sys/types.h>
 
@@ -344,6 +345,11 @@ static void emit_ptp_statistics (guint8 domain, const GstStructure * stats);
 static GHookList domain_stats_hooks;
 static gint domain_stats_n_hooks;
 static gboolean domain_stats_hooks_initted = FALSE;
+
+/* Only ever accessed from the PTP thread */
+/* PTPD in hybrid mode (default) sends multicast PTP messages with an invalid
+ * logMessageInterval. We work around this here and warn once */
+static gboolean ptpd_hybrid_workaround_warned_once = FALSE;
 
 /* Converts log2 seconds to GstClockTime */
 static GstClockTime
@@ -908,7 +914,17 @@ handle_announce_message (PtpMessage * msg, GstClockTime receive_time)
       return;
   }
 
-  sender->announce_interval = log2_to_clock_time (msg->log_message_interval);
+  if (msg->log_message_interval == 0x7f) {
+    sender->announce_interval = 2 * GST_SECOND;
+
+    if (!ptpd_hybrid_workaround_warned_once) {
+      GST_WARNING ("Working around ptpd bug: ptpd sends multicast PTP packets "
+          "with invalid logMessageInterval");
+      ptpd_hybrid_workaround_warned_once = TRUE;
+    }
+  } else {
+    sender->announce_interval = log2_to_clock_time (msg->log_message_interval);
+  }
 
   announce = g_new0 (PtpAnnounceMessage, 1);
   announce->receive_time = receive_time;
@@ -1105,15 +1121,20 @@ update_ptp_time (PtpDomainData * domain, PtpPendingSync * sync)
    * we can get here without a delay response too. The tolerance on
    * accepting follow-up after a sync is high, because a PTP server
    * doesn't have to prioritise sending FOLLOW_UP - its purpose is
-   * just to give us the accurate timestamp of the preceding SYNC */
+   * just to give us the accurate timestamp of the preceding SYNC.
+   *
+   * For that reason also allow at least 100ms delay in case of delays smaller
+   * than 5ms. */
   if (sync->follow_up_recv_time_local != GST_CLOCK_TIME_NONE
       && sync->follow_up_recv_time_local >
-      sync->sync_recv_time_local + 20 * domain->mean_path_delay) {
+      sync->sync_recv_time_local + MAX (100 * GST_MSECOND,
+          20 * domain->mean_path_delay)) {
     GstClockTimeDiff delay =
         sync->follow_up_recv_time_local - sync->sync_recv_time_local;
     GST_WARNING ("Sync-follow-up delay for domain %u too big: %"
-        GST_STIME_FORMAT " > 20 * %" GST_TIME_FORMAT, domain->domain,
-        GST_STIME_ARGS (delay), GST_TIME_ARGS (domain->mean_path_delay));
+        GST_STIME_FORMAT " > MAX(100ms, 20 * %" GST_TIME_FORMAT ")",
+        domain->domain, GST_STIME_ARGS (delay),
+        GST_TIME_ARGS (domain->mean_path_delay));
     synced = FALSE;
     gst_clock_get_calibration (GST_CLOCK_CAST (domain->domain_clock),
         &internal_time, &external_time, &rate_num, &rate_den);
@@ -1373,13 +1394,17 @@ update_mean_path_delay (PtpDomainData * domain, PtpPendingSync * sync)
 #ifdef USE_MEASUREMENT_FILTERING
   /* The tolerance on accepting follow-up after a sync is high, because
    * a PTP server doesn't have to prioritise sending FOLLOW_UP - its purpose is
-   * just to give us the accurate timestamp of the preceding SYNC */
+   * just to give us the accurate timestamp of the preceding SYNC.
+   *
+   * For that reason also allow at least 100ms delay in case of delays smaller
+   * than 5ms. */
   if (sync->follow_up_recv_time_local != GST_CLOCK_TIME_NONE &&
       domain->mean_path_delay != 0
       && sync->follow_up_recv_time_local >
-      sync->sync_recv_time_local + 20 * domain->mean_path_delay) {
+      sync->sync_recv_time_local + MAX (100 * GST_MSECOND,
+          20 * domain->mean_path_delay)) {
     GST_WARNING ("Sync-follow-up delay for domain %u too big: %" GST_TIME_FORMAT
-        " > 20 * %" GST_TIME_FORMAT, domain->domain,
+        " > MAX(100ms, 20 * %" GST_TIME_FORMAT ")", domain->domain,
         GST_TIME_ARGS (sync->follow_up_recv_time_local -
             sync->sync_recv_time_local),
         GST_TIME_ARGS (domain->mean_path_delay));
@@ -1405,11 +1430,14 @@ update_mean_path_delay (PtpDomainData * domain, PtpPendingSync * sync)
    * hope for, but some PTP systems don't prioritise sending DELAY_RESP,
    * but they must still have placed an accurate reception timestamp.
    * That means we should be quite tolerant about late DELAY_RESP, and
-   * mostly rely on filtering out jumps in the mean-path-delay elsewhere  */
-  if (delay_req_delay > 20 * domain->mean_path_delay) {
+   * mostly rely on filtering out jumps in the mean-path-delay elsewhere.
+   *
+   * For that reason also allow at least 100ms delay in case of delays smaller
+   * than 5ms. */
+  if (delay_req_delay > MAX (100 * GST_MSECOND, 20 * domain->mean_path_delay)) {
     GST_WARNING ("Delay-request-response delay for domain %u too big: %"
-        GST_TIME_FORMAT " > 20 * %" GST_TIME_FORMAT, domain->domain,
-        GST_TIME_ARGS (delay_req_delay),
+        GST_TIME_FORMAT " > MAX(100ms, 20 * %" GST_TIME_FORMAT ")",
+        domain->domain, GST_TIME_ARGS (delay_req_delay),
         GST_TIME_ARGS (domain->mean_path_delay));
     ret = FALSE;
     goto out;
@@ -1498,7 +1526,17 @@ handle_sync_message (PtpMessage * msg, GstClockTime receive_time)
     return;
 #endif
 
-  domain->sync_interval = log2_to_clock_time (msg->log_message_interval);
+  if (msg->log_message_interval == 0x7f) {
+    domain->sync_interval = GST_SECOND;
+
+    if (!ptpd_hybrid_workaround_warned_once) {
+      GST_WARNING ("Working around ptpd bug: ptpd sends multicast PTP packets "
+          "with invalid logMessageInterval");
+      ptpd_hybrid_workaround_warned_once = TRUE;
+    }
+  } else {
+    domain->sync_interval = log2_to_clock_time (msg->log_message_interval);
+  }
 
   /* Check if duplicated */
   for (l = domain->pending_syncs.head; l; l = l->next) {
@@ -1695,8 +1733,18 @@ handle_delay_resp_message (PtpMessage * msg, GstClockTime receive_time)
       requesting_port_identity.port_number != ptp_clock_id.port_number)
     return;
 
-  domain->min_delay_req_interval =
-      log2_to_clock_time (msg->log_message_interval);
+  if (msg->log_message_interval == 0x7f) {
+    domain->min_delay_req_interval = GST_SECOND;
+
+    if (!ptpd_hybrid_workaround_warned_once) {
+      GST_WARNING ("Working around ptpd bug: ptpd sends multicast PTP packets "
+          "with invalid logMessageInterval");
+      ptpd_hybrid_workaround_warned_once = TRUE;
+    }
+  } else {
+    domain->min_delay_req_interval =
+        log2_to_clock_time (msg->log_message_interval);
+  }
 
   /* Check if we know about this one */
   for (l = domain->pending_syncs.head; l; l = l->next) {
@@ -1862,7 +1910,11 @@ have_stdin_data_cb (GIOChannel * channel, GIOCondition condition,
       }
       g_mutex_lock (&ptp_lock);
       ptp_clock_id.clock_identity = GST_READ_UINT64_BE (buffer);
+#ifdef G_OS_WIN32
+      ptp_clock_id.port_number = (guint16) GetCurrentProcessId ();
+#else
       ptp_clock_id.port_number = getpid ();
+#endif
       GST_DEBUG ("Got clock id 0x%016" G_GINT64_MODIFIER "x %u",
           ptp_clock_id.clock_identity, ptp_clock_id.port_number);
       g_cond_signal (&ptp_cond);
