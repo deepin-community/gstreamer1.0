@@ -1,3 +1,66 @@
+gstreamer1.0 (1.24.2-1) unstable; urgency=medium
+
+  * New upstream version 1.24.2
+
+ -- Marc Leeman <marc.leeman@gmail.com>  Wed, 10 Apr 2024 08:40:18 +0200
+
+gstreamer1.0 (1.24.1-1) unstable; urgency=medium
+
+  * d/postinst.in: add cap_sys_nice on gst-ptp-helper
+  * New upstream version 1.24.1
+  * d/install: remove gst-ptp-helper-test
+
+ -- Marc Leeman <marc.leeman@gmail.com>  Fri, 22 Mar 2024 09:20:56 +0100
+
+gstreamer1.0 (1.24.0-1) unstable; urgency=medium
+
+  * Revert "d/watch: pin master releases on 1.22.x"
+  * New upstream version 1.24.0
+  * d/control: Build-Depends on rustc
+  * d/install: gst-ptp-helper-test
+  * d/symbols update to 1.23.1
+  * d/symbols: update for 1.23.2
+  * d/patches: remove registry update
+  * d/symbols: add 1.23.90 new symbols
+
+ -- Marc Leeman <marc.leeman@gmail.com>  Tue, 05 Mar 2024 09:26:20 +0100
+
+gstreamer1.0 (1.22.10-1) unstable; urgency=medium
+
+  * d/watch: pin master releases on 1.22.x
+  * New upstream version 1.22.10
+  * d/control: pkg-config is transitional
+
+ -- Marc Leeman <marc.leeman@gmail.com>  Wed, 14 Feb 2024 10:19:25 +0100
+
+gstreamer1.0 (1.22.9-1) unstable; urgency=medium
+
+  * New upstream version 1.22.9
+
+ -- Marc Leeman <m.leeman@televic.com>  Thu, 01 Feb 2024 10:05:16 +0100
+
+gstreamer1.0 (1.22.8-1) unstable; urgency=medium
+
+  * Team upload.
+  * New upstream version 1.22.8
+
+ -- Marc Leeman <marc.leeman@gmail.com>  Mon, 18 Dec 2023 15:41:12 +0100
+
+gstreamer1.0 (1.22.7-1) unstable; urgency=medium
+
+  [ Marc Leeman ]
+  * New upstream version 1.22.7
+  * d/lintian-overrides: hide warnings
+  * Team upload.
+
+  [ Aurelien Jarno ]
+  * Enable libunwind on riscv64 (Closes: #1057048)
+
+  [ Debian Janitor ]
+  * Remove constraints unnecessary since buster (oldstable)
+
+ -- Marc Leeman <marc.leeman@gmail.com>  Tue, 14 Nov 2023 14:01:28 +0100
+
 gstreamer1.0 (1.22.6-1) unstable; urgency=medium
 
   * Team upload

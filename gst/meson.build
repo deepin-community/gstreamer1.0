@@ -40,7 +40,6 @@ gst_sources = files(
   'gstpipeline.c',
   'gstplugin.c',
   'gstpluginfeature.c',
-  'gstpluginloader.c',
   'gstpoll.c',
   'gstpreset.c',
   'gstprotection.c',
@@ -83,6 +82,7 @@ gst_headers = files(
   'gstbufferlist.h',
   'gstbufferpool.h',
   'gstbus.h',
+  'gstbytearrayinterface.h',
   'gstcaps.h',
   'gstcapsfeatures.h',
   'gstchildproxy.h',
@@ -154,6 +154,12 @@ if host_system == 'darwin'
 endif
 
 install_headers(gst_headers, subdir : 'gstreamer-1.0/gst')
+
+if host_system == 'windows'
+  gst_sources += files('gstpluginloader-win32.c')
+else
+  gst_sources += files('gstpluginloader.c')
+endif
 
 extra_deps = []
 if host_system == 'android'
@@ -247,6 +253,10 @@ if not tracer_hooks
   libgst_c_args += ['-DGST_DISABLE_GST_TRACER_HOOKS']
 endif
 
+if get_option('gstreamer-static-full')
+  libgst_c_args += ['-DGST_FULL_STATIC_COMPILATION']
+endif
+
 # Make sure that subproject building gir files work
 gst_incdirs = [configinc]
 gst_gen_sources = [gstenum_h]
@@ -265,6 +275,11 @@ libgst = library('gstreamer-1.0', gst_sources,
                   backtrace_deps, platform_deps, extra_deps],
 )
 
+gst_compile_args = []
+if static_build
+  gst_compile_args += ['-DGST_STATIC_COMPILATION']
+endif
+
 pkg_name = 'gstreamer-1.0'
 library_def = {'lib': libgst}
 pkgconfig.generate(libgst,
@@ -274,6 +289,7 @@ pkgconfig.generate(libgst,
   subdirs : pkgconfig_subdirs,
   name : pkg_name,
   description : 'Streaming media framework',
+  extra_cflags: gst_compile_args,
 )
 
 if build_gir
@@ -308,15 +324,13 @@ if build_gir
   # creating another gir which links against gst-full.
   if not static_build
     gst_gir = gnome.generate_gir(libgst, kwargs: gir)
+    library_def += {'gir_targets':  library_def.get('gir_targets', []) + [gst_gir]}
     gst_gen_sources += gst_gir
   endif
 endif
 gst_libraries += [[pkg_name, library_def]]
 
-gst_compile_args = []
-if get_option('default_library') == 'static'
-  gst_compile_args += ['-DGST_STATIC_COMPILATION']
-endif
+
 
 gst_dep = declare_dependency(link_with : libgst,
   compile_args : gst_compile_args,

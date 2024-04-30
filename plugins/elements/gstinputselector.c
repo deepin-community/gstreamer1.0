@@ -361,7 +361,7 @@ static GstSelectorPadCachedBuffer *
 gst_selector_pad_new_cached_buffer (GstSelectorPad * selpad, GstBuffer * buffer)
 {
   GstSelectorPadCachedBuffer *cached_buffer =
-      g_slice_new (GstSelectorPadCachedBuffer);
+      g_new (GstSelectorPadCachedBuffer, 1);
   cached_buffer->buffer = buffer;
   cached_buffer->segment = selpad->segment;
   return cached_buffer;
@@ -372,7 +372,7 @@ gst_selector_pad_free_cached_buffer (GstSelectorPadCachedBuffer * cached_buffer)
 {
   if (cached_buffer->buffer)
     gst_buffer_unref (cached_buffer->buffer);
-  g_slice_free (GstSelectorPadCachedBuffer, cached_buffer);
+  g_free (cached_buffer);
 }
 
 /* must be called with the SELECTOR_LOCK */
@@ -839,6 +839,13 @@ gst_input_selector_wait_running_time (GstInputSelector * sel,
       GstClockTimeDiff jitter;
       GstClockID clock_id;
 
+      if (!sel->playing) {
+        GST_DEBUG_OBJECT (selpad, "Waiting for playing");
+        GST_INPUT_SELECTOR_WAIT (sel);
+        GST_DEBUG_OBJECT (selpad, "Done waiting");
+        continue;
+      }
+
       base_time = gst_element_get_base_time (GST_ELEMENT_CAST (sel));
       if (!GST_CLOCK_TIME_IS_VALID (base_time)) {
         GST_DEBUG_OBJECT (selpad, "sync-mode=clock but no base time. Blocking");
@@ -850,13 +857,6 @@ gst_input_selector_wait_running_time (GstInputSelector * sel,
       if (!clock) {
         GST_DEBUG_OBJECT (selpad, "sync-mode=clock but no clock. Blocking");
         GST_INPUT_SELECTOR_WAIT (sel);
-        continue;
-      }
-
-      if (!sel->playing) {
-        GST_DEBUG_OBJECT (selpad, "Waiting for playing");
-        GST_INPUT_SELECTOR_WAIT (sel);
-        GST_DEBUG_OBJECT (selpad, "Done waiting");
         continue;
       }
 
@@ -1542,7 +1542,7 @@ gst_input_selector_set_property (GObject * object, guint prop_id,
 
       GST_INPUT_SELECTOR_LOCK (sel);
 
-      sel->active_sinkpad_from_user = ! !pad;
+      sel->active_sinkpad_from_user = !!pad;
 #if DEBUG_CACHED_BUFFERS
       gst_input_selector_debug_cached_buffers (sel);
 #endif
@@ -1942,7 +1942,6 @@ gst_input_selector_request_new_pad (GstElement * element,
 
   GST_OBJECT_FLAG_SET (sinkpad, GST_PAD_FLAG_PROXY_CAPS);
   GST_OBJECT_FLAG_SET (sinkpad, GST_PAD_FLAG_PROXY_ALLOCATION);
-  gst_pad_set_active (sinkpad, TRUE);
   GST_INPUT_SELECTOR_UNLOCK (sel);
   gst_element_add_pad (GST_ELEMENT (sel), sinkpad);
 

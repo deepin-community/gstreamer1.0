@@ -277,7 +277,9 @@ Use `all` to enable all tracing flags.
 
 Set this variable to a file path to redirect all GStreamer debug
 messages to this file. If left unset, debug messages with be output unto
-the standard error.
+the standard error. The %p pattern is replaced with the PID and the
+%r with a random number.
+
 
 **ORC_CODE.**
 
@@ -323,7 +325,7 @@ the encoding does not look like UTF-8.
 **GST_GL_WINDOW.**
 
 Influences the window system to use by the GStreamer OpenGL library.
-Common values are 'x11', 'wayland', 'win32' or 'cocoa'.
+Common values are 'x11', 'wayland', 'surfaceless', 'win32' or 'cocoa'.
 
 **GST_GL_PLATFORM.**
 

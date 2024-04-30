@@ -141,12 +141,10 @@ struct _GstSingleQueue
   /* segments */
   GstSegment sink_segment;
   GstSegment src_segment;
-  gboolean has_src_segment;     /* preferred over initializing the src_segment to
-                                 * UNDEFINED as this doesn't requires adding ifs
-                                 * in every segment usage */
 
   /* position of src/sink */
   GstClockTimeDiff sinktime, srctime;
+  GstClockTimeDiff sink_start_time;
   /* cached input value, used for interleave */
   GstClockTimeDiff cached_sinktime;
   /* TRUE if either position needs to be recalculated */
@@ -1147,42 +1145,31 @@ gst_multi_queue_get_property (GObject * object, guint prop_id,
 static GstIterator *
 gst_multi_queue_iterate_internal_links (GstPad * pad, GstObject * parent)
 {
+  GstSingleQueue *sq = GST_MULTIQUEUE_PAD (pad)->sq;
   GstIterator *it = NULL;
-  GstPad *opad, *sinkpad, *srcpad;
-  GstSingleQueue *squeue;
-  GstMultiQueue *mq = GST_MULTI_QUEUE (parent);
-  GValue val = { 0, };
+  GstPad *opad;
 
-  GST_MULTI_QUEUE_MUTEX_LOCK (mq);
-  squeue = GST_MULTIQUEUE_PAD (pad)->sq;
-  if (!squeue)
-    goto out;
+  switch (GST_PAD_DIRECTION (pad)) {
+    case GST_PAD_SRC:
+      opad = g_weak_ref_get (&sq->sinkpad);
+      break;
 
-  srcpad = g_weak_ref_get (&squeue->srcpad);
-  sinkpad = g_weak_ref_get (&squeue->sinkpad);
-  if (sinkpad == pad && srcpad) {
-    opad = srcpad;
-    gst_clear_object (&sinkpad);
+    case GST_PAD_SINK:
+      opad = g_weak_ref_get (&sq->srcpad);
+      break;
 
-  } else if (srcpad == pad && sinkpad) {
-    opad = sinkpad;
-    gst_clear_object (&srcpad);
-
-  } else {
-    gst_clear_object (&srcpad);
-    gst_clear_object (&sinkpad);
-    goto out;
+    default:
+      g_return_val_if_reached (NULL);
   }
 
-  g_value_init (&val, GST_TYPE_PAD);
-  g_value_set_object (&val, opad);
-  it = gst_iterator_new_single (GST_TYPE_PAD, &val);
-  g_value_unset (&val);
+  if (opad) {
+    GValue val = G_VALUE_INIT;
 
-  gst_object_unref (opad);
-
-out:
-  GST_MULTI_QUEUE_MUTEX_UNLOCK (mq);
+    g_value_init (&val, GST_TYPE_PAD);
+    g_value_take_object (&val, opad);
+    it = gst_iterator_new_single (GST_TYPE_PAD, &val);
+    g_value_unset (&val);
+  }
 
   return it;
 }
@@ -1370,8 +1357,6 @@ gst_single_queue_pause (GstMultiQueue * mq, GstSingleQueue * sq)
     gst_object_unref (srcpad);
   }
 
-  sq->sink_tainted = sq->src_tainted = TRUE;
-
   return result;
 }
 
@@ -1386,7 +1371,6 @@ gst_single_queue_stop (GstMultiQueue * mq, GstSingleQueue * sq)
     result = gst_pad_stop_task (srcpad);
     gst_object_unref (srcpad);
   }
-  sq->sink_tainted = sq->src_tainted = TRUE;
 
   return result;
 }
@@ -1416,7 +1400,6 @@ gst_single_queue_flush (GstMultiQueue * mq, GstSingleQueue * sq, gboolean flush,
     GST_MULTI_QUEUE_MUTEX_LOCK (mq);
     gst_segment_init (&sq->sink_segment, GST_FORMAT_TIME);
     gst_segment_init (&sq->src_segment, GST_FORMAT_TIME);
-    sq->has_src_segment = FALSE;
     /* All pads start off OK for a smooth kick-off */
     sq->srcresult = GST_FLOW_OK;
     sq->pushed = FALSE;
@@ -1427,6 +1410,9 @@ gst_single_queue_flush (GstMultiQueue * mq, GstSingleQueue * sq, gboolean flush,
     sq->nextid = 0;
     sq->oldid = 0;
     sq->last_oldid = G_MAXUINT32;
+    sq->sinktime = GST_CLOCK_STIME_NONE;
+    sq->srctime = GST_CLOCK_STIME_NONE;
+    sq->sink_start_time = GST_CLOCK_STIME_NONE;
     sq->next_time = GST_CLOCK_STIME_NONE;
     sq->last_time = GST_CLOCK_STIME_NONE;
     sq->cached_sinktime = GST_CLOCK_STIME_NONE;
@@ -1440,6 +1426,8 @@ gst_single_queue_flush (GstMultiQueue * mq, GstSingleQueue * sq, gboolean flush,
     mq->high_time = GST_CLOCK_STIME_NONE;
 
     sq->flushing = FALSE;
+
+    sq->sink_tainted = sq->src_tainted = FALSE;
     GST_MULTI_QUEUE_MUTEX_UNLOCK (mq);
   }
 }
@@ -1709,7 +1697,7 @@ calculate_interleave (GstMultiQueue * mq, GstSingleQueue * sq)
 static void
 update_time_level (GstMultiQueue * mq, GstSingleQueue * sq)
 {
-  GstClockTimeDiff sink_time, src_time;
+  GstClockTimeDiff sink_time, src_time, sink_start_time;
 
   if (sq->sink_tainted) {
     sink_time = sq->sinktime = my_segment_to_running_time (&sq->sink_segment,
@@ -1727,56 +1715,48 @@ update_time_level (GstMultiQueue * mq, GstSingleQueue * sq)
        * we set the last_time */
       sq->last_time = sink_time;
     }
-    if (G_UNLIKELY (sink_time != GST_CLOCK_STIME_NONE)) {
+
+    sq->sink_tainted = FALSE;
+    if (sink_time != GST_CLOCK_STIME_NONE) {
       /* if we have a time, we become untainted and use the time */
-      sq->sink_tainted = FALSE;
       if (mq->use_interleave) {
         sq->cached_sinktime = sink_time;
         calculate_interleave (mq, sq);
       }
     }
-  } else
+  } else {
     sink_time = sq->sinktime;
+  }
+
+  sink_start_time = sq->sink_start_time;
 
   if (sq->src_tainted) {
-    GstSegment *segment;
-    gint64 position;
-
-    if (sq->has_src_segment) {
-      segment = &sq->src_segment;
-      position = sq->src_segment.position;
-    } else {
-      /*
-       * If the src pad had no segment yet, use the sink segment
-       * to avoid signalling overrun if the received sink segment has a
-       * a position > max-size-time while the src pad time would be the default=0
-       *
-       * This can happen when switching pads on chained/adaptive streams and the
-       * new chain has a segment with a much larger position
-       */
-      segment = &sq->sink_segment;
-      position = sq->sink_segment.position;
-    }
-
-    src_time = sq->srctime = my_segment_to_running_time (segment, position);
-    /* if we have a time, we become untainted and use the time */
-    if (G_UNLIKELY (src_time != GST_CLOCK_STIME_NONE)) {
-      sq->src_tainted = FALSE;
-    }
-  } else
+    src_time = sq->srctime = my_segment_to_running_time (&sq->src_segment,
+        sq->src_segment.position);
+    sq->src_tainted = FALSE;
+  } else {
     src_time = sq->srctime;
+  }
 
   GST_DEBUG_ID (sq->debug_id,
-      "sink %" GST_STIME_FORMAT ", src %" GST_STIME_FORMAT,
-      GST_STIME_ARGS (sink_time), GST_STIME_ARGS (src_time));
+      "sink %" GST_STIME_FORMAT ", src %" GST_STIME_FORMAT
+      ", sink-start-time %" GST_STIME_FORMAT, GST_STIME_ARGS (sink_time),
+      GST_STIME_ARGS (src_time), GST_STIME_ARGS (sink_start_time));
 
-  /* This allows for streams with out of order timestamping - sometimes the
-   * emerging timestamp is later than the arriving one(s) */
-  if (G_LIKELY (GST_CLOCK_STIME_IS_VALID (sink_time) &&
-          GST_CLOCK_STIME_IS_VALID (src_time) && sink_time > src_time))
-    sq->cur_time = sink_time - src_time;
-  else
+  if (GST_CLOCK_STIME_IS_VALID (sink_time)) {
+    if (!GST_CLOCK_STIME_IS_VALID (src_time) &&
+        GST_CLOCK_STIME_IS_VALID (sink_start_time) &&
+        sink_time >= sink_start_time) {
+      /* If we got input buffers but output thread didn't push any buffer yet */
+      sq->cur_time = sink_time - sink_start_time;
+    } else if (GST_CLOCK_STIME_IS_VALID (src_time) && sink_time >= src_time) {
+      sq->cur_time = sink_time - src_time;
+    } else {
+      sq->cur_time = 0;
+    }
+  } else {
     sq->cur_time = 0;
+  }
 
   /* updating the time level can change the buffering state */
   update_buffering (mq, sq);
@@ -1784,22 +1764,22 @@ update_time_level (GstMultiQueue * mq, GstSingleQueue * sq)
   return;
 }
 
-/* take a SEGMENT event and apply the values to segment, updating the time
- * level of queue. */
+/* take a SEGMENT event and apply the values to segment */
 static void
 apply_segment (GstMultiQueue * mq, GstSingleQueue * sq, GstEvent * event,
     GstSegment * segment)
 {
   GstClockTimeDiff ppos = 0;
+  gboolean is_sink = segment == &sq->sink_segment;
 
   /* If we switched groups, grab the previous position */
   if (segment->rate > 0.0) {
-    if (segment == &sq->sink_segment && sq->sink_stream_gid_changed) {
+    if (is_sink && sq->sink_stream_gid_changed) {
       ppos =
           gst_segment_to_running_time (segment, GST_FORMAT_TIME,
           segment->position);
       sq->sink_stream_gid_changed = FALSE;
-    } else if (segment == &sq->src_segment && sq->src_stream_gid_changed) {
+    } else if (!is_sink && sq->src_stream_gid_changed) {
       ppos =
           gst_segment_to_running_time (segment, GST_FORMAT_TIME,
           segment->position);
@@ -1834,21 +1814,17 @@ apply_segment (GstMultiQueue * mq, GstSingleQueue * sq, GstEvent * event,
   else
     segment->position = segment->stop;
 
-  if (segment == &sq->sink_segment)
-    sq->sink_tainted = TRUE;
+  /* Will be updated on buffer flows */
+  if (is_sink)
+    sq->sink_tainted = FALSE;
   else {
-    sq->has_src_segment = TRUE;
-    sq->src_tainted = TRUE;
+    sq->src_tainted = FALSE;
   }
 
   GST_DEBUG_ID (sq->debug_id,
       "configured SEGMENT %" GST_SEGMENT_FORMAT, segment);
 
-  /* segment can update the time level of the queue */
-  update_time_level (mq, sq);
-
   GST_MULTI_QUEUE_MUTEX_UNLOCK (mq);
-  gst_multi_queue_post_buffering (mq);
 }
 
 /* take a buffer and update segment, updating the time level of the queue. */
@@ -1856,6 +1832,8 @@ static void
 apply_buffer (GstMultiQueue * mq, GstSingleQueue * sq, GstClockTime timestamp,
     GstClockTime duration, GstSegment * segment)
 {
+  gboolean is_sink = segment == &sq->sink_segment;
+
   GST_MULTI_QUEUE_MUTEX_LOCK (mq);
 
   /* if no timestamp is set, assume it's continuous with the previous
@@ -1863,16 +1841,22 @@ apply_buffer (GstMultiQueue * mq, GstSingleQueue * sq, GstClockTime timestamp,
   if (timestamp == GST_CLOCK_TIME_NONE)
     timestamp = segment->position;
 
+  if (is_sink && !GST_CLOCK_STIME_IS_VALID (sq->sink_start_time)) {
+    sq->sink_start_time = my_segment_to_running_time (segment, timestamp);
+    GST_DEBUG_ID (sq->debug_id, "Start time updated to %" GST_STIME_FORMAT,
+        GST_STIME_ARGS (sq->sink_start_time));
+  }
+
   /* add duration */
   if (duration != GST_CLOCK_TIME_NONE)
     timestamp += duration;
 
   GST_DEBUG_ID (sq->debug_id, "%s position updated to %" GST_TIME_FORMAT,
-      segment == &sq->sink_segment ? "sink" : "src", GST_TIME_ARGS (timestamp));
+      is_sink ? "sink" : "src", GST_TIME_ARGS (timestamp));
 
   segment->position = timestamp;
 
-  if (segment == &sq->sink_segment)
+  if (is_sink)
     sq->sink_tainted = TRUE;
   else
     sq->src_tainted = TRUE;
@@ -1889,12 +1873,18 @@ apply_gap (GstMultiQueue * mq, GstSingleQueue * sq, GstEvent * event,
 {
   GstClockTime timestamp;
   GstClockTime duration;
+  gboolean is_sink = segment == &sq->sink_segment;
 
   GST_MULTI_QUEUE_MUTEX_LOCK (mq);
 
   gst_event_parse_gap (event, &timestamp, &duration);
 
   if (GST_CLOCK_TIME_IS_VALID (timestamp)) {
+    if (is_sink && !GST_CLOCK_STIME_IS_VALID (sq->sink_start_time)) {
+      sq->sink_start_time = my_segment_to_running_time (segment, timestamp);
+      GST_DEBUG_ID (sq->debug_id, "Start time updated to %" GST_STIME_FORMAT,
+          GST_STIME_ARGS (sq->sink_start_time));
+    }
 
     if (GST_CLOCK_TIME_IS_VALID (duration)) {
       timestamp += duration;
@@ -1902,12 +1892,11 @@ apply_gap (GstMultiQueue * mq, GstSingleQueue * sq, GstEvent * event,
 
     GST_DEBUG_ID (sq->debug_id,
         "%s position updated to %" GST_TIME_FORMAT,
-        segment == &sq->sink_segment ? "sink" : "src",
-        GST_TIME_ARGS (timestamp));
+        is_sink ? "sink" : "src", GST_TIME_ARGS (timestamp));
 
     segment->position = timestamp;
 
-    if (segment == &sq->sink_segment)
+    if (is_sink)
       sq->sink_tainted = TRUE;
     else
       sq->src_tainted = TRUE;
@@ -2051,8 +2040,6 @@ gst_single_queue_push_one (GstMultiQueue * mq, GstSingleQueue * sq,
       }
       case GST_EVENT_SEGMENT:
         apply_segment (mq, sq, event, &sq->src_segment);
-        /* Applying the segment may have made the queue non-full again, unblock it if needed */
-        gst_data_queue_limits_changed (sq->queue);
         if (G_UNLIKELY (*allow_drop)) {
           result = GST_FLOW_OK;
           *allow_drop = FALSE;
@@ -2124,7 +2111,7 @@ gst_multi_queue_item_destroy (GstMultiQueueItem * item)
 {
   if (!item->is_query && item->object)
     gst_mini_object_unref (item->object);
-  g_slice_free (GstMultiQueueItem, item);
+  g_free (item);
 }
 
 /* takes ownership of passed mini object! */
@@ -2133,7 +2120,7 @@ gst_multi_queue_buffer_item_new (GstMiniObject * object, guint32 curid)
 {
   GstMultiQueueItem *item;
 
-  item = g_slice_new (GstMultiQueueItem);
+  item = g_new (GstMultiQueueItem, 1);
   item->object = object;
   item->destroy = (GDestroyNotify) gst_multi_queue_item_destroy;
   item->posid = curid;
@@ -2152,7 +2139,7 @@ gst_multi_queue_mo_item_new (GstMiniObject * object, guint32 curid)
 {
   GstMultiQueueItem *item;
 
-  item = g_slice_new (GstMultiQueueItem);
+  item = g_new (GstMultiQueueItem, 1);
   item->object = object;
   item->destroy = (GDestroyNotify) gst_multi_queue_item_destroy;
   item->posid = curid;
@@ -2407,11 +2394,9 @@ next:
     /* pretend we have not seen EOS yet for upstream's sake */
     result = sq->srcresult;
   } else if (dropping && gst_data_queue_is_empty (sq->queue)) {
-    /* queue empty, so stop dropping
-     * we can commit the result we have now,
+    /* queue empty. we can commit the result we have now,
      * which is either OK after a segment, or EOS */
     GST_DEBUG_ID (sq->debug_id, "committed EOS drop");
-    dropping = FALSE;
     result = GST_FLOW_EOS;
   }
   sq->srcresult = result;
@@ -2648,6 +2633,7 @@ gst_multi_queue_sink_event (GstPad * pad, GstObject * parent, GstEvent * event)
   GstEventType type;
   GstEvent *sref = NULL;
   GstPad *srcpad;
+  gboolean is_timed_event = FALSE;
 
 
   sq = GST_MULTIQUEUE_PAD (pad)->sq;
@@ -2732,6 +2718,7 @@ gst_multi_queue_sink_event (GstPad * pad, GstObject * parent, GstEvent * event)
           GST_MULTI_QUEUE_MUTEX_UNLOCK (mq);
         }
       }
+      is_timed_event = TRUE;
       break;
 
     default:
@@ -2755,8 +2742,13 @@ gst_multi_queue_sink_event (GstPad * pad, GstObject * parent, GstEvent * event)
       "Enqueuing event %p of type %s with id %d",
       event, GST_EVENT_TYPE_NAME (event), curid);
 
-  if (!gst_data_queue_push (sq->queue, (GstDataQueueItem *) item))
-    goto flushing;
+  if (is_timed_event) {
+    if (!gst_data_queue_push (sq->queue, (GstDataQueueItem *) item))
+      goto flushing;
+  } else {
+    if (!gst_data_queue_push_force (sq->queue, (GstDataQueueItem *) item))
+      goto flushing;
+  }
 
   /* mark EOS when we received one, we must do that after putting the
    * buffer in the queue because EOS marks the buffer as filled. */
@@ -3569,8 +3561,9 @@ gst_single_queue_new (GstMultiQueue * mqueue, guint id)
 
   sq->sinktime = GST_CLOCK_STIME_NONE;
   sq->srctime = GST_CLOCK_STIME_NONE;
-  sq->sink_tainted = TRUE;
-  sq->src_tainted = TRUE;
+  sq->sink_start_time = GST_CLOCK_STIME_NONE;
+  sq->sink_tainted = FALSE;
+  sq->src_tainted = FALSE;
 
   sq->sink_stream_gid = sq->src_stream_gid = GST_GROUP_ID_INVALID;
   sq->sink_stream_gid_changed = FALSE;

@@ -1,1 +1,15 @@
-.pc/
+*~
+*.bak
+
+Build
+*.user
+*.suo
+*.ipch
+*.sdf
+*.opensdf
+*.DS_Store
+
+# Meson
+/build
+/_build
+/subprojects
