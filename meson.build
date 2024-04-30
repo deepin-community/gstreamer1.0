@@ -1,6 +1,6 @@
 project('gstreamer', 'c',
-  version : '1.22.6',
-  meson_version : '>= 0.62',
+  version : '1.24.2',
+  meson_version : '>= 1.1',
   default_options : [ 'warning_level=1',
                       'buildtype=debugoptimized' ])
 
@@ -32,6 +32,7 @@ helpers_install_dir = join_paths(libexecdir, 'gstreamer-1.0')
 
 cc = meson.get_compiler('c')
 host_system = host_machine.system()
+static_build = get_option('default_library') == 'static'
 
 if host_system == 'darwin'
   ios_test_code = '''#include <TargetConditionals.h>
@@ -75,8 +76,6 @@ if cc.get_id() == 'msvc'
       '/we4053', # one void operand for '?:'
       '/we4062', # enumerator 'identifier' in switch of enum 'enumeration' is not handled
       '/we4098', # 'function' : void function returning a value
-      '/we4101', # 'identifier' : unreferenced local variable
-      '/we4189', # 'identifier' : local variable is initialized but not referenced
     ])
   endif
   add_project_arguments(msvc_args, language: 'c')
@@ -149,6 +148,8 @@ cdata.set_quoted('GST_PLUGIN_SUBDIR', get_option('libdir'),
   description: 'plugin directory path component, used to find plugins on relocatable builds')
 cdata.set_quoted('GST_PLUGIN_SCANNER_SUBDIR', libexecdir,
   description: 'libexecdir path component, used to find plugin-scanner on relocatable builds')
+cdata.set_quoted('GST_PTP_HELPER_SUBDIR', libexecdir,
+  description: 'libexecdir path component, used to find ptp-helper on relocatable builds')
 cdata.set('GST_DISABLE_OPTION_PARSING', not get_option('option-parsing'))
 
 mem_align_opt = get_option('memory-alignment')
@@ -312,7 +313,7 @@ if cc.compiles('''#include <linux/futex.h>
                int main (int argc, char ** argv) {
                  syscall (__NR_futex_time64, NULL, FUTEX_WAKE, FUTEX_WAIT);
                  return 0;
-               }''', name : 'futex(2) system call')
+               }''', name : 'futex_time64(2) system call')
   cdata.set('HAVE_FUTEX_TIME64', 1)
 endif
 
@@ -485,7 +486,23 @@ endif
 
 gst_debug = get_option('gst_debug')
 if not gst_debug
-  add_project_arguments(['-Wno-unused'], language: 'c')
+  if cc.get_argument_syntax() == 'msvc'
+    msvc_args = cc.get_supported_arguments([
+      '/wd4101', # 'identifier' : unreferenced local variable
+      '/wd4189', # 'identifier' : local variable is initialized but not referenced
+    ])
+    add_project_arguments(msvc_args, language: 'c')
+  elif cc.has_argument('-Wno-unused')
+    add_project_arguments(['-Wno-unused'], language: 'c')
+  endif
+else
+  if cc.get_argument_syntax() == 'msvc' and gst_version_is_dev
+    msvc_args = cc.get_supported_arguments([
+      '/we4101', # 'identifier' : unreferenced local variable
+      '/we4189', # 'identifier' : local variable is initialized but not referenced
+    ])
+    add_project_arguments(msvc_args, language: 'c')
+  endif
 endif
 
 warning_flags = [
@@ -531,7 +548,7 @@ configinc = include_directories('.')
 libsinc = include_directories('libs')
 privinc = include_directories('gst')
 
-glib_req = '>= 2.62.0'
+glib_req = '>= 2.64.0'
 
 # Find dependencies
 glib_dep = dependency('glib-2.0', version: glib_req,
@@ -567,7 +584,8 @@ gst_c_args = ['-DHAVE_CONFIG_H']
 # FIXME: This is only needed on windows and probably breaks when
 # default_library = 'both'. We should add this flag to static_c_args instead
 # when Meson supports it: https://github.com/mesonbuild/meson/issues/3304
-if get_option('default_library') == 'static'
+
+if static_build
   gst_c_args += ['-DGST_STATIC_COMPILATION']
 endif
 
@@ -632,7 +650,7 @@ if host_system == 'darwin'
   pkgconfig_libs = ['-Wl,-rpath,${libdir}']
 endif
 
-static_build = get_option('default_library') == 'static'
+
 gst_libraries = []
 subdir('gst')
 subdir('libs')
@@ -662,7 +680,7 @@ endif
 configure_file(output : 'config.h', configuration : cdata)
 install_data('gst-element-check-1.0.m4', install_dir : join_paths(get_option('datadir'), 'aclocal'))
 
-meson.add_dist_script('scripts/gen-changelog.py', meson.project_name(), '1.20.0', meson.project_version())
+meson.add_dist_script('scripts/gen-changelog.py', meson.project_name(), '1.22.0', meson.project_version())
 
 plugin_names = []
 gst_plugins = []

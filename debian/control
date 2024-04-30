@@ -3,22 +3,23 @@ Section: libs
 Priority: optional
 Maintainer: Maintainers of GStreamer packages <gstreamer1.0@packages.debian.org>
 Uploaders: Sebastian Dröge <slomo@debian.org>,
-           Sjoerd Simons <sjoerd@debian.org>
+           Sjoerd Simons <sjoerd@debian.org>,
+           Marc Leeman <marc.leeman@gmail.com>,
 Build-Depends: debhelper-compat (= 13),
                dh-sequence-gir,
-               dpkg-dev (>= 1.15.1),
                meson (>= 0.62),
-               pkg-config (>= 0.11.0),
+               pkgconf,
                perl-doc,
-               zlib1g-dev (>= 1:1.1.4),
-               libglib2.0-dev (>= 2.62.0),
+               zlib1g-dev,
+               libglib2.0-dev,
                libgmp-dev <!nocheck> | libgmp3-dev <!nocheck>,
                libgsl-dev <!nocheck> | libgsl0-dev <!nocheck>,
-               libunwind-dev [i386 amd64 armel armhf arm64 powerpc ppc64 ppc64el mipsel mips64el],
-               libdw-dev [i386 amd64 armel armhf arm64 powerpc ppc64 ppc64el mipsel mips64el],
-               bison (>= 1:2.4),
-               flex (>= 2.5.34),
-               libgirepository1.0-dev (>= 0.9.12-4~),
+               libunwind-dev [i386 amd64 armel armhf arm64 powerpc ppc64 ppc64el mipsel mips64el riscv64],
+               libdw-dev [i386 amd64 armel armhf arm64 powerpc ppc64 ppc64el mipsel mips64el riscv64],
+               bison,
+               flex,
+               rustc,
+               libgirepository1.0-dev,
                gir1.2-glib-2.0,
                gir1.2-freedesktop,
                bash-completion,
@@ -38,9 +39,6 @@ Depends: ${shlibs:Depends},
          ${misc:Depends},
          libcap2-bin [linux-any]
 Suggests: gstreamer1.0-tools,
-Breaks: gstreamer1.0-plugins-base (<< 1.8.0),
-        gstreamer1.0-plugins-bad (<< 1.11.1),
-        libgstreamer-plugins-bad1.0-0 (<< 1.13.1)
 Description: Core GStreamer libraries and elements
  GStreamer is a streaming media framework, based on graphs of filters
  which operate on media data.  Applications using this library can do
@@ -57,15 +55,13 @@ Multi-Arch: same
 Section: libdevel
 Depends: libgstreamer1.0-0 (= ${binary:Version}),
          libc6-dev | libc-dev,
-         pkg-config,
+         pkgconf,
          libglib2.0-dev,
-         libunwind-dev [i386 amd64 armel armhf arm64 powerpc ppc64 ppc64el mipsel mips64el],
-         libdw-dev [i386 amd64 armel armhf arm64 powerpc ppc64 ppc64el mipsel mips64el],
+         libunwind-dev [i386 amd64 armel armhf arm64 powerpc ppc64 ppc64el mipsel mips64el riscv64],
+         libdw-dev [i386 amd64 armel armhf arm64 powerpc ppc64 ppc64el mipsel mips64el riscv64],
          ${shlibs:Depends},
          ${misc:Depends},
          gir1.2-gstreamer-1.0 (= ${binary:Version})
-Conflicts: libgstreamer-plugins-bad1.0-dev (<< 1.13.1)
-Replaces: libgstreamer-plugins-bad1.0-dev (<< 1.13.1)
 Suggests: gstreamer1.0-doc
 Description: GStreamer core development files
  GStreamer is a streaming media framework, based on graphs of filters

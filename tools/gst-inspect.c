@@ -78,6 +78,7 @@ GMainLoop *loop = NULL;
 /* Console colors */
 
 /* Escape values for colors */
+#define RED       "\033[31m"
 #define BLUE      "\033[34m"
 #define BRBLUE    "\033[94m"
 #define BRCYAN    "\033[96m"
@@ -456,7 +457,7 @@ print_object_properties_info (GObject * obj, GObjectClass * obj_class,
 
     first_flag = TRUE;
     n_print ("%sflags%s: ", PROP_ATTR_NAME_COLOR, RESET_COLOR);
-    readable = ! !(param->flags & G_PARAM_READABLE);
+    readable = !!(param->flags & G_PARAM_READABLE);
     if (readable && obj != NULL) {
       g_object_get_property (obj, param->name, &value);
     } else {
@@ -490,7 +491,10 @@ print_object_properties_info (GObject * obj, GObjectClass * obj_class,
           RESET_COLOR);
       first_flag = FALSE;
     }
-    if (param->flags & GST_PARAM_MUTABLE_PLAYING) {
+    if (param->flags & G_PARAM_CONSTRUCT_ONLY) {
+      g_print (", %s%s%s", PROP_ATTR_VALUE_COLOR,
+          _("can be set only at object construction time"), RESET_COLOR);
+    } else if (param->flags & GST_PARAM_MUTABLE_PLAYING) {
       g_print (", %s%s%s", PROP_ATTR_VALUE_COLOR,
           _("changeable in NULL, READY, PAUSED or PLAYING state"), RESET_COLOR);
     } else if (param->flags & GST_PARAM_MUTABLE_PAUSED) {
@@ -924,17 +928,9 @@ print_clocking_info (GstElement * element)
     n_print ("%selement requires a clock%s\n", PROP_VALUE_COLOR, RESET_COLOR);
   }
 
-  if (provides_clock) {
-    GstClock *clock;
 
-    clock = gst_element_get_clock (element);
-    if (clock) {
-      n_print ("%selement provides a clock%s: %s%s%s\n", PROP_VALUE_COLOR,
-          RESET_COLOR, DATATYPE_COLOR, GST_OBJECT_NAME (clock), RESET_COLOR);
-      gst_object_unref (clock);
-    } else
-      n_print ("%selement is supposed to provide a clock but returned NULL%s\n",
-          PROP_VALUE_COLOR, RESET_COLOR);
+  if (provides_clock) {
+    n_print ("%selement provides a clock%s\n", PROP_VALUE_COLOR, RESET_COLOR);
   }
 
   pop_indent ();
@@ -1002,7 +998,6 @@ print_pad_info (GstElement * element)
   pads = element->pads;
   while (pads) {
     gchar *name;
-    GstCaps *caps;
 
     pad = GST_PAD (pads->data);
     pads = g_list_next (pads);
@@ -1025,15 +1020,6 @@ print_pad_info (GstElement * element)
       n_print ("%sPad Template%s: %s'%s'%s\n", PROP_NAME_COLOR, RESET_COLOR,
           PROP_VALUE_COLOR, pad->padtemplate->name_template, RESET_COLOR);
       pop_indent ();
-    }
-
-    caps = gst_pad_get_current_caps (pad);
-    if (caps) {
-      n_print ("%sCapabilities:%s\n", PROP_NAME_COLOR, RESET_COLOR);
-      push_indent ();
-      print_caps (caps, "");    // FIXME
-      pop_indent ();
-      gst_caps_unref (caps);
     }
   }
 
@@ -1692,6 +1678,50 @@ print_plugin_features (GstPlugin * plugin)
   n_print ("\n");
 }
 
+static void
+print_plugin_status_message (const gchar * label, const gchar * msg,
+    const gchar * color)
+{
+  if (msg != NULL) {
+    /* TODO: do something fancy with multi-line strings to preserve indentation */
+    n_print ("%s%s:%s %s\n\n", color, label, RESET_COLOR, msg);
+  }
+}
+
+static void
+print_plugin_status (GstPlugin * plugin)
+{
+  gchar **msgs, **s;
+
+  push_indent ();
+
+  msgs = gst_plugin_get_status_infos (plugin);
+  for (s = msgs; s != NULL && *s != NULL; ++s) {
+    const gchar *info_msg = *s;
+
+    print_plugin_status_message ("Info", info_msg, GREEN);
+  }
+  g_strfreev (msgs);
+
+  msgs = gst_plugin_get_status_warnings (plugin);
+  for (s = msgs; s != NULL && *s != NULL; ++s) {
+    const gchar *warning_msg = *s;
+
+    print_plugin_status_message ("Warning", warning_msg, YELLOW);
+  }
+  g_strfreev (msgs);
+
+  msgs = gst_plugin_get_status_errors (plugin);
+  for (s = msgs; s != NULL && *s != NULL; ++s) {
+    const gchar *err_msg = *s;
+
+    print_plugin_status_message ("Error", err_msg, RED);
+  }
+  g_strfreev (msgs);
+
+  pop_indent ();
+}
+
 static int
 print_feature_info (const gchar * feature_name, gboolean print_all)
 {
@@ -1923,11 +1953,13 @@ print_plugin_automatic_install_info_codecs (GstElementFactory * factory)
 
   if (strstr (klass, "Demuxer") ||
       strstr (klass, "Decoder") ||
+      strstr (klass, "Decryptor") ||
       strstr (klass, "Depay") || strstr (klass, "Parser")) {
     type_name = "decoder";
     direction = GST_PAD_SINK;
   } else if (strstr (klass, "Muxer") ||
-      strstr (klass, "Encoder") || strstr (klass, "Pay")) {
+      strstr (klass, "Encoder") ||
+      strstr (klass, "Encryptor") || strstr (klass, "Pay")) {
     type_name = "encoder";
     direction = GST_PAD_SRC;
   } else {
@@ -2139,6 +2171,7 @@ real_main (int argc, char *argv[])
   gboolean print_aii = FALSE;
   gboolean uri_handlers = FALSE;
   gboolean check_exists = FALSE;
+  gboolean check_version = FALSE;
   gboolean color_always = FALSE;
   gchar *min_version = NULL;
   guint minver_maj = GST_VERSION_MAJOR;
@@ -2253,6 +2286,7 @@ real_main (int argc, char *argv[])
     }
     g_free (min_version);
     check_exists = TRUE;
+    check_version = TRUE;
   }
 
   if (check_exists) {
@@ -2264,9 +2298,13 @@ real_main (int argc, char *argv[])
         GstPluginFeature *feature;
 
         feature = gst_registry_lookup_feature (gst_registry_get (), argv[1]);
-        if (feature != NULL && gst_plugin_feature_check_version (feature,
-                minver_maj, minver_min, minver_micro)) {
-          exit_code = 0;
+        if (feature != NULL) {
+          if (check_version && !gst_plugin_feature_check_version (feature,
+                  minver_maj, minver_min, minver_micro)) {
+            exit_code = 2;
+          } else {
+            exit_code = 0;
+          }
         } else {
           exit_code = 1;
         }
@@ -2335,6 +2373,7 @@ real_main (int argc, char *argv[])
           print_plugin_automatic_install_info (plugin);
         } else {
           print_plugin_info (plugin);
+          print_plugin_status (plugin);
           print_plugin_features (plugin);
         }
       } else {
@@ -2348,6 +2387,7 @@ real_main (int argc, char *argv[])
               print_plugin_automatic_install_info (plugin);
             } else {
               print_plugin_info (plugin);
+              print_plugin_status (plugin);
               print_plugin_features (plugin);
             }
           } else {

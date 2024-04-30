@@ -177,7 +177,7 @@ _serialize_enum (GString * json, GType gtype, GstPluginAPIFlags api_flags)
       "\"kind\": \"enum\"", json->len ? "," : "", g_type_name (gtype));
 
   if (api_flags & GST_PLUGIN_API_FLAG_IGNORE_ENUM_MEMBERS) {
-    g_string_append (json, ",\"ignore-enum-members\": true}");
+    g_string_append (json, ",\"ignore-enum-members\": true, \"values\": []}");
   } else {
     g_string_append (json, ",\"values\": [");
 
@@ -349,7 +349,7 @@ _add_properties (GString * json, GString * other_types,
       continue;
 
     g_value_init (&value, spec->value_type);
-    if (object && ! !(spec->flags & G_PARAM_READABLE) &&
+    if (object && !!(spec->flags & G_PARAM_READABLE) &&
         !(spec->flags & GST_PARAM_DOC_SHOW_DEFAULT)) {
       g_object_get_property (G_OBJECT (object), spec->name, &value);
     } else {

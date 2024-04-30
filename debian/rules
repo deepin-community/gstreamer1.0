@@ -40,7 +40,7 @@ conf_flags += -Dptp-helper-permissions=setuid-root \
 	-Dptp-helper-setuid-user=nobody -Dptp-helper-setuid-group=nobody
 endif
 
-ifeq (,$(filter $(DEB_HOST_ARCH),i386 amd64 armel armhf arm64 powerpc ppc64 ppc64el mipsel mips64el))
+ifeq (,$(filter $(DEB_HOST_ARCH),i386 amd64 armel armhf arm64 powerpc ppc64 ppc64el mipsel mips64el riscv64))
 conf_flags += -Dlibunwind=disabled -Dlibdw=disabled
 endif
 
