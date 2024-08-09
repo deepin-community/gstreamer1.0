@@ -1,3 +1,283 @@
+=== release 1.24.6 ===
+
+2024-07-29 16:41:37 +0100  Tim-Philipp Müller <tim@centricular.com>
+
+	* NEWS:
+	* RELEASE:
+	* gstreamer.doap:
+	* meson.build:
+	  Release 1.24.6
+
+2024-07-03 09:05:06 +0200  Guillaume Desmottes <guillaume.desmottes@onestream.live>
+
+	* plugins/elements/gstdownloadbuffer.c:
+	  downloadbuffer: send EOS in push mode
+	  gst_download_buffer_read_buffer() returns FLOW_EOS but it was not
+	  handled in the 'out_flushing' goto block which uses srcresult,
+	  so EOS was not sent downstream.
+	  Part-of: <https://gitlab.freedesktop.org/gstreamer/gstreamer/-/merge_requests/7140>
+
+2024-07-03 09:16:47 +0200  Guillaume Desmottes <guillaume.desmottes@onestream.live>
+
+	* plugins/elements/gstdownloadbuffer.c:
+	  downloadbuffer: initialize upstream_size when activated in push mode
+	  Push mode flow relies on upstream_size but it was not initialized when
+	  activated as it is when activated in pull mode.
+	  Part-of: <https://gitlab.freedesktop.org/gstreamer/gstreamer/-/merge_requests/7140>
+
+2024-07-03 09:13:27 +0200  Guillaume Desmottes <guillaume.desmottes@onestream.live>
+
+	* plugins/elements/gstdownloadbuffer.c:
+	  downloadbuffer: init upstream_size to -1
+	  Code in check_upstream_size() is checking for -1 to check if
+	  upstream_size has been set or not.
+	  Part-of: <https://gitlab.freedesktop.org/gstreamer/gstreamer/-/merge_requests/7140>
+
+2024-07-03 09:03:59 +0200  Guillaume Desmottes <guillaume.desmottes@onestream.live>
+
+	* plugins/elements/gstdownloadbuffer.c:
+	  downloadbuffer: properly log when receiving events
+	  Part-of: <https://gitlab.freedesktop.org/gstreamer/gstreamer/-/merge_requests/7140>
+
+2024-07-02 15:56:12 +0100  Tim-Philipp Müller <tim@centricular.com>
+
+	* gst/gstinfo.c:
+	  info: remove unused valgrind header include
+	  Follow-up to commit a2cbf75523cdf8a4df1baa7007d86ef455972245.
+	  Part-of: <https://gitlab.freedesktop.org/gstreamer/gstreamer/-/merge_requests/7129>
+
+2024-07-01 09:24:28 +0200  Edward Hervey <edward@centricular.com>
+
+	* tests/validate/gst-tester.c:
+	  gstreamer/gst-tester: Don't leak thread
+	  Part-of: <https://gitlab.freedesktop.org/gstreamer/gstreamer/-/merge_requests/7123>
+
+2024-06-29 17:12:12 +0200  Edward Hervey <edward@centricular.com>
+
+	* tools/gst-inspect.c:
+	  gst-inspect: Fix leak of plugin/feature
+	  Reordering changes the initial list head
+	  Part-of: <https://gitlab.freedesktop.org/gstreamer/gstreamer/-/merge_requests/7123>
+
+2024-06-20 15:13:27 +0300  Sebastian Dröge <sebastian@centricular.com>
+
+	* plugins/elements/gstmultiqueue.c:
+	* plugins/elements/gstqueue.c:
+	* plugins/elements/gstqueue2.c:
+	  queue, queue2, multiqueue: Timestamps of gap events must be valid
+	  This is checked in gst_event_new_gap() so doesn't have to be checked again here,
+	  but simply can be asserted with a g_return_if_fail().
+	  Part-of: <https://gitlab.freedesktop.org/gstreamer/gstreamer/-/merge_requests/7075>
+
+2024-06-20 15:10:07 +0300  Sebastian Dröge <sebastian@centricular.com>
+
+	* plugins/elements/gstmultiqueue.c:
+	* plugins/elements/gstqueue.c:
+	* plugins/elements/gstqueue2.c:
+	  queue: queue2: multiqueue: Don't work with segment.position if buffers have no timestamps
+	  If the first buffers have no timestamp then the sink position would be
+	  initialized to 0. The source pad might output this buffer, which would then
+	  initialize the source position to 0 too.
+	  Afterwards two buffers with a valid but huge timestamp might arrive before any
+	  of them are output on the source pad. The first one would set the sink position
+	  to a huge value, the second one would notice that the difference between the
+	  huge value and 0 is certainly larger than max-size-time and consider the queue
+	  as full.
+	  Instead, simply don't update the times from buffers without timestamps and
+	  assume whatever was set before is still valid, i.e. the buffer has the same
+	  timestamp as the previous one.
+	  Part-of: <https://gitlab.freedesktop.org/gstreamer/gstreamer/-/merge_requests/7075>
+
+2024-06-20 13:02:19 +0100  Tim-Philipp Müller <tim@centricular.com>
+
+	* meson.build:
+	  Back to development after 1.24.5
+
+=== release 1.24.5 ===
+
+2024-06-20 12:54:15 +0100  Tim-Philipp Müller <tim@centricular.com>
+
+	* NEWS:
+	* RELEASE:
+	* gstreamer.doap:
+	* meson.build:
+	  Release 1.24.5
+
+2024-06-05 10:38:57 +0200  Edward Hervey <edward@centricular.com>
+
+	* gst/gstpromise.c:
+	* tests/check/gst/gstpromise.c:
+	  gstpromise: Don't use g_return_* for internal checks
+	  If assertion/checks are disabled bad things will happen and the function won't
+	  return as expected
+	  Part-of: <https://gitlab.freedesktop.org/gstreamer/gstreamer/-/merge_requests/6998>
+
+2024-05-30 12:08:57 +0200  Martin Nordholts <martn@axis.com>
+
+	* gst/gstinfo.c:
+	  gst_debug: Add missing gst_debug_log_id_literal() dummy with gst_debug=false
+	  E.g. gst_debug_log_literal() already has a dummy variant.
+	  gst_debug_log_id_literal() is simply missing, which can
+	  cause link errors for project using gstreamer with
+	  gst_debug=false.
+	  Part-of: <https://gitlab.freedesktop.org/gstreamer/gstreamer/-/merge_requests/6979>
+
+2024-05-30 01:07:30 +0200  Samuel Thibault <samuel.thibault@ens-lyon.org>
+
+	* libs/gst/helpers/ptp/clock.rs:
+	* libs/gst/helpers/ptp/ffi.rs:
+	* libs/gst/helpers/ptp/meson.build:
+	* libs/gst/helpers/ptp/net.rs:
+	  ptp-helper: Add GNU/Hurd support
+	  Part-of: <https://gitlab.freedesktop.org/gstreamer/gstreamer/-/merge_requests/6974>
+
+2024-05-29 13:51:27 +0300  Tim-Philipp Müller <tim@centricular.com>
+
+	* meson.build:
+	  Back to development after 1.24.4
+
+=== release 1.24.4 ===
+
+2024-05-29 13:44:50 +0300  Tim-Philipp Müller <tim@centricular.com>
+
+	* NEWS:
+	* RELEASE:
+	* gstreamer.doap:
+	* meson.build:
+	  Release 1.24.4
+
+2024-05-28 13:17:39 +0300  Sebastian Dröge <sebastian@centricular.com>
+
+	* gst/parse/grammar.y.in:
+	  gstreamer: parse: Don't assume that child proxy child objects are GstObjects
+	  The name is already passed via the signal parameters so it doesn't have
+	  to be retrieved again via GstObject API, which would crash on other
+	  GObjects. Child proxy child objects can be any kind of GObject and the
+	  code here otherwise handles this correctly already.
+	  Part-of: <https://gitlab.freedesktop.org/gstreamer/gstreamer/-/merge_requests/6951>
+
+2024-05-28 09:06:57 +0300  Sebastian Dröge <sebastian@centricular.com>
+
+	* libs/gst/helpers/ptp/ffi.rs:
+	  gstreamer: ptp-helper: Use u64 instead of c_ulong for ifa_flags on Solaris/Illumos
+	  See https://gitlab.freedesktop.org/gstreamer/gstreamer/-/issues/3553#note_2429400
+	  Patch by Marcel Telka <marcel@telka.sk>.
+	  Part-of: <https://gitlab.freedesktop.org/gstreamer/gstreamer/-/merge_requests/6950>
+
+2024-05-26 12:33:02 +0300  Sebastian Dröge <sebastian@centricular.com>
+
+	* libs/gst/helpers/ptp/ffi.rs:
+	  gstreamer: ptp-helper: Use `if_nametoindex` and `setsockopt` on Solaris / Illumos too
+	  Patch by Marcel Telka <marcel@telka.sk>.
+	  Fixes https://gitlab.freedesktop.org/gstreamer/gstreamer/-/issues/3552
+	  Part-of: <https://gitlab.freedesktop.org/gstreamer/gstreamer/-/merge_requests/6947>
+
+2024-05-26 12:31:33 +0300  Sebastian Dröge <sebastian@centricular.com>
+
+	* libs/gst/helpers/ptp/net.rs:
+	  gstreamer: ptp-helper: Don't import `Context` trait multiple times unnecessarily
+	  This only affected the Solaris / Illumos code path.
+	  Patch by Marcel Telka <marcel@telka.sk>.
+	  Fixes https://gitlab.freedesktop.org/gstreamer/gstreamer/-/issues/3551
+	  Part-of: <https://gitlab.freedesktop.org/gstreamer/gstreamer/-/merge_requests/6947>
+
+2024-05-26 12:27:54 +0300  Sebastian Dröge <sebastian@centricular.com>
+
+	* libs/gst/helpers/ptp/ffi.rs:
+	* libs/gst/helpers/ptp/net.rs:
+	  gstreamer: ptp-helper: Use `c_ulong` for `ifa_flags` on Solaris/Illumos
+	  Based on a patch by Marcel Telka <marcel@telka.sk>.
+	  Fixes https://gitlab.freedesktop.org/gstreamer/gstreamer/-/issues/3553
+	  Part-of: <https://gitlab.freedesktop.org/gstreamer/gstreamer/-/merge_requests/6947>
+
+2024-05-26 12:24:33 +0300  Sebastian Dröge <sebastian@centricular.com>
+
+	* gst/meson.build:
+	* libs/gst/net/meson.build:
+	* meson.build:
+	* tests/check/meson.build:
+	* tests/misc/meson.build:
+	  gstreamer: Solaris/Illumos require linking to libnsl / libsocket for various socket APIs
+	  Patch by Tim Mooney <Tim.Mooney@ndsu.edu> from OpenIndiana/oi-userland
+	  Part-of: <https://gitlab.freedesktop.org/gstreamer/gstreamer/-/merge_requests/6947>
+
+2024-05-17 11:03:51 +0300  Sebastian Dröge <sebastian@centricular.com>
+
+	* gst/gstclock.h:
+	  clock: Fix 32 bit assertions in GST_TIME_TO_TIMEVAL and GST_TIME_TO_TIMESPEC
+	  On various 32 bit systems, time_t is actually 64 bits while long is
+	  still only 32 bits. The macro would wrongly trigger its assertion in
+	  this case if a value with more than 68 years worth of seconds is
+	  converted.
+	  Examples are various newer 32 bit platforms and old ones that are
+	  compiled with -D_TIME_BITS=64.
+	  Also statically assert that time_t is either 32 or 64 bits. Other values
+	  might need adjustments in the macro.
+	  Part-of: <https://gitlab.freedesktop.org/gstreamer/gstreamer/-/merge_requests/6919>
+
+2024-05-21 21:50:47 +0300  Jordan Petridis <jordan@centricular.com>
+
+	* tests/check/gst/gststructure.c:
+	  tests/check: Avoid using "bool" for the variable name
+	  Glib 2.82 will be aliasing [1] TRUE and FALSE to the C99
+	  definitions, which means it will be including stdbool.h
+	  As such, having variables named "bool" causes issues
+	  since it conflicts with the symbol defined in stdbool.h
+	  [1] https://gitlab.gnome.org/GNOME/glib/-/merge_requests/4001
+	  Part-of: <https://gitlab.freedesktop.org/gstreamer/gstreamer/-/merge_requests/6896>
+
+2024-05-17 23:03:19 +0900  Seungha Yang <seungha@centricular.com>
+
+	* meson.build:
+	* plugins/elements/gstfilesrc.c:
+	  filesrc: Don't abort on _get_osfhandle()
+	  _get_osfhandle() expects valid fd and CRT will abort program
+	  if given paramerter is invalid. The fd can be invalidated
+	  in various way, file was deleted by other process after
+	  we open a file. To avoid it, our own exception
+	  handler must be installed so that _get_osfhandle() can return
+	  INVALID_HANDLE_VALUE if fd is invalid.
+	  Part-of: <https://gitlab.freedesktop.org/gstreamer/gstreamer/-/merge_requests/6879>
+
+2024-05-14 23:30:56 +0200  Alexander Slobodeniuk <aslobodeniuk@fluendo.com>
+
+	* gst/gstsystemclock.c:
+	  systemclock: fix usage of __STDC_NO_ATOMICS__
+	  __STDC_NO_ATOMICS doesn't seem to exist. In fact the only compiler
+	  I've found that sets any of those is msvc, but it sets
+	  __STDC_NO_ATOMICS__, not __STDC_NO_ATOMICS.
+	  __STDC_NO_ATOMICS__ is the one documented by C11 standard.
+	  Part-of: <https://gitlab.freedesktop.org/gstreamer/gstreamer/-/merge_requests/6856>
+
+2024-04-30 00:36:59 +0100  Tim-Philipp Müller <tim@centricular.com>
+
+	* meson.build:
+	  Back to development after 1.24.3
+	  Part-of: <https://gitlab.freedesktop.org/gstreamer/gstreamer/-/merge_requests/6772>
+
+=== release 1.24.3 ===
+
+2024-04-30 00:15:23 +0100  Tim-Philipp Müller <tim@centricular.com>
+
+	* NEWS:
+	* RELEASE:
+	* gstreamer.doap:
+	* meson.build:
+	  Release 1.24.3
+
+2024-04-10 16:29:15 +0300  Sebastian Dröge <sebastian@centricular.com>
+
+	* libs/gst/helpers/ptp/parse.rs:
+	  ptp: Silence warning about some unused trait methods
+	  These are not used yet but will likely be useful in the future.
+	  Rust 1.79 (nightly) is warning about them being unused.
+	  Part-of: <https://gitlab.freedesktop.org/gstreamer/gstreamer/-/merge_requests/6606>
+
+2024-04-10 00:04:02 +0100  Tim-Philipp Müller <tim@centricular.com>
+
+	* meson.build:
+	  Back to development after 1.24.2
+
 === release 1.24.2 ===
 
 2024-04-09 21:48:55 +0100  Tim-Philipp Müller <tim@centricular.com>
