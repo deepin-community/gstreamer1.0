@@ -116,15 +116,15 @@ mod imp {
             // Skip loopback interfaces, interfaces that are not up and interfaces that can't do
             // multicast. These are all unusable for PTP purposes.
             let flags = ifaddr.ifa_flags;
-            if flags & IFF_LOOPBACK as u32 != 0 {
+            if flags & IFF_LOOPBACK != 0 {
                 debug!("Interface {} is loopback interface", name);
                 continue;
             }
-            if flags & IFF_UP as u32 == 0 {
+            if flags & IFF_UP == 0 {
                 debug!("Interface {} is not up", name);
                 continue;
             }
-            if flags & IFF_MULTICAST as u32 == 0 {
+            if flags & IFF_MULTICAST == 0 {
                 debug!("Interface {} does not support multicast", name);
                 continue;
             }
@@ -217,7 +217,7 @@ mod imp {
                     }
                 }
             }
-            #[cfg(not(target_os = "linux"))]
+            #[cfg(not(any(target_os = "linux", target_os = "hurd")))]
             {
                 use std::slice;
 
@@ -295,6 +295,7 @@ mod imp {
                 target_os = "dragonfly",
                 target_os = "solaris",
                 target_os = "illumos",
+                target_os = "hurd",
             ))]
             let ty = SOCK_DGRAM | SOCK_CLOEXEC;
             #[cfg(target_os = "macos")]
@@ -352,6 +353,7 @@ mod imp {
                     target_os = "netbsd",
                     target_os = "dragonfly",
                     target_os = "macos",
+                    target_os = "hurd",
                 ))]
                 sin_len: mem::size_of::<sockaddr_in>() as _,
             };
@@ -498,8 +500,6 @@ mod imp {
 
         #[cfg(any(target_os = "solaris", target_os = "illumos"))]
         {
-            use crate::error::Context;
-
             socket
                 .join_multicast_v4(addr, &iface.ip_addr)
                 .with_context(|| {

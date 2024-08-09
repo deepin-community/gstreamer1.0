@@ -1,3 +1,31 @@
+gstreamer1.0 (1.24.6-1) unstable; urgency=medium
+
+  [ liushuyu ]
+  * d/rules: manually enable code optimizations and debuginfo for Rust parts
+
+  [ Marc Leeman ]
+  * New upstream version 1.24.6
+
+ -- Marc Leeman <marc.leeman@gmail.com>  Mon, 29 Jul 2024 18:50:23 +0200
+
+gstreamer1.0 (1.24.5-1) unstable; urgency=medium
+
+  * New upstream version 1.24.5
+
+ -- Marc Leeman <marc.leeman@gmail.com>  Thu, 20 Jun 2024 16:18:14 +0200
+
+gstreamer1.0 (1.24.4-1) unstable; urgency=medium
+
+  * New upstream version 1.24.4
+
+ -- Marc Leeman <marc.leeman@gmail.com>  Wed, 29 May 2024 14:01:07 +0200
+
+gstreamer1.0 (1.24.3-1) unstable; urgency=medium
+
+  * New upstream version 1.24.3
+
+ -- Marc Leeman <marc.leeman@gmail.com>  Tue, 30 Apr 2024 10:40:18 +0200
+
 gstreamer1.0 (1.24.2-1) unstable; urgency=medium
 
   * New upstream version 1.24.2

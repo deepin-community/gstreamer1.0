@@ -106,9 +106,6 @@
 #include "gstvalue.h"
 #include "gstcapsfeatures.h"
 
-#ifdef HAVE_VALGRIND_VALGRIND_H
-#  include <valgrind/valgrind.h>
-#endif
 #endif /* GST_DISABLE_GST_DEBUG */
 
 #include <glib/gprintf.h>       /* g_sprintf */
@@ -2684,6 +2681,13 @@ void
 gst_debug_log_literal (GstDebugCategory * category, GstDebugLevel level,
     const gchar * file, const gchar * function, gint line,
     GObject * object, const gchar * message_string)
+{
+}
+
+void
+gst_debug_log_id_literal (GstDebugCategory * category, GstDebugLevel level,
+    const gchar * file, const gchar * function, gint line,
+    const gchar * id, const gchar * message_string)
 {
 }
 
