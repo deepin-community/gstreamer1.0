@@ -60,6 +60,8 @@
 
 #include <gst/base/base.h>
 
+#include "gst/glib-compat-private.h"
+
 #ifdef G_OS_WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
@@ -294,8 +296,8 @@ typedef struct
 
   GstClockTime announce_interval;       /* last interval we received */
   GQueue announce_messages;
-  guint64 timed_out_sync;       /* how often did this sender continously time out a FOLLOW_UP */
-  guint64 timed_out_delay_resp; /* how often did this sender continously time out a DELAY_RESP */
+  guint64 timed_out_sync;       /* how often did this sender continuously time out a FOLLOW_UP */
+  guint64 timed_out_delay_resp; /* how often did this sender continuously time out a DELAY_RESP */
 } PtpAnnounceSender;
 
 typedef struct
@@ -1457,7 +1459,7 @@ update_mean_path_delay (PtpDomainData * domain, PtpPendingSync * sync)
   } else {
     memcpy (&last_path_delays, &domain->last_path_delays,
         sizeof (last_path_delays));
-    g_qsort_with_data (&last_path_delays,
+    g_sort_array (&last_path_delays,
         MEDIAN_PRE_FILTERING_WINDOW, sizeof (GstClockTime),
         (GCompareDataFunc) compare_clock_time, NULL);
 
@@ -2050,7 +2052,7 @@ handle_send_time_ack (const guint8 * data, gsize size,
         " from helper process",
         GST_STIME_ARGS ((GstClockTimeDiff) (helper_send_time -
                 sync->delay_req_send_time_local)),
-        GST_STIME_ARGS (receive_time - helper_send_time));
+        GST_STIME_ARGS ((GstClockTimeDiff) (receive_time - helper_send_time)));
     sync->delay_req_send_time_local = helper_send_time;
   }
 }
@@ -3292,7 +3294,7 @@ gst_ptp_clock_get_internal_time (GstClock * clock)
 
 /**
  * gst_ptp_clock_new:
- * @name: Name of the clock
+ * @name: (nullable): Name of the clock
  * @domain: PTP domain
  *
  * Creates a new PTP clock instance that exports the PTP time of the master
@@ -3307,7 +3309,7 @@ gst_ptp_clock_get_internal_time (GstClock * clock)
  * check this with gst_clock_wait_for_sync(), the GstClock::synced signal and
  * gst_clock_is_synced().
  *
- * Returns: (transfer full): A new #GstClock
+ * Returns: (transfer full) (nullable): A new #GstClock
  *
  * Since: 1.6
  */
