@@ -8,3 +8,4 @@ usr/share/gstreamer-1.0
 usr/share/gdb
 debian/dh_gstscancodecs usr/bin
 usr/share/man/man1/dh_gstscancodecs.1
+usr/share/cmake/FindGStreamer.cmake
