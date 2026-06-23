@@ -1,0 +1,3423 @@
+gstreamer1.0 (1.26.2-2deepin1) unstable; urgency=medium
+
+  * feat: add sw64 support
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.26.2-2) unstable; urgency=medium
+
+  * Team upload
+  * Stop marking libgstreamer1.0-dev as Multi-Arch: same because Gst-1.0.gir
+    is not identical across architectures (Closes: #1108412) (LP: #2115325)
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.26.2-1) unstable; urgency=medium
+
+  * d/patches: remove applied 0002-test-latomic.patch
+  * d/copyright: review with licenserecon
+  * d/copyright: remove old FSF address
+  * New upstream version 1.26.2
+  * d/symbols: add gst_structure_is_writable@Base 1.26.2
+  * d/copyright: correct continuation
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.26.1-1) unstable; urgency=medium
+
+  * d/copyright: add default license, support lrc
+  * New upstream version 1.26.1
+  * d/patches: refresh
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.26.0-3) unstable; urgency=medium
+
+  * Team upload
+  * Set Provides: ${gir:Provides} for gir package
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.26.0-2) unstable; urgency=medium
+
+  * Team upload
+  * Set Provides: ${gir:Provides} for -dev package
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.26.0-1) unstable; urgency=medium
+
+  * Revert "d/watch: pin on 1.24.x"
+  * New upstream version 1.26.0
+  * d/libgstreamer1.0-dev.install:  install FindGStreamer.cmake
+  * d/symbols: add 1.25.1 symbols
+  * d/patches: test for latomic
+  * d/symbols: add new
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.24.12-1) unstable; urgency=medium
+
+  * New upstream version 1.24.12
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.24.11-2) unstable; urgency=medium
+
+  * d/watch: pin on 1.24.x
+  * d/watch: correct wildcard/dot
+  * d/rules: disable libunwind (Closes: #1093376)
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.24.11-1) unstable; urgency=medium
+
+  * New upstream version 1.24.11
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.24.10-2) unstable; urgency=medium
+
+  * d/postinst: fix build on alpha, hppa, m68k and sh4 (Closes: #1086594)
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.24.10-1) unstable; urgency=medium
+
+  * New upstream version 1.24.10
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.24.9-1) unstable; urgency=medium
+
+  [ John Paul Adrian Glaubitz ]
+  * Disable rustc for unsupported architectures (Closes: #1069625)
+
+  [ Marc Leeman ]
+  * New upstream version 1.24.9
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.24.8-1) unstable; urgency=medium
+
+  * New upstream version 1.24.8
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.24.7-1) unstable; urgency=medium
+
+  * d/rules: debian-rules-parses-dpkg-parsechangelog
+  * New upstream version 1.24.7
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.24.6-1) unstable; urgency=medium
+
+  [ liushuyu ]
+  * d/rules: manually enable code optimizations and debuginfo for Rust parts
+
+  [ Marc Leeman ]
+  * New upstream version 1.24.6
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.24.5-1) unstable; urgency=medium
+
+  * New upstream version 1.24.5
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.24.4-1) unstable; urgency=medium
+
+  * New upstream version 1.24.4
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.24.3-1) unstable; urgency=medium
+
+  * New upstream version 1.24.3
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.24.2-1) unstable; urgency=medium
+
+  * New upstream version 1.24.2
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.24.1-1) unstable; urgency=medium
+
+  * d/postinst.in: add cap_sys_nice on gst-ptp-helper
+  * New upstream version 1.24.1
+  * d/install: remove gst-ptp-helper-test
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.24.0-1) unstable; urgency=medium
+
+  * Revert "d/watch: pin master releases on 1.22.x"
+  * New upstream version 1.24.0
+  * d/control: Build-Depends on rustc
+  * d/install: gst-ptp-helper-test
+  * d/symbols update to 1.23.1
+  * d/symbols: update for 1.23.2
+  * d/patches: remove registry update
+  * d/symbols: add 1.23.90 new symbols
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.22.10-1) unstable; urgency=medium
+
+  * d/watch: pin master releases on 1.22.x
+  * New upstream version 1.22.10
+  * d/control: pkg-config is transitional
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.22.9-1) unstable; urgency=medium
+
+  * New upstream version 1.22.9
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.22.8-1) unstable; urgency=medium
+
+  * Team upload.
+  * New upstream version 1.22.8
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.22.7-1) unstable; urgency=medium
+
+  [ Marc Leeman ]
+  * New upstream version 1.22.7
+  * d/lintian-overrides: hide warnings
+  * Team upload.
+
+  [ Aurelien Jarno ]
+  * Enable libunwind on riscv64 (Closes: #1057048)
+
+  [ Debian Janitor ]
+  * Remove constraints unnecessary since buster (oldstable)
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.22.6-1) unstable; urgency=medium
+
+  * Team upload
+  * New upstream bugfix release
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.22.5-1) unstable; urgency=medium
+
+  * Team upload
+  * New upstream release
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.22.4-1) unstable; urgency=medium
+
+  * Team upload
+  * New upstream release
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.22.3-2) unstable; urgency=medium
+
+  * Team upload
+  * Release to unstable
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.22.3-1) experimental; urgency=medium
+
+  * Team upload
+  * New upstream release
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.22.2-1) experimental; urgency=medium
+
+  * Team upload
+  * New upstream bugfix release (LP: #2015943)
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.22.1-1) experimental; urgency=medium
+
+  * Team upload
+  * New upstream bugfix release (LP: #2015129)
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.22.0-2) unstable; urgency=medium
+
+  * debian/rules: Set -Dauto_features=enabled
+  * Set Rules-Requires-Root: no
+  * Bump Standards-Version to 4.6.2
+  * Release to unstable
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.22.0-1) experimental; urgency=medium
+
+  * Team upload
+  * New upstream release
+  * Add debian/upstream/signing-key.asc and update debian/watch to use it
+  * debian/libgstreamer1.0-0.symbols: Add new symbols
+  * Bump minimum meson and glib2.0
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.20.5-1) unstable; urgency=medium
+
+  * Team upload
+  * New upstream bugfix release
+  * Update debian/upstream/metadata
+  * Update standards version to 4.6.1, no changes needed
+  * Update watch file format version to 4
+  * debian/rules: Drop unneeded -Wl,--as-needed
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.20.4-1) unstable; urgency=medium
+
+  * Team upload
+  * New upstream bugfix release
+  * debian/libgstreamer1.0-0.symbols: Add new symbol
+  * Build-Depend on dh-sequence-gir
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.20.3-1) unstable; urgency=medium
+
+  [ Sebastian Dröge ]
+  * New upstream bugfix release.
+
+  [ Debian Janitor ]
+  * Use secure URI in debian/watch.
+  * Update standards version to 4.5.1, no changes needed.
+  * Remove Section on libgstreamer1.0-0 that duplicates source.
+
+  [ Jeremy Bicha ]
+  * Don't ignore build test failures on amd64 & arm64 (Closes #1011082).
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.20.2-1) unstable; urgency=medium
+
+  * New upstream bugfix release.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.20.1-1) unstable; urgency=medium
+
+  * New upstream bugfix release.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.20.0-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.19.90-1) experimental; urgency=medium
+
+  * New upstream release candidate.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.18.5-1) unstable; urgency=medium
+
+  * New upstream bugfix release.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.18.4-2) unstable; urgency=medium
+
+  * Upload to unstable.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.18.4-1) experimental; urgency=medium
+
+  [ Marc Leeman ]
+  * New upstream version 1.18.4
+
+  [ Sebastian Dröge ]
+  * Upload to experimental.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.18.3-2) unstable; urgency=medium
+
+  [ Helmut Grohne ]
+  * Annotate Build-Depends libgmp-dev and libgsl-dev <!nocheck> (Closes: #981203).
+
+  [ Andreas Beckmann ]
+  * Remove obsolete diversions on upgrades from buster (Closes: #984579).
+
+  [ Sebastian Dröge ]
+  * Upload to unstable.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.18.3-1) unstable; urgency=medium
+
+  * New upstream bugfix release.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.18.2-1) unstable; urgency=medium
+
+  * New upstream bugfix release.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.18.1-1) unstable; urgency=medium
+
+  * New upstream bugfix release.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.18.0-3) unstable; urgency=medium
+
+  * debian/rules:
+    + Add `--with gir` to generate correct dependencies. Thanks to Ken VanDine.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.18.0-2) unstable; urgency=medium
+
+  * debian/patches/0001-ptp-Also-handle-gnu-kfreebsd.patch:
+    + Fix build on kfreebsd or how meson likes to call it now: gnu/kfreebsd.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.18.0-1) unstable; urgency=medium
+
+  * New upstream stable release.
+  * Upload to unstable (Closes: #963301, #914861).
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.17.90-1) experimental; urgency=medium
+
+  * New upstream release candidate.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.17.2-1) experimental; urgency=medium
+
+  * New upstream development release.
+  * debian/rules:
+    + Fix typo in ptp-helper-setuid-group=nobody meson option.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.17.1-2) experimental; urgency=medium
+
+  * debian/rules:
+    + Remove remaining usages of $(gst_abi) variable.
+  * debian/control:
+    + Depend on GLib >= 2.44.
+    + Add libdw-dev / libunwind-dev to dependencies of the -dev package
+      as they're listed in the Requires.private of the pkg-config file.
+  * debian/rules,
+    debian/control:
+    + Remove manual, legacy dbg package.
+  * debian/*.install:
+    + Remove accidental hardcoding of x86_64-linux-gnu in some paths.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.17.1-1) experimental; urgency=medium
+
+  [ Sebastian Dröge ]
+  * New upstream development release.
+  * Completely redo and modernize the packaging.
+
+  [ Debian Janitor ]
+  * Trim trailing whitespace.
+  * Use secure copyright file specification URI.
+  * Wrap long lines in changelog entries: 1.5.1-2, 0.11.94-1, 0.11.93-2,
+    0.11.90-1.
+  * Set upstream metadata fields: Bug-Database, Bug-Submit, Name (from
+    ./configure), Repository, Repository-Browse.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.16.2-2) unstable; urgency=medium
+
+  * Source-only re-upload.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.16.2-1) unstable; urgency=medium
+
+  * New upstream release
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.16.1-1) unstable; urgency=medium
+
+  * New upstream bugfix release
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.16.0-3) unstable; urgency=medium
+
+  * Source-only re-upload
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.16.0-2) unstable; urgency=medium
+
+  * Upload to unstable.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.16.0-1) experimental; urgency=medium
+
+  * New upstream release
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.15.90-1) experimental; urgency=medium
+
+  * New upstream release candidate
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.15.2-1) experimental; urgency=medium
+
+  * New upstream development release
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.15.1-1) experimental; urgency=medium
+
+  [ Sebastian Dröge ]
+  * New upstream development release
+    + debian/libgstreamer-dev.install:
+      - Ship gdb helper script.
+    + debian/libgstreamer.symbols:
+      - Update symbols file with new API.
+  * debian/control.in:
+    + Remove Sebastian Bacher and Loïc Minier from Uploaders. They didn't work
+      on the packages in a very long time (Closes: #857480).
+
+      Thanks a lot for their past work!
+
+  [ Simon McVittie ]
+  * Run gtkdocize during build (Closes: #899116) and only build
+    docs if we actually build the docs package.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.14.4-1) unstable; urgency=medium
+
+  * New upstream bugfix release
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.14.3-1) unstable; urgency=medium
+
+  [ Hugh McMaster ]
+  * gir1.2-gstreamer-1.0: Install the typelibs into a multi-arch library
+    directory (Closes: #904266).
+  * debian/control.in:
+    - Mark gir1.2-gstreamer-1.0 Multi-Arch: same.
+    - Remove a duplicate ${gir:Depends} variable from gir1.2-gstreamer-1.0.
+    - Mark libgstreamer1.0-dev Multi-Arch: same (Closes: #823307).
+  * debian/dh_gstscancodecs:
+    - Call gst-codec-info-1.0 from the package's libexecdir path.
+  * libgstreamer1.0-dev:
+    - Install the gst-codec-info-1.0 utility into the package's multi-arch
+      program executables directory (libexecdir).
+
+  [ Sebastian Dröge ]
+  * New upstream bugfix release.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.14.2-2) unstable; urgency=medium
+
+  * debian/patches/0002-gstconfig.h.in-initial-RISC-V-support.patch:
+    + Add support for RISC-V (Closes: #895711).
+  * debian/control.in:
+    + Build-depend on libgmp-dev | libgmp3-dev (Closes: #862257).
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.14.2-1) unstable; urgency=medium
+
+  * New upstream bugfix release
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.14.1-1) unstable; urgency=medium
+
+  * New upstream bugfix release.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.14.0-1) unstable; urgency=medium
+
+  * debian/control.in:
+    + Let -dev package conflict/replaces with the one from gst-plugins-bad.
+  * New upstream stable release.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.13.91-1) experimental; urgency=medium
+
+  * debian/*.symbols:
+    + Add Build-Depends-Package header to each library section.
+  * New upstream release candidate.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.13.90-1) experimental; urgency=medium
+
+  * New upstream release candidate.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.13.1-1) experimental; urgency=medium
+
+  * New upstream development release.
+  * debian/control.in:
+    + Breaks libgstreamer-plugins-bad1.0-0 (<< 1.13.1) because of API
+      that moved to the core GStreamer libraries.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.12.4-1) unstable; urgency=medium
+
+  * New upstream bugfix release
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.12.3-1) unstable; urgency=medium
+
+  * New upstream bugfix release
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.12.2-1) unstable; urgency=medium
+
+  * New upstream bugfix release
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.12.1-2) unstable; urgency=high
+
+  * debian/patches/0001-registrybinary-Update-magic-version-string.patch:
+    + Force regeneration of the registry for blacklisted plugins that
+      were blacklisted due to broken dependencies.
+
+      Various 1.12 plugin packages were built against 1.12.1-1 and moved to
+      testing as such, but had dependencies on GStreamer < 1.12. This does not
+      work and causes the plugins to fail to load and be blacklisted.
+
+      While all dependencies should be correct, for some reason they were not,
+      which needs separate investigation (Closes: #866339, #866103).
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.12.1-1) unstable; urgency=medium
+
+  * New upstream bugfix release
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.12.0-2) experimental; urgency=medium
+
+  [ Sebastian Dröge ]
+  * debian/control.in:
+    + Don't let gstreamer1.0-tools depend on pkg-config (Closes: #861969).
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.12.0-1) experimental; urgency=medium
+
+  * New upstream stable release
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.11.91-1) experimental; urgency=medium
+
+  * New upstream release candidate.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.11.90-1) experimental; urgency=medium
+
+  * New upstream release candidate.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.11.2-1) experimental; urgency=medium
+
+  * New development release
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.11.1-1) experimental; urgency=medium
+
+  * New upstream development release:
+    + debian/*doc*,
+      debian/rules:
+      - Remove PWG and other documentation that is now handled outside
+        the source tarball.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.10.4-1) unstable; urgency=medium
+
+  * New upstream bugfix release
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.10.3-1) unstable; urgency=medium
+
+  * New upstream bugfix release
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.10.2-1) unstable; urgency=medium
+
+  * New upstream bugfix release
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.10.1-1) unstable; urgency=medium
+
+  * New upstream bugfix release
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.10.0-2) unstable; urgency=medium
+
+  * debian/control:
+    + Make sure to properly update debian/control every time, otherwise
+      changes to control.in are not applied (Closes: #842526).
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.10.0-1) unstable; urgency=medium
+
+  [ Sebastian Dröge ]
+  * debian/control.in:
+    + Remove obsolete and redudant build dependency on jade (Closes: #840370).
+
+  [ Helmut Grohne ]
+  * Mark gstreamer1.0-doc Multi-Arch: foreign (Closes: #842526).
+
+  [ Sebastian Dröge ]
+  * New upstream stable release.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.9.90-1) experimental; urgency=medium
+
+  * New upstream unstable release:
+    + debian/libgstreamer.symbols:
+      - Update new symbols.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.9.2-1) experimental; urgency=medium
+
+  * New upstream unstable release:
+    + debian/libgstreamer-dev.install:
+      - Move gstconfig.h into the arch independent path again.
+    + debian/libgstreamer.symbols:
+      - Update new symbols.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.9.1-1) experimental; urgency=medium
+
+  * New upstream unstable release:
+    + debian/libgstreamer.symbols:
+      - Update new symbols.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.8.2-1) unstable; urgency=medium
+
+  * debian/control.in:
+    + Remove duplicated field name.
+  * New upstream bugfix release.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.8.1-1) unstable; urgency=medium
+
+  * New upstream bugfix release.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.8.0-2) unstable; urgency=medium
+
+  * debian/control.in:
+    + libgstreamer1.0-0 1.8.0 breaks gstreamer1.0-plugins-base << 1.8.0
+      because of a bug in the latter that is exposed by the new version of
+      core. See https://bugzilla.gnome.org/show_bug.cgi?id=760234
+      (Closes: #819958, #819960).
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.8.0-1) unstable; urgency=medium
+
+  * New upstream stable release.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.7.91-1) experimental; urgency=medium
+
+  * New upstream release candidate:
+    + debian/libgstreamer.symbols:
+      - Update new symbols.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.7.90-1) experimental; urgency=medium
+
+  * New upstream release candidate:
+    + debian/libgstreamer.symbols:
+      - Add new symbols.
+    + debian/control.in:
+      - Build-depend on texlive-generic-recommended for ulem.sty.
+        It's not pulled in automatically anymore for whatever reason.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.7.2-1) experimental; urgency=medium
+
+  * New upstream unstable release:
+    + debian/libgstreamer.symbols:
+      - Add new symbols.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.7.1-1) experimental; urgency=medium
+
+  * debian/control.in:
+    + Build-depend on libgsl-dev | libgsl0-dev instead of just the latter.
+  * New upstream unstable release:
+    + debian/control.in:
+      - Build-depend on GLib >= 2.40.
+    + debian/libgstreamer.symbols:
+      - Add new symbols.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.6.2-1) unstable; urgency=medium
+
+  * New upstream bugfix release.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.6.1-1) unstable; urgency=medium
+
+  * New upstream bugfix release.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.6.0-1) unstable; urgency=medium
+
+  * New stable upstream release.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.5.91-1) experimental; urgency=medium
+
+  * New upstream release candidate.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.5.90-1) experimental; urgency=medium
+
+  * New upstream release candidate.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.5.2-1) experimental; urgency=medium
+
+  * New unstable upstream release.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.5.1-3) experimental; urgency=medium
+
+  * debian/rules,
+    debian/libgstreamer.postinst:
+    + Explicitely specify the architecture dependent lib directory, otherwise
+      setcap will fail if the package is installed for multiple architures.
+      It only allows one filename at a time (Closes: #788282).
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.5.1-2) experimental; urgency=medium
+
+  * debian/patches/0001-ptp-Check-for-the-actual-API-we-use-instead-of-just-.patch:
+    + Hopefully fix build on kFreeBSD and non-Linux in general.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.5.1-1) experimental; urgency=medium
+
+  * New unstable upstream release.
+  * debian/control.in,
+    debian/libgstreamer.postinst:
+    + Install gst-ptp-helper with cap_net_bind_service,cap_net_admin
+      capabilities, and otherwise fall back to setuid root. It needs
+      to be able to listen for multicast on port 319 and 320.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.5.0.1+git20150513-1) experimental; urgency=medium
+
+  * New upstream GIT snapshot.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.5.0.1+git20150316-1) experimental; urgency=medium
+
+  * New upstream GIT snapshot.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.4.5-1) experimental; urgency=medium
+
+  * New upstream bugfix release.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.4.4-2) unstable; urgency=medium
+
+  * Upload to unstable.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.4.4-1) experimental; urgency=medium
+
+  * New upstream bugfix release.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.4.3-1.2) unstable; urgency=medium
+
+  * Non-maintainer upload.
+  * debian/rules: Remove outdated mangling of debian/shlibs.local, this is
+    breaking dependencies generation for gir packages. This fix should really
+    Closes: #761019
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.4.3-1.1) unstable; urgency=medium
+
+  * Non-maintainer upload.
+  * Add missing libgstreamer dependency to the gir package (closes: #761019).
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.4.3-1) unstable; urgency=medium
+
+  * New upstream bugfix release.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.4.2-1) unstable; urgency=medium
+
+  * New upstream bugfix release.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.4.1-1) unstable; urgency=medium
+
+  * New upstream bugfix release.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.4.0-1) unstable; urgency=medium
+
+  * New upstream stable release.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.3.91-1) experimental; urgency=medium
+
+  * New upstream release candidate:
+    + debian/libgstreamer.symbols:
+      - Update for new symbols.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.3.90-1) experimental; urgency=medium
+
+  * New upstream release candidate:
+    + debian/libgstreamer.symbols:
+      - Update for new symbols.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.3.3-1) experimental; urgency=medium
+
+  * New upstream development release:
+    + debian/libgstreamer.symbols:
+      - Update for new symbols.
+    + debian/rules:
+      - Run autopoint too during autoreconf now.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.3.2-1) experimental; urgency=medium
+
+  * New upstream development release:
+    + debian/libgstreamer.symbols:
+      - Update for new symbols.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.3.1-1) experimental; urgency=medium
+
+  * New upstream development release:
+    + debian/control.in:
+      - Build-depend on bison >= 2.4.
+    + debian/libgstreamer.symbols:
+      - Update for new symbols.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.2.4-1) unstable; urgency=medium
+
+  * New upstream bugfix release.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.2.3-1) unstable; urgency=medium
+
+  [ Iain Lane ]
+  * Run libtoolize in autoreconf. Drop ltmain-as-needed patch and use
+    dh_autoreconf --as-needed.
+
+  [ Sebastian Dröge ]
+  * New upstream bugfix release:
+    + debian/libgstreamer.symbols:
+      - Add new symbol.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.2.2-1) unstable; urgency=medium
+
+  * New upstream bugfix release.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.2.1-1) unstable; urgency=low
+
+  * New upstream bugfix release.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.2.0-1) unstable; urgency=low
+
+  * New upstream stable release.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.1.90-1) experimental; urgency=low
+
+  * New upstream release candidate:
+    + debian/libgstreamer.symbols:
+      - Add new symbols.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.1.4-1) experimental; urgency=low
+
+  * New upstream development snapshot:
+    + debian/libgstreamer.symbols:
+      - Add new symbols.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.1.3-1) experimental; urgency=low
+
+  * New upstream development snapshot:
+    + debian/libgstreamer.symbols:
+      - Add new symbols.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.1.2-1) experimental; urgency=low
+
+  * New upstream development snapshot:
+    + debian/libgstreamer.symbols:
+      - Add new symbols.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.0.8-1) unstable; urgency=low
+
+  * New upstream bugfix release.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.0.7-1) unstable; urgency=low
+
+  * New upstream bugfix release.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.0.6-1) unstable; urgency=low
+
+  * New upstream bugfix release.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.0.5-1) unstable; urgency=low
+
+  * New upstream bugfix release.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.0.4-1) unstable; urgency=low
+
+  * New upstream bugfix release.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.0.3-1) unstable; urgency=low
+
+  * New upstream bugfix release.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.0.2-1) unstable; urgency=low
+
+  * New upstream stable release.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.0.1-1) unstable; urgency=low
+
+  * New upstream stable release:
+    + debian/libgstreamer.symbols:
+      - Add new symbols.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (1.0.0-1) unstable; urgency=low
+
+  * New upstream stable release:
+    + debian/libgstreamer.symbols:
+      - Update symbols file.
+    + debian/*:
+      - Change remaining parts from 0.11 to 1.0.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (0.11.99-1) experimental; urgency=low
+
+  * New upstream release.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (0.11.94-1) experimental; urgency=low
+
+  * New upstream release:
+    + debian/libgstreamer.symbols:
+      - Update symbols file.
+    + debian/control.in:
+      - Build-depend on gtk-doc >= 1.12.
+    + debian/patches/0001-netclientclock-simplify-by-using-g_socket_condition_.patch:
+      - Dropped, merged upstream.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (0.11.93-2) experimental; urgency=low
+
+  * debian/control.in:
+    + Build-depend on GLIB >= 2.23.
+  * debian/patches/0001-netclientclock-simplify-by-using-g_socket_condition_.patch:
+    + Fix unit test hang that causes the build to fail sometimes.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (0.11.93-1) experimental; urgency=low
+
+  * New upstream release:
+    + debian/libgstreamer.symbols:
+      - Update symbols file.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (0.11.92-1) experimental; urgency=low
+
+  * debian/control.in:
+    + Update automake, autoconf and libtool build dependencies.
+  * New upstream release, "High Hopes":
+    + debian/libgstreamer.symbols:
+      - Update symbols file.
+  * debian/gst-codec-info.c:
+    + Updated for API changes.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (0.11.91-1) experimental; urgency=low
+
+  * New upstream release, "I will give you five magic beans!":
+    + debian/libgstreamer.symbols:
+      - Update symbols file.
+  * debian/libgstreamer-dev.install:
+    + Don't ship useless .la file for the core plugins.
+    + Don't ship .a and .la files for the library.
+  * debian/control.in:
+    + Update debhelper dependency version and Standards-Version.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer1.0 (0.11.90-1) experimental; urgency=low
+
+  [ Olivier Naudan ]
+  * Imported Upstream version 0.11.90
+  * debian/rules and debian/changelog: migration to 1.0
+  * debian/control*: aligned libglib2.0-dev version requirement with
+    configure.ac
+  * gst-codec-info.c: migration to gst 1.0
+  * Updated debian/patches to use GST_API_VERSION
+  * Refreshed 99_ltmain_as-needed.patch to apply cleanly again
+  * debian/control: updated package names with 1.0
+  * Updated debian/libgstreamer.symbols based on upstream 0.11.90
+  * debian/control*: added a new build-dep on libxml2-dev
+
+  [ Sebastian Dröge ]
+  * Fix symbols file versions.
+  * 79_multiarch-backwards-compat.patch: Dropped, there's no need for
+    backwards compatibility anymore.
+  * Remove libxml2-dev build-dependency again.
+  * Update copyright.
+  * 80_ia32-hack.patch: Dropped, shouldn't be needed anymore.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.11 (0.11.1-3) UNRELEASED; urgency=low
+
+  [ Sebastian Dröge ]
+  * debian/control.in:
+    + Don't (build-) depend on libxml2.
+    + Build-depend on automake (>= 1.10), autoconf (>= 2.60) and
+      libtool (>= 2.0) to make dh-autoreconf actually work.
+
+  [ Loïc Minier ]
+  * Only track 0.11.* versions in watch file.
+  * Update my email address in control.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.11 (0.11.1-2) experimental; urgency=low
+
+  * debian/control.in:
+    + Build-depend on GLib 2.26.
+  * debian/dh_gstscancodecs:
+    + Fix for multi-arch to look in the correct directories.
+      Patch by YunQiang Su <wzssyqa@gmail.com>.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.11 (0.11.1-1) experimental; urgency=low
+
+  [ Nicolas Dechesne ]
+  * New upstream release.
+    + debian/libstreamer.symbols
+    + debian/control.in
+      - removed unversioned gstreamer-tools since removed upstream
+      - removed old Replaces/Conflicts which no longer make sense on 0.11
+    + debian/rules
+      - updated abi number
+    + misc
+      - removed xmllaunch, feedback and xmlinspect
+      - replaced reference to GST_PLUGIN_FEATURE_NAME to GST_OBJECT_NAME
+
+  [ Sebastian Dröge ]
+  * debian/copyright:
+    + Clean up, fix and complete copyright file.
+  * Merge 0.10.35.2-1.
+  * Upload to experimental
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.35.2-1) experimental; urgency=low
+
+  * New upstream pre-release:
+    + debian/control.in:
+      - Build-depend on GLib >= 2.24.
+    + debian/patches/99_ltmain_as-needed.patch:
+      - Refreshed to apply cleanly again.
+    + debian/libgstreamer.symbols:
+      - Update symbols file with new API.
+  * debian/rules:
+    + Remove all dependency_libs from the .la files (Closes: #633319).
+  * debian/control.in:
+    + Put GI package into section introspection.
+  * debian/compat,
+    debian/control.in,
+    debian/gir1.2-gstreamer.install,
+    debian/libgstreamer-dev.install,
+    debian/libgstreamer.install,
+    debian/patches/79_multiarch-backwards-compat.patch,
+    debian/patches/80_ia32-hack.patch,
+    debian/rules:
+    + Transition package to multi-arch (Closes: #647481).
+      Patch taken from the Ubuntu package.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.35-1) unstable; urgency=low
+
+  * New upstream bugfix release, "Nuclear Fission".
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.34-1) unstable; urgency=low
+
+  * New upstream bugfix release, "Misfits".
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.33-1) unstable; urgency=low
+
+  * New upstream release, "Prior Spaceflight Experience is an Advantage":
+    + debian/libgstreamer.symbols:
+      - Update version of new symbols to 0.10.33.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.32.3-1) experimental; urgency=low
+
+  * New upstream pre-release.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.32.2-1) experimental; urgency=low
+
+  * debian/control.in:
+    + Let the -dev package depend on the GIR package as required by
+      the new gobject-introspection policy.
+
+  [ Alessandro Decina ]
+  * debian/control.in:
+    + Add build dependency on dh-autoreconf.
+  * debian/rules:
+    + Include dh-autoreconf cdbs rule.
+
+  [ Sebastian Dröge ]
+  * New upstream pre-release:
+    + debian/patches/01_valve-only-set-discont-once.patch:
+      - Dropped, merged upstream.
+    + debian/libgstreamer.symbols:
+      - Add new API.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.32-6) unstable; urgency=low
+
+  * Upload to unstable for the gobject-introspection transition.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.32-5) experimental; urgency=low
+
+  * debian/control.in:
+    + Revert gobject-introspection versio revert and provide
+      gir1.2-gstreamer-0.10 again.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.32-4) unstable; urgency=low
+
+  * debian/control.in: Remove Conflict on gst-plugins-bad, the registry
+    itself works around it.
+  * debian/control.in: Move back to the old gobject-introspection stack as it
+    hasn't migrated to unstable yet
+  * Both of the above fixes FTBS on unstable (Closes: #615911)
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.32-3) unstable; urgency=low
+
+  * debian/patches/01_valve-only-set-discont-once.patch
+    - Added. Fixes bad audio quality in calls from Empathy (From upstream git)
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.32-2) unstable; urgency=low
+
+  * Upload to unstable.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.32-1) experimental; urgency=low
+
+  * New upstream stable release, "Take Me to the Bonus Level":
+    + debian/libgstreamer.symbols:
+      - Update new symbols to the release version.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.31.4-1) experimental; urgency=low
+
+  * New upstream pre-release:
+    + debian/libgstreamer.symbols:
+      - Update new symbols to the latest pre-release version.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.31.3-1) experimental; urgency=low
+
+  * debian/control.in:
+    + Conflict with gstreamer0.10-plugins-bad0.10 (<< 0.10.20.2) because
+      of the moved selector and valve plugins. There's no file conflict.
+  * New upstream pre-release:
+    + debian/libgstreamer.symbols:
+      - Update new symbols to the latest pre-release version.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.31.2-1) experimental; urgency=low
+
+  [ Emilio Pozuelo Monfort ]
+  * debian/control.in,
+    debian/rules:
+    + Use dpkg-vendor instead of lsb_release.
+
+  [ Sebastian Dröge ]
+  * debian/control.in:
+    + Suggest gstreamer0.10-plugins-base instead of the non-existing
+      gstreamer0.10-plugins package (Closes: #607466).
+  * New upstream pre-release:
+    + debian/control.in:
+      - Require GLib >= 2.22.
+    + debian/patches/*.patch:
+      - Refreshed.
+    + debian/libgstreamer.symbols:
+      - Add new API symbols.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.31-2) experimental; urgency=low
+
+  * Transition from gir1.0-gstreamer-0.10 to gir1.2-gstreamer-0.10
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.31-1) experimental; urgency=low
+
+  * New upstream release, "Safety Pins":
+    + debian/libgstreamer.symbols:
+      - Update symbols.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.30.5-1) experimental; urgency=low
+
+  * debian/control.in:
+    + Drop gir-repository-dev build dependency. It's not needed and
+      only pulls in half of Gnome.
+  * New upstream pre-release:
+    + debian/libgstreamer.symbols:
+      - Update symbols.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.30.4-1) experimental; urgency=low
+
+  * New upstream pre-release:
+    + debian/libgstreamer.symbols:
+      - Update symbols.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.30.3-1) experimental; urgency=low
+
+  * New upstream pre-release:
+    + debian/libgstreamer.symbols:
+      - Update symbols.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.30.2-1) experimental; urgency=low
+
+  * New upstream pre-release:
+    + debian/patches/80_ia32-hack.patch:
+      - Refreshed.
+    + debian/libgstreamer.symbols:
+      - Add new symbols.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.30-1) unstable; urgency=low
+
+  * New upstream stable release, "Safety First":
+    + debian/libgstreamer.symbols:
+      - Update new symbols version to 0.10.30.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.29.4-1) experimental; urgency=low
+
+  * New upstream pre-release:
+    + debian/libgstreamer.symbols:
+      - Update new symbols version to 0.10.29.4.
+      - Add new symbols.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.29.3-1) experimental; urgency=low
+
+  * New upstream pre-release:
+    + debian/libgstreamer.symbols:
+      - Update new symbols version to 0.10.29.3.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.29.2-1) experimental; urgency=low
+
+  * New upstream pre-release:
+    + debian/rules,
+      debian/compat,
+      debian/control.in,
+      debian/source/format,
+      debian/patches/*:
+      - Update to debhelper compat level 7.
+      - Update to source format 3.0 (quilt).
+      - Update to Standards-Version 3.8.4.
+    + debian/libgstreamer.symbols:
+      - Update symbols file for the new API.
+    + debian/control.in:
+      - Build depend on GLib 2.20.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.29-1) unstable; urgency=low
+
+  * New upstream release, "It's a Trap":
+    + debian/libgstreamer.symbols:
+      - Update symbol versions to the stable release.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.28.3-1) experimental; urgency=low
+
+  * New upstream pre-release.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.28.2-1) experimental; urgency=low
+
+  * New upstream pre-release:
+    + debian/libgstreamer.symbols:
+      - Update symbols file for the new API.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.28-1) unstable; urgency=low
+
+  * New upstream stable release, "Same Old, Same Old".
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.27-1) unstable; urgency=low
+
+  * New upstream stable release, "You're Shocked, We Know":
+    + debian/libgstreamer.symbols:
+      - Updated symbol versions to the stable version.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.26.3-1) experimental; urgency=low
+
+  * New upstream pre-release.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.26.2-2) experimental; urgency=low
+
+  * New upstream pre-release:
+    + debian/libgstreamer.symbols:
+      - Added new API.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.26-1) unstable; urgency=low
+
+  * New upstream release, "Think Twice":
+    + debian/libgstreamer.symbols:
+      - Update to use the stable versions.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.25.3-1) experimental; urgency=low
+
+  * New upstream pre-release.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.25.2-3) experimental; urgency=low
+
+  * debian/patches/80_ia32-hack.patch:
+    + Fix FTBFS if sys/utsname.h is not included indirectly by
+      other headers.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.25.2-2) experimental; urgency=low
+
+  * debian/libgstreamer.install:
+    + Also ship the registry update helper application.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.25.2-1) experimental; urgency=low
+
+  * New upstream pre-release:
+    + debian/patches/01_multiqueue-iterate-internal-links.patch:
+      - Dropped, merged upstream.
+    + debian/patches/80_ia32-hack.patch:
+      - Updated to apply cleanly again.
+    + debian/control.in:
+      - Conflict with gstreamer0.10-plugins-base (<< 0.10.25.2) because
+        of a moved plugin. This is no file conflict but a GObject type
+        name conflict.
+      - Build depend on GLib 2.18.
+    + debian/libgstreamer.symbols:
+      - Added new API.
+  * debian/control.in:
+    + Remove David I. Lehn from Uploaders (Closes: #557284).
+    + Fix typo in package description (Closes: #557365).
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.25-4) unstable; urgency=low
+
+  * debian/rules:
+    + Don't include the plugin library files in the dh_makeshlibs
+      call (Closes: #559657).
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.25-3) unstable; urgency=low
+
+  * debian/rules,
+    debian/control.in,
+    debian/gir1.0-gstreamer.install:
+    + Update for the new GObject-Introspection mini spec (Closes: #551568).
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.25-2) unstable; urgency=low
+
+  * debian/patches/01_multiqueue-iterate-internal-links.patch:
+    + Patch from upstream GIT to improve the iterate internal links
+      function of the multiqueue element. It's more robust and faster
+      now.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.25-1) unstable; urgency=low
+
+  * New upstream release, 'Feel the burn':
+    + debian/libgstreamer.symbols:
+      - Updated for the new release.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.24.4-1) experimental; urgency=low
+
+  * New upstream pre-release.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.24.3-1) experimental; urgency=low
+
+  * New upstream pre-release:
+    + debian/patches/01_gir-pkgconfig-path.patch,
+      debian/patches/02_pkgconfig-first.patch:
+      - Dropped, merged upstream.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.24.2-2) experimental; urgency=low
+
+  * debian/rules:
+    + Set HOME to a fake home directory to prevent writing
+      to a non-writable buildd home which results in FTBFS (Closes: #546444).
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.24.2-1) experimental; urgency=low
+
+  * New upstream pre-release:
+    + debian/control.in,
+      debian/libgstreamer.install,
+      debian/libgstreamer-dev.install:
+      - Enable GObject-Introspection support and ship the generated
+        files in the -dev and shared library package.
+    + debian/control.in:
+      - Update build dependencies.
+    + debian/patches/90_dont-link-gstcheck-with-check.patch:
+      - Dropped, not needed anymore.
+    + debian/libgstreamer.symbols:
+      - Updated for the new version.
+  * debian/control.in:
+    - Update Standards-Version to 3.8.3.
+  * debian/patches/01_gir-pkgconfig-path.patch:
+    - Add correct pkg-config search path for introspection
+      generation.
+  * debian/patches/02_pkgconfig-first.patch:
+    - Generate pkg-config before all binaries.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.24-1) unstable; urgency=low
+
+  * New upstream release, 'It matters':
+    + debian/libgstreamer.symbols:
+      - Updated for the new release.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.23.4-1) experimental; urgency=low
+
+  * New upstream pre-release:
+    + debian/libgstreamer.symbols:
+      - Updated for the new pre-release.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.23.3-1) experimental; urgency=low
+
+  * New upstream pre-release:
+    + debian/libgstreamer.symbols:
+      - Updated for the new pre-release.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.23.2-1) experimental; urgency=low
+
+  * debian/control.in:
+    + Fix section of debug package.
+    + Update Standards-Version to 3.8.2, no additional changes needed.
+  * New upstream pre-release:
+    + debian/control.in:
+      - Update build dependencies.
+    + debian/patches/01_urihandler-get_type_full.patch:
+      - Dropped, merged upstream.
+    + debian/libgstreamer.symbols:
+      - Updated for the new API additions.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.23-2) unstable; urgency=low
+
+  * debian/control.in:
+    + (Build-) depend on libxml2-doc and libglib2.0-doc to get correct
+      cross references in the docs.
+    + Add ${misc:Depends} everywhere.
+  * debian/gstreamer-doc.links:
+    + Add links to /usr/share/gtk-doc to allow cross references to
+      the gstreamer core docs.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.23-1) unstable; urgency=low
+
+  * New upstream release, 'Alaboo Alaboo':
+    + debian/libgstreamer.symbols:
+      - Change new symbol version to 0.10.23.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.22.4-1) experimental; urgency=low
+
+  * debian/patches/90_dont-link-gstcheck-with-check.patch:
+    + Patch by Arnaud Soyez to fix FTBFS because of invalid make syntax.
+      (Closes: #527007).
+  * debian/patches/01_urihandler-get_type_full.patch:
+    + Use get_type_full() vmethod instead of get_type() if specified.
+      This makes it possible to implement GstURIHandler from bindings.
+  * New upstream pre-release.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.22.3-1) experimental; urgency=low
+
+  * New upstream pre-release.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.22.2-1) experimental; urgency=low
+
+  * New upstream pre-release:
+    + debian/control.in:
+      - Require GLib >= 2.14.
+    + debian/libgstreamer.symbols:
+      - Add new symbols.
+  * debian/control.in:
+    + Update Standards-Version to 3.8.1, no additional changes needed.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.22-3) unstable; urgency=low
+
+  * debian/patches/90_dont-link-gstcheck-with-check.patch:
+    + Don't link libgstcheck with check. check is a static library
+      and by linking it to libgstcheck and to everything using libgstcheck
+      we're introducing the check symbols twice and export the check
+      API from libgstcheck (Closes: #521735).
+  * debian/rules:
+    + Include clean-la.mk to remove dependency_libs from the .la files.
+      This is a preparation to drop them later and to remove unneeded
+      dependencies when linking to the GStreamer libraries.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.22-2) unstable; urgency=low
+
+  * Upload to unstable.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.22-1) experimental; urgency=low
+
+  * New upstream release, 'I heard a disturbing sound':
+    + debian/libgstreamer.symbols:
+      - Updated for the new version.
+    + Fixes segfault in gst_register_typefind() (Closes: #511902).
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.21.3-1) experimental; urgency=low
+
+  * New upstream pre-release.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.21.2-3) experimental; urgency=low
+
+  * debian/rules:
+    + Fix check introduced in last version to prevent FTBFS.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.21.2-2) experimental; urgency=low
+
+  * debian/rules:
+    + Only build the docs when binary-indep is called.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.21.2-1) experimental; urgency=low
+
+  * New upstream pre-release:
+    + debian/patches/01_wrapper-plugins.patch,
+      debian/patches/02_gtkdoc-rebase.patch,
+      debian/patches/03_registry-failure-crash.patch,
+      debian/patches/04_pad-caps-acception.patch,
+      debian/patches/05_basetransform-caps-refcount.patch,
+      debian/patches/06_basetransform-buffer-allocation.patch:
+      - Dropped, merged upstream.
+    + debian/patches/80_ia32-hack.patch:
+      - Updated to apply cleanly again.
+    + debian/libgstreamer.symbols:
+      - Updated with the new symbols.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.21-5) experimental; urgency=low
+
+  * debian/patches/06_basetransform-buffer-allocation.patch:
+    + Patch from upstream CVS to fix buffer allocation. Before it could
+      happen that invalid memory references were returned.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.21-4) experimental; urgency=low
+
+  * debian/patches/04_pad-caps-acception.patch:
+    + Patch from upstream CVS to fix several cases where basetransform
+      elements didn't accept caps while they should.
+  * debian/patches/05_basetransform-caps-refcount.patch:
+    + Patch from upstream CVS to make sure that basetransform's pad caps
+      have the correct refcount and are not destroyed by accident.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.21-3) experimental; urgency=low
+
+  * debian/patches/03_registry-failure-crash.patch:
+    + Patch from upstream CVS to fix a crash when writing the registry file
+      failed. Fixes builds on buildd's with non-writable $HOME.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.21-2) experimental; urgency=low
+
+  * debian/libgstreamer.symbols:
+    - Updated for 0.10.21 so we depend on a stable version.
+  * debian/patches/02_gtkdoc-rebase.patch:
+    - Don't require gtk-doc for the docs. Fixes the build with
+      binary-indep (Closes: #499818).
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.21-1) experimental; urgency=low
+
+  * New upstream release, 'Take These Things From Me'.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.20.2-1) experimental; urgency=low
+
+  * debian/gst-codec-info.c:
+    + Ignore decoders with a less than marginal rank as they're
+      not autoplugged by playbin/decodebin. This only applies to the
+      X-Gst-Decoders field.
+  * New upstream pre-release:
+    + debian/patches/02_gtk-doc-cflags.patch:
+      - Dropped, merged upstream.
+    + debian/libgstreamer.symbols:
+      - Updated for the new version.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.20-3) experimental; urgency=low
+
+  [ Loic Minier ]
+  * Bdep on perl-doc; thanks Marc 'HE' Brockschmidt; closes: #495043.
+  * Wrap uploaders, bdeps and deps.
+
+  [ Sebastian Dröge ]
+  * debian/gst-codec-info.c:
+    + Rename gstreamer0.10-{audio,video}src to
+      gstreamer0.10-{audio,video}source.
+    + Remove some more useless fields from the encoder/decoder caps.
+  * debian/control.in:
+    + Let the -dev package recommends debhelper for the dh_gstscancodecs
+      script (Closes: #494999).
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.20-2) experimental; urgency=low
+
+  * debian/control.in:
+    + Update flex build dependency to >= 2.5.34 for the new symbols this
+      adds to the library (Closes: #492028).
+  * debian/gst-codec-info.c,
+    debian/control.in,
+    debian/rules,
+    debian/dh_gstscancodecs,
+    debian/libgstreamer-dev.install:
+    + Implement infrastructure to export the codec installation informations
+      via binary package control fields. Move dh_gstscancodecs to the -dev
+      package and implement helper utility gst-codec-info-0.10 for getting
+      the codec information for a package.
+  * debian/rules,
+    debian/libgstreamer-dev.install:
+    + Add a manpage for dh_gstscancodecs (Closes: #445456).
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.20-1) unstable; urgency=low
+
+  * New upstream release, 'You Crazy Diamond':
+    + debian/libgstreamer.symbols:
+      - Updated for the new version.
+  * debian/control.in:
+    + Replace gs build dependency by ghostscript as the former is only a
+      transitional dummy package.
+    + Update Standards-Version to 3.8.0, no additional changes needed.
+  * debian/libgstreamer.symbols:
+    + Append '~' to the versions for symbols which were introduced between
+      different Debian package versions.
+  * debian/gstreamer-doc.links:
+    + Link the GStreamer plugins documentation into the devhelp directories
+      too.
+  * debian/gstreamer0.10-doc.doc-base.manual,
+    debian/gstreamer0.10-doc.doc-base.pwg,
+    debian/gstreamer0.10-doc.doc-base.core-ref,
+    debian/gstreamer0.10-doc.doc-base.libs-ref,
+    debian/gstreamer0.10-doc.doc-base.faq:
+    + Fix sections.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.19.3-1) experimental; urgency=low
+
+  * New upstream pre-release:
+    + debian/patches/02_link-dl.patch:
+      - Dropped, merged upstream.
+  * debian/patches/02_gtk-doc-cflags.patch:
+    + Use the CFLAGS passed to configure also for the gtk-doc utitilities.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.19.2-1) experimental; urgency=low
+
+  [ Sjoerd Simons ]
+  * debian/patches/07_bus_flushing_race.patch
+    + Added. Patch from upstream CVS to handle the bus_dispatch function
+    popping NULL from the message queue, which can happen if the bus is set to
+    flushing between check/prepare and dispatch.
+
+  [ Sebastian Dröge ]
+  * New upstream pre-release:
+    + debian/patches/03_binary-registry-version.patch,
+      debian/patches/04_binary-registry-alignment.patch,
+      debian/patches/05_binary-registry-empty-uri-schemes-corruption.patch,
+      debian/patches/06_binary-registry-checksum.patch,
+      debian/patches/07_bus_flushing_race.patch,
+      debian/patches/75_build_docs_without_python_xml.patch:
+      - Dropped, merged upstream.
+    + debian/control.in:
+      - Drop python-twisted-core from build dependencies as it's not needed
+        anymore.
+      - Bump glib build dependency to >= 2.12.
+    + debian/rules:
+      - Drop configure parameter to build the binary registry. It's the
+        default now.
+    + debian/libgstreamer.symbols:
+      - Updated symbol file with the new symbols.
+  * debian/rules:
+    + Pass -c4 to to dh_makeshlibs to fail the build when the symbol files is
+      out of date.
+    + Don't compress gtk-doc documentation to make gtk-doc happy.
+  * debian/patches/02_werror.patch,
+    debian/rules:
+    + Drop patch to prevent usage of -Werror and append -Wno-error to
+      CFLAGS and CXXFLAGS instead.
+  * debian/patches/02_link-dl.patch:
+    + Link with -ldl for dladdr().
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.19-3) unstable; urgency=low
+
+  * debian/patches/06_binary-registry-checksum.patch:
+    + Patch from upstream CVS to include a CRC32 checksum for the registry
+      data to make sure it's not corrupted. Also plug a memory leak in error
+      cases.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.19-2) unstable; urgency=medium
+
+  * debian/control.in:
+    + Require bison >= 1.875 as per configure.ac.
+  * debian/patches/05_binary-registry-empty-uri-schemes-corruption.patch:
+    + Patch from upstream CVS to not corrupt the registry if a plugin gives
+      a valid pointer for the supported URI schemes list but this contains
+      no URI schemes. Also don't unref a variable from which we don't own
+      the reference and improve debugging (Closes: #475735). Set urgency to
+      medium because this closes an RC bug.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.19-1) unstable; urgency=high
+
+  * New upstream bugfix release, "Me Again":
+    + debian/patches/05_fdsrc-fdsink-eagain.patch:
+      - Dropped, merged upstream.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.18-4) unstable; urgency=low
+
+  * debian/patches/05_fdsrc-fdsink-eagain.patch:
+    + Retry when we get EAGAIN. Fixes the totem mozilla plugin to actually
+      work again.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.18-3) unstable; urgency=low
+
+  * debian/patches/04_binary-registry-alignment.patch:
+    + Fix alignment of the binary registry on 64 bit architectures
+      and whitelist amd64 for unaligned access too.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.18-2) unstable; urgency=low
+
+  * debian/rules:
+    + Start using the binary registry instead of the XML registry. This has
+      the advantage of being much faster (especially startup of applications
+      will be faster) and lower memory usage.
+  * debian/patches/03_binary-registry-version.patch:
+    + Patch from upstream CVS to use a sane value for the binary registry
+      format version and not print an error when there is a version mismatch.
+      Instead silently recreate the registry.
+  * debian/libgstreamer.symbols:
+    + Update for the binary registry. These symbols are private ones and
+      should in theory not be exported at all.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.18-1) unstable; urgency=low
+
+  * New upstream release, "So far away":
+    + debian/libgstreamer.symbols:
+      - Updated for the new version.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.17.4-1) experimental; urgency=low
+
+  * New upstream pre-release:
+    + debian/libgstreamer0.10-0.symbols:
+      - Update symbols for 0.10.17.4.
+    + debian/rules:
+      - Use file versionize magic to get the correct filename for the
+        symbols file.
+    + debian/patches/02_werror.patch:
+      - Don't build with -Werror.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.17.3-1) experimental; urgency=low
+
+  * New upstream pre-release:
+    + debian/libgstreamer0.10-0.symbols:
+      - Updated.
+  * debian/patches/75_build_docs_without_python_xml.patch,
+    debian/control.in:
+    + Stop using pyxml for building the docs (Closes: #468627).
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.17.2-2) experimental; urgency=low
+
+  * debian/patches/80_ia32-hack.patch:
+    + Updated to build without warnings on other architectures than i386.
+      Fixes FTBFS as we use -Werror for pre-releases.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.17.2-1) experimental; urgency=low
+
+  * New upstream pre-release:
+    + debian/libgstreamer0.10-0.symbols:
+      - Updated for the new version.
+  * debian/libgstreamer.{post*,pre*},
+    debian/libgstreamer.dirs,
+    debian/rules:
+    + Don't use non-existing configure parameters and for 0.10 we don't need
+      a cache dir anymore, so let's not create one and remove it with
+      maintainer scripts on remove.
+  * debian/control.in:
+    + Add Homepage field.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.17-2) unstable; urgency=low
+
+  [ Emilio Pozuelo Monfort ]
+  * debian/rules:
+    - Decide the package name and url depending on the distribution.
+  * debian/control.in:
+    - Build-Depend on lsb-release.
+    - Add a Conflicts for libgstreamer-plugins-base0.10-0 <<
+      0.10.11cvs20070110-0ubuntu5 to keep the Ubuntu delta lower.
+
+  [ Sebastian Dröge ]
+  * debian/patches/99_ltmain_as-needed.patch,
+    debian/rules:
+    + Add -Wl,-z,defs -Wl,-O1 -Wl,--as-needed to LDFLAGS to remove some
+      unnecessary dependencies on various packages.
+  * debian/libgstreamer0.10-0.symbols:
+    + Add new symbol added by using flex 2.3.34.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.17-1) unstable; urgency=low
+
+  * New upstream bugfix-only release, "Due Negligence".
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.16-1) unstable; urgency=low
+
+  * New upstream release, "Special Dispensation", with API additions:
+    + debian/libgstreamer0.10-0.symbols:
+      - Updated symbols for 0.10.16.
+  * debian/patches/80_ia32-hack.patch:
+     + Set the plugin dir to /usr/lib32/gstreamer-0.10, when running the
+       i386 binaries on amd64. Patch taken from the Ubuntu package, originally
+       created by Matthias Klose.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.15.4-1) experimental; urgency=low
+
+  * New upstream pre-release.
+  * debian/libgstreamer0.10-0.symbols,
+    debian/control.in:
+    + Add a symbols file for the GStreamer core libraries, generated from all
+      0.10 releases since 0.10.0. Build depend on dpkg-dev >= 1.14.13 for
+      this.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.15.3-1) experimental; urgency=low
+
+  * New upstream pre-release.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.15.2-1) experimental; urgency=low
+
+  * New upstream pre-release:
+    + debian/patches/02_basesink-event-forwarding.patch,
+      debian/patches/03_filesink-seek-failure.patch:
+      - Dropped, merged upstream.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.15-4) unstable; urgency=low
+
+  * debian/dh_gstscancodecs:
+    + Fix typo: extention->extension.
+  * debian/patches/01_wrapper-plugins.patch:
+    + Update to also handle the ffmpeg plugin and rebuild the registry
+      if libavcodec and friends change.
+  * debian/control.in:
+    + Update Standards-Version to 3.7.3, no additional changes needed.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.15-3) unstable; urgency=low
+
+  * debian/rules:
+    + Don't make the build fail if the testsuite fails.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.15-2) unstable; urgency=low
+
+  * debian/patches/02_basesink-event-forwarding.patch:
+    + Only forward upstream events upstream. This prevents some useless
+      warnings. Patch taken from upstream CVS.
+  * debian/patches/03_filesink-seek-failure.patch:
+    + Only try to seek if it is really necessary in filesink. This fixes
+      filesink on a FIFO. Patch taken from upstream CVS.
+  * debian/rules:
+    + Enable test suite.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.15-1) unstable; urgency=low
+
+  * New upstream release, "October", with API additions:
+    + Fixes FTBFS if built twice in a row (Closes: #424386).
+  * debian/control.in:
+    + Only suggest the docs package instead of recommending (Closes: #436667).
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.14-2) unstable; urgency=low
+
+  * debian/control.in:
+    + Let the -dev package depend on check as some headers include check.h.
+      check is no dependency of the libs package because it's linked
+      statically.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.14-1) unstable; urgency=low
+
+  * New upstream release 'Breathing Vacuum', with API additions.
+  * debian/control.in:
+    + Use ${binary:Version} and ${source:Version} instead of ${Source-Version}
+      to make lintian happy.
+  * debian/gstreamer-tools.install,
+    debian/dh_gstscancodecs:
+    + Add debhelper script for extracting GStreamer codec informations. This
+      will be used for semi-automatic codec installation.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.13-2) unstable; urgency=low
+
+  * debian/patches/01_wrapper-plugins.patch:
+    + Add hacks for gnomevfs, ladspa and libvisual plugin to have the registry
+      rebuild if the plugins of them change. This for example lets GStreamer
+      recognize if new gnomevfs methods are installed after the gnomevfs
+      plugin is installed. (Closes: #426694)
+      This is a temporary workaround until the upstream bug is fixed:
+      http://bugzilla.gnome.org/show_bug.cgi?id=350477
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.13-1) unstable; urgency=low
+
+  * New upstream release with API additions, "With or without you".
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.12.1+cvs20070529-1) unstable; urgency=low
+
+  * Prepare CVS snapshot
+  * debian/patches/01_yacc-reentrant.patch
+    debian/patches/02_filesrc_no_location.patch
+    debian/patches/03_system_clock_wait_jitter_block.patch:
+    + All dropped, fixed upstream.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.12-5) unstable; urgency=low
+
+  * debian/patches/03_system_clock_wait_jitter_block.patch:
+    + Patch from upstream CVS. Make the GstSystemCLock wait_jitter
+    implementation  really block untill a timeout occurs instead of returning
+    when the first entries_changed condition occurs. Fixes problems with
+    farsight.
+  * Add myself to Uploaders.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.12-4) unstable; urgency=low
+
+  * debian/patches/02_filesrc_no_location.patch:
+    + Patch from upstream CVS to also allow "file://" as URI. This is used
+      by some applications, like quodlibet, to check if there's an element
+      that handles the file protocol. (Closes: #421167)
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.12-3) unstable; urgency=low
+
+  * Upload to unstable
+  * Merged experimental branch:
+    + New upstream release 0.10.12, "Inevitable Demise":
+      - Fixes typo in manual (Closes: #408516)
+    + New upstream release 0.10.11, "Love never runs on time":
+      - debian/patches/10_assertion-failure-on-signal-full-when-empty.patch:
+        . Dropped, merged upstream
+      - debian/patches/70_relibtoolize.patch:
+        . Dropped, upstream used Debian's libtool
+    + Add common/gst.supp to libgstreamer-dbg.docs for valgrind suppressions.
+      (Loic Minier)
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.10-4) unstable; urgency=low
+
+  * debian/patches/01_yacc-reentrant.patch,
+    debian/control.in:
+    + Make gst_parse_launch reentrant. This fixes a crash in gaim. Also update
+      flex build-dependency to >= 2.5.31 for this.
+      Patch with some changes taken from:
+      http://bugzilla.gnome.org/show_bug.cgi?id=349180
+      (Closes: #404637, #403343, #400602)
+  * debian/control.in:
+    + Update to use my debian.org address
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.10-3) unstable; urgency=low
+
+  * Rename 10_dont-leak-buffer-on-emptied-queue to
+    10_assertion-failure-on-signal-full-when-empty, what the patch fixes is
+    really an assertion failure which happens when the queue is empty at the
+    moment where the "queue full" signal is processed.
+  * Fix typo in control, "versionned" -> "versioned"; thanks J S Bygott;
+    closes: #408931.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.10-2) unstable; urgency=low
+
+  * New patch, 10_dont-leak-buffer-on-emptied-queue, to avoid leaking a buffer
+    when a queue is emptied while sending out a signal.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.10-1) unstable; urgency=low
+
+  [ Sebastian Dröge ]
+  * New upstream release, "Pais", some additional API
+  * debian/patches/70_relibtoolize.patch:
+    + updated for new upstream version
+
+  [ Loic Minier ]
+  * Drop the versionned Recommends which will break with binNMUs.
+  * Fix duplicate dependencies.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.9-2) unstable; urgency=low
+
+  [ Loic Minier ]
+  * Update control.
+
+  [ Sebastian Dröge ]
+  * debian/rules,
+    debian/control.in:
+    + Add a -dbg package for libgstreamer0.10-0 and add me to Uploaders
+  * debian/compat,
+    debian/control.in:
+    + Bump debhelper compat level to 5
+
+  [ Loic Minier ]
+  * Build-depend on python-twisted-core instead of python-twisted, thanks
+    Matthias Klose. (Closes: #385428)
+  * Don't build the doc on arm and m68k.  It's painfully long, and -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+    on arm -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.9-1) unstable; urgency=low
+
+  * Clean up Build-Depends-Indep of packages already referenced in
+    Build-Depends.
+  * New upstream release, "On the road again", no API changes.
+    - Drop 10_no-registry-file-fallback patch, merged upstream.
+    - Update 70_relibtoolize patch.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.8-2) unstable; urgency=low
+
+  * Update 70_relibtoolize to not ship config.guess and config.sub already
+    updated by CDBS.
+  * New patch, 10_no-registry-file-fallback.patch from upstream CVS to re-read
+    the registry when the forked child fails to write it for example because
+    the home dir isn't writable; see discussion in GNOME #344748.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.8-1) unstable; urgency=low
+
+  * New upstream releases with API additions, "Soepeke, ik zie ou nog altijd
+    nie".
+    - New patch, 70_relibtoolize, ditto.
+    - Drop 10_accept-empty-strings-in-registry patch, included upstream.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.6-2) unstable; urgency=low
+
+  * Bump up Standards-Version to 3.7.2.
+    [debian/control, debian/control.in]
+  * New patch from upstream to let the registry handle empty strings,
+    especially important because of a bug in a m4 macro which lets the name of
+    official GStreamer packages empty if you use --with-package-name as is the
+    case in Debian.
+    [debian/patches/10_accept-empty-strings-in-registry.patch]
+  * Export OIL_CPU_FLAGS=0 for commands launched during the build process as
+    it can cause build failures on buildds with specific hardware at build
+    time.
+    [debian/rules]
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.6-1) unstable; urgency=low
+
+  * New upstream release, "Take the cannoli", with API additions.
+    - Bump up inter-dependencies to 0.10.6.
+      [debian/control]
+    - Bump up libglib2.0-dev build-dep to >= 2.8.
+      [debian/control, debian/control.in]
+    - Drop relibtoolizing patch as this release was libtoolized under Debian
+      or a derivative.
+      [debian/patches/70_relibtoolize.patch]
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.5-1) unstable; urgency=low
+
+  * New upstream release, "Fogo".
+    - Force debian/control rebuild, a debian/changelog Makefile dep wouldn't
+      be wise.
+      [debian/control]
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.4.2-1) unstable; urgency=low
+
+  * New upstream pre-release, with API additions.
+    - Drop patch for the check libraries in pkg-config files (merged
+      upstream).
+      [debian/patches/11_libcheck-pkgconfig-force-pic.patch]
+    - Relibtoolize.
+      [debian/patches/70_relibtoolize.patch]
+    - Drop all references to the gst-md5sum utility (removed upstream).
+      [debian/gstreamer-tools-abi.install, debian/gstreamer-tools.install,
+       debian/gstreamer-tools-abi.manpages]
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.4-1) unstable; urgency=low
+
+  * New upstream release, "Light".
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.3.2-1) unstable; urgency=low
+
+  * New upstream pre-release, with API additions.
+    - Backward incompatible change: removes support for quoted strings and
+      mimetypes when writing filtered caps.
+    - Drop patch for force linking against the PIC version of libcheck since
+      upstream implemented a better fix.
+      [debian/patches/10_libcheck-macro-force-pic.patch]
+    - Relibtoolize.
+      [debian/patches/70_relibtoolize.patch]
+  * Use upstream descriptions for packages descriptions.
+    [debian/control, debian/control.in]
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.3-1) unstable; urgency=low
+
+  * New upstream release, "Like a virgin".
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.2.3-1) unstable; urgency=low
+
+  * New upstream pre-release.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.2.2-1) unstable; urgency=low
+
+  * New upstream pre-release.
+    - Relibtoolize.
+      [debian/patches/70_relibtoolize.patch]
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.2-1) unstable; urgency=low
+
+  * New upstream release, "If man is 5".
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.1-2) unstable; urgency=low
+
+  * Drop unneeded passivetex and xmltex from the build-deps, thanks Frank
+    Küster; this is urgent since xmltex is RC-buggy. (Closes: #348214)
+    [debian/control, debian/control.in]
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.1-1) unstable; urgency=low
+
+  * Suggest gstreamer0.10-plugins-base instead of misc. (Closes: #345118)
+    [debian/control, debian/control.in]
+  * Add Sebastien Bacher to Uploaders.
+    [debian/control, debian/control.in]
+  * Replace occurrences of GST_PREFIX in GST_PKGNAME since they hold the same
+    value and GST_PREFIX isn't used in the other source packages.
+    [debian/control.in, debian/gstreamer-doc.install,
+     debian/gstreamer-doc.links, debian/gstreamer-doc.lintian, debian/rules]
+  * New upstream release.
+  * Force linking against libcheck_pic instead of libcheck.  Warning: to use
+    this patch you need to relibtoolize afterwards or patch configure too.
+    [debian/patches/10_libcheck-macro-force-pic.patch]
+  * Advertise this in pkgconfig files.
+    [debian/patches/11_libcheck-pkgconfig-force-pic.patch]
+  * Relibtoolize.
+    [debian/patches/70_relibtoolize.patch]
+  * Move check to arch-dependent build-deps and version to >= 0.9.3-2 to get a
+    PIC version of the static lib.
+    [debian/control, debian/control.in]
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.10 (0.10.0-1) unstable; urgency=medium
+
+  [ Sebastien Bacher ]
+  * New upstream version.
+  * Changes for gstreamer0.10:
+    - Rename 0.8 packages to 0.10. [debian/rules]
+    - Build-Depends on check, python-twisted, python-xml [debian/control.in]
+    - Bump shlibs deps for 0.10. [debian/rules]
+    - Create a cache directory [debian/libgstreamer.dirs, debian/rules]
+    - Don't use alternatives [debian/gstreamer-tools-abi.postinst,.
+      debian/gstreamer-tools-abi.prerm]
+    - Drop references to deprecated tools [debian/gstreamer-tools-abi.install,.
+      debian/gstreamer-tools-abi.manpages,debian/gstreamer-tools-abi.postinst,.
+      debian/gstreamer-tools-abi.prerm, debian/libgstreamer.install,.
+      debian/libgstreamer.manpages, debian/libgstreamer.postinst, debian/rules]
+    - New gstreamer-tools (unversionned binaries) package
+      [debian/control.in, debian/gstreamer-tools.install, debian/rules].
+    - Remove transition code. [debian/libgstreamer.preinst]
+    - Rename documentation lists. [debian/gstreamer0.8-doc.doc-base.core-ref,
+      debian/gstreamer0.8-doc.doc-base.faq,
+      debian/gstreamer0.8-doc.doc-base.libs-ref,
+      debian/gstreamer0.8-doc.doc-base.manual,
+      debian/gstreamer0.8-doc.doc-base.pwg]
+    - Updated descriptions [debian/control.in]
+    - Updated lists of files. [debian/libgstreamer.install
+      debian/gstreamer-tools-abi.install debian/libgstreamer-dev.install]
+    - Updated options for the documentation build [debian/rules]
+    - Updated the TODO list [debian/TODO]
+  * debian/patches/64_sparc-gcc4-build-fix.patch,
+    debian/patches/doc-build.patch:
+    - fixed with the new version.
+
+  [ Loic Minier ]
+  * Merge changes from Sebastien Bacher, thanks!
+  * Update upstream URL to http://gstreamer.freedesktop.org/.
+    [debian/control, debian/control.in, debian/copyright]
+  * Minor cleanups.
+    [debian/rules]
+  * Let gstreamer-tools conflict with gstreamer0.8-tools << 0.8.11-2 which
+    shipped the gst-* command line tools as symlinks.
+    [debian/control, debian/control.in]
+  * Add gst-xmlinspect to man pages.
+    [debian/gstreamer-tools-abi.manpages]
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.8 (0.8.11-2) unstable; urgency=low
+
+  [ Sebastien Bacher ]
+  * Clean the alternatives, we use real files now
+    [debian/gstreamer-tools.postinst, debian/gstreamer-tools.preinst,
+    debian/gstreamer-tools.prerm]
+
+  [ Loic Minier ]
+  * Merge the work of Sebastien Bacher (above), thanks!
+  * Completely drop the now obsolete prerm and postinst scripts.
+    [debian/gstreamer-tools.postinst, debian/gstreamer-tools.preinst,
+    debian/rules]
+  * With this upload, you will loose the gst-* commands such as gst-launch,
+    only the versionned version will remain, the unversionned tools will be
+    built and shipped from the 0.10 series sources.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.8 (0.8.11-1) unstable; urgency=low
+
+  * New upstream release, "No Fun".
+    - Bump libxml2-dev build-dep to 2.6.0.
+  * Update FSF address. [debian/copyright]
+  * Fix FTBFS with GCC 4 in a code path only built by sparc (but unused).
+    (Closes: #319147) [debian/patches/64_sparc-gcc4-build-fix.patch]
+  * Bump shlibs.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.8 (0.8.10-2) unstable; urgency=low
+
+  * Loic Minier:
+    * Install alternatives for the gst-* binaries with a priority
+      corresponding to the GStreamer ABI. (Closes:  #265223) [debian/rules,
+      debian/gstreamer-tools.prerm, debian/gstreamer-tools.postinst]
+    * Call gst-register and gst-compprep with GST_REGISTRY in their
+      environment to override the default behavior of writing to
+      /root/.gstreamer-0.8, waiting for an upstream fix. (Closes: #301190)
+      [debian/libgstreamer.postinst, debian/TODO.Debian]
+    * Remove /var/lib/gstreamer if empty.
+      [debian/libgstreamer.postrm]
+    * Remove left over /root/.gstreamer-0.8 tree if it hasn't been modified.
+      [debian/libgstreamer.preinst, debian/rules]
+    * Add a versioned dependency with >= current-upstream-version to all
+      current shlibs inter-dependencies to ensure consistency of symbols to
+      avoid things such as #315556.
+      [debian/control, debian/control.in, debian/rules]
+    * Set Maintainer to group. [debian/control, debian/control.in]
+    * Bump Standards-Version to 3.6.2, no change needed.
+      [debian/control, debian/control.in]
+    * Add a TODO list for the Debian package. [debian/TODO.Debian]
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.8 (0.8.10-1) unstable; urgency=low
+
+  * Loic Minier:
+    * New upstream release "No Fun". (Closes: #312355)
+      - Don't drop buffers on interrupt, fixes reported problems on MP3
+        playback. (Closes: #303139)
+      - Fix a typo in the gst-launch manual page where "--silent" was used
+        instead of "--verbose". (Closes: #292267)
+      - Bump shlibs to current version since new elements were added.
+        [debian/rules]
+      - Drop CPUID instruction detection patch, upstream used a SIGILL handler
+        instead. [debian/patches/cpuid.patch]
+    * Add myself as uploader.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.8 (0.8.9-2) unstable; urgency=low
+
+  * debian/patches/cpuid.patch:
+    * Patch from upstream to check for cpuid support (Closes: #289362)
+  * debian/watch:
+    * Watch for gstreamer not gst-plugins
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.8 (0.8.9-1) unstable; urgency=low
+
+  * New upstream
+  * debian/rules:
+    * Bump shlibs to current version
+  * debian/patches/doc-build.patch:
+    * Update and refer to bug #286160
+  * debian/watch:
+    * Add
+  * debian/gstreamer0.8-doc.doc-base.*
+    * Register docs with doc-base (Closes: #293871)
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.8 (0.8.8-1) unstable; urgency=low
+
+  * New upstream
+    * Fixes Ogg stream bug (Closes: #273086)
+    * Fixes mp3 infinite loop (Closes: #277650)
+  * debian/rules:
+    * Bump shlibs to current version
+  * debian/rules:
+    * Distribute NEWS (Closes: #275717)
+  * Should fix Rhythmbox image and cpu problems
+    (Closes: #277146, #278661, #278663, #278656, #281426, #284507, #288102)
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.8 (0.8.7-1) unstable; urgency=low
+
+  * New upstream
+  * debian/rules:
+    * Bump shlibs to current version
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.8 (0.8.6-1) unstable; urgency=low
+
+  * New upstream
+  * debian/rules:
+    * Bump shlibs to current version
+    * Use debian/control:: vs debian/control: to work with recent CDBS changes
+    * Use CDBS simple-patchsys
+  * docs/pwg/advanced-types.xml:
+    * Remove patch
+  * debian/patches/doc-build.patch:
+    * Add goofy doc patch
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.8 (0.8.5-1) unstable; urgency=low
+
+  * New upstream
+  * debian/rules:
+    * Bump shlibs to current version
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.8 (0.8.4-1) unstable; urgency=low
+
+  * New upstream
+  * debian/rules:
+    * Bump shlibs version
+  * gst/queue.h:
+    * Fix GstQueue binary compatibility (patch from upstream CVS)
+  * libs/gst/control/Makefile.{am,in}:
+    * Link libgstcontrol to libgstreamer (patch from upstream CVS)
+      (Closes: #262019)
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.8 (0.8.3-3) unstable; urgency=low
+
+  * debian/rules:
+    * Typo, s/DEB_MAKESHLIBS_ARGS_/DEB_DH_MAKESHLIBS_ARGS_/, broke versioned
+      shlibs
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.8 (0.8.3-2) unstable; urgency=medium
+
+  * debian/libgstreamer.install, debian/libgstreamer-dev.install:
+    * Include dataprotocol library and development files
+  * debian/rules:
+    * Bump shlibs dep to 0.8.3-2 due to dataprotocol
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.8 (0.8.3-1) unstable; urgency=low
+
+  * New upstream
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.8 (0.8.2-1) unstable; urgency=low
+
+  * New upstream
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.8 (0.8.1-2) unstable; urgency=low
+
+  * debain/rules:
+    * Convert to use CDBS
+      * Fixes rpath and .la libdir problems from previous builds
+      * Always builds the docs even on -arch builds, sorry
+  * debian/compat:
+    * Bump to 4
+  * debian/control.in:
+    * Update Standards-Version to 3.6.1 due to CDBS use
+    * Add CDBS and newer debhelper dependencies
+  * debian/*:
+    * Adjust install paths to work with CDBS
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.8 (0.8.1-1) unstable; urgency=low
+
+  * New upstream
+  * New schedulers:
+  * debian/libgstreamer.install:
+    * Add libgstentrygthreadscheduler.so
+    * Add libgstentryomegascheduler.so
+  * docs/gst/Makefile.{in,am}:
+    * Patch from CVS to fix docs build
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.8 (0.8.0-2) unstable; urgency=low
+
+  * Bump to -2 to ease upgrades for early -1 testers
+  * gstreamer-tools.links:
+    * Link gst-xmlinspect manpage to gst-inspect
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.8 (0.8.0-1) unstable; urgency=low
+
+  * New upstream (Closes: #239114)
+    * Branch 0.7.x to 0.8.x
+  * debian/control.in:
+    * Version all packages as 0.8 series
+  * debian/rules:
+    * Update to 0.8
+    * Build 0.8 series package control files
+    * Remove older hacks fixed upstream
+  * debian/*:
+    * Reorg many control files for 0.8 versioning
+    * s/--gst-mask=0/--gst-debug-level=0/
+    * Remove "VERSION" from input package file names
+  * debian/libgstreamer[-dev].install:
+    * Plugins removed upstream: gsttypes, gststaticautoplug*,
+      gstautoplugcache, gstautoplugger, gstputbits, gststaticautoplug,
+      gststaticautoplugrender, gsttypes
+    * Add locale files
+  * debian/gstreamer-tools.install:
+    * Add gst-xmlinspect-*
+  * Upstream installs versioned manpages (Closes: #199444)
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.7 (0.7.6-1) unstable; urgency=low
+
+  * New upstream
+  * debian/control.in:
+    * Build-Depends-Indep: add netpbm so ps and pdf docs build
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.7 (0.7.5-1) unstable; urgency=low
+
+  * New upstream
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.7 (0.7.4-1) unstable; urgency=low
+
+  * New upstream
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.7 (0.7.3-1) unstable; urgency=low
+
+  * New upstream
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer0.7 (0.7.1-1) unstable; urgency=low
+
+  * New upstream
+    * Branch 0.6.x to 0.7.x
+  * debian/rules:
+    * Update to 0.7
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer (0.6.4-1) unstable; urgency=low
+
+  * New upstream (Closes: #217880)
+  * Add xmlto, xmltex, and passivetex dependencies for doc creation
+  * debian/rules: adjust for new doc locations
+  * docs/{manual,pwg,faq}/Makefile.in: temporary hack to disable ps/pdf
+    generation
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer (0.6.3-1) unstable; urgency=low
+
+  * New upstream
+  * configure, configure.ac:
+    * disable -Werror
+  * gst/gstplugin.c: CVS patch to fix type punning
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer (0.6.2-2) unstable; urgency=low
+
+  * m68k patch by Matthias Urlichs <smurf@smurf.noris.de> (forwarded from Rick
+    Younie <rick@def.debian.net>) (Closes: #172269)
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer (0.6.2-1) unstable; urgency=low
+
+  * New upstream
+  * debian/gstreamer-tools.install/manpages: add gst-typefind
+  * docs/gst/: change www.oasis-open.org dtd to local dtd
+  * docs/libs/: use some code from cdbs to change dtd in gtk-doc tools output
+    to local dtd
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer (0.6.1-2) unstable; urgency=low
+
+  * (unreleased)
+  * Merge packages:
+    * Simplify for users, developers, and maintainers.
+    * Current number of packages is confusing.
+    * Users/developers need to install all the packages anyway due to tight
+      (circular) dependencies.
+    * The libraries and plugins are all versioned - no need (currently) for a
+      "-common" type package.
+    * Progress towards capability for parallel GStreamer installs (more work
+      needed).
+    * Decision long ago to make very modular has turned out to be complex and
+      is not utilized by any current applications.
+  * Merge changes:
+    * Add -core, -core-libs, -runtime files to libgstreamer0.6-0
+    * Add -core-libs-dev files to libgstreaer0.6-dev
+    * Version gst-{register,compprep} (and manpages) as
+      gst-{register,compprep}-0.6
+    * Many other supporting debian/ adjustments
+  * Remove DISPLAY unset hacks from postinst/postrm scripts and fix non-X
+    installs with 0.6.2 CVS xvideosink patch in gst-plugins.
+    (Closes: #192693, #195342, #169100, #195113, #194975)
+  * docs/devhelp/Makefile.*: stop regeneration of devhelp files during install
+  * gst/elements/gstmd5sink.c: make md5_* functions static to avoid symbol
+    conflicts with libdvdnav 0.1.9
+  * Fix gstreamer-doc Recommends: to use versioned -dev package
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer (0.6.1-1) unstable; urgency=low
+
+  * New upstream
+  * Change maintainer address to @debian.org
+  * Added gst-element-check.m4 to -dev package (Closes: Bug#187456)
+  * debian/control.in:
+    * gstreamer-tools: gst-feedback depends on pkg-config (Closes: Bug#180076)
+    * libgstreamer0.6-dev depends on libxml2-dev (Closes: Bug#190103)
+    * gstreamer-runtime depends on gstreamer-core.  Sigh.  Didn't want to do
+      this but looks like no other option. (Closes: Bug#181502, Bug#181745,
+      Bug#185817)
+  * gst/gstatomic_impl.h: disable mips asm in favor of generic implementation
+    (sparc disabled upstream) (Closes: Bug#186440)
+  * Upstream now linking libraries properly (Closes: Bug#187360)
+  * Patch from 0.6.1+ to add back _get_props_entry_type
+  * Unset DISPLAY before running gst-register/gst-compprep
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer (0.6.0-1) unstable; urgency=low
+
+  * New upstream
+  * Upstream manpage updates (Closes: Bug#179190)
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer (0.5.2.3-1) unstable; urgency=low
+
+  * New upstream
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer (0.5.2.2-1) unstable; urgency=low
+
+  * New upstream
+    * pre-release for API frozen 0.6.x series
+  * Slight pacakge refactoring so a possible future parallel dev series is
+    slightly less painful
+  * Update libgstreamer-dev to libgstreamer0.6-dev
+  * Update libgstreamer0.5.2 to libgstreamer0.6-0
+  * debian/libgstreamer0.6-dev.install:
+    * explicitly mention gstreamer-[0-9]*.pc
+  * debian/gstreamer-core-libs-dev.install:
+    * add gstreamer-control-*.pc
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer (0.5.2-1) unstable; urgency=low
+
+  * New upstream
+  * Update libgstreamer0.5.1 to libgstreamer0.5.2
+  * Upstream fixes Python requirement when not building docs
+    (Closes: Bug#178114)
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer (0.5.1-1) unstable; urgency=low
+
+  * New upstream (Closes: Bug#176474)
+  * Update libgstreamer0.5.0 to libgstreamer0.5.1
+  * Tighten gstreamer-core-libs shlibs (Closes: Bug#174363)
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer (0.5.0-1) unstable; urgency=low
+
+  * New upstream
+  * Make core Architecture: any:  It's almost true, or might be now, or will
+    be soon and autobuilders are ignoring that field anyway.
+  * Generated files moved from /etc/gstreamer to /var/lib/gstreamer/0.5/
+  * Update libgstreamer0.4.2 to libgstreamer0.5.0
+  * Hack gst/autoplug/gstautoplugger.c to not use the non-existant
+    "caps_changed" signal
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer (0.4.2-2) unstable; urgency=low
+
+  * Update gtk-doc.m4 with CVS patch to handle multidigit version check
+  * Add S/390 support patch (Closes: Bug#171473)
+  * Update config.{guess,sub}
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer (0.4.2-1) unstable; urgency=low
+
+  * New upstream (Closes: Bug#167479)
+  * Update libgstreamer0.4.1 to libgstreamer0.4.2
+  * libgstreamer0.4.2 conflicts with 0.4.0, 0.4.1
+    * Upstream needs more work to properly support parallel lib installs
+  * Tighten dependencies
+    * Upstream ABI/API changes require this for any hope of smooth upgrades at
+      the moment
+  * Move gstreamer-runtime to Section: utils from libs
+  * Move gstreamer-tools to Section: utils from x11
+  * Doc fixes: (Closes: Bug#165279)
+    * Call xsltproc with --nonet
+    * Refer xsl:import urls to local docbook-xsl package xsl files
+    * Refer www.oasis-open.org dtds to local docbook-xml package dtd files
+    * Add docbook-xml and docbook-xsl to Build-Depends-Indep
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer (0.4.1-3) unstable; urgency=low
+
+  * Fix formatting of Architecture: list to fix alpha and sparc builds
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer (0.4.1-2) unstable; urgency=low
+
+  * Update debian/rules to not fail on binary-arch only builds (configure was
+    unconditionally run with --enable-docs-build which caused it to fail when
+    Build-Depends-Indep packages were not installed)
+    (Closes: Bug#164589, Bug#164698)
+  * Fix version check in common/m4/as-python.m4 to use sys.version_info
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer (0.4.1-1) unstable; urgency=low
+
+  * New upstream
+  * Update libgstreamer0.4.0 to libgstreamer0.4.1
+  * gstreamer-tools.files/manpages: add gst-md5sum
+  * Use xsltproc 1.0.21 to fix doc image problems
+  * Add patch from CVS to fix GST_TYPE_CAPS/PROPS macro typos
+  * Build libgstcontrol as a lib not a plugin module
+  * Update config.{guess,sub}
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer (0.4.0.2-cvs20020919-1) unstable; urgency=low
+
+  * CVS snapshot, release branch
+  * gstreamer-core.files: change to libgst*scheduler, since the
+    scheduler names have changed.
+  * gstreamer-core-libs.files: libgstcontrol.so moved
+  * add debian/control.in, and create debian/control rule in debian/rules
+    to change the version number automatically
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer (0.4.0-2) unstable; urgency=low
+
+  * Remove libtool hack
+  * Dependency change from libc6-dev to libc6-dev | libc-dev
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer (0.4.0-1) unstable; urgency=low
+
+  * New upstream
+  * Update library package: libgstreamer0.3.4 -> libgstreamer0.4.0
+  * Add automake Python support to find python binary to run devhelp doc
+    helper script.  This touches -every- Makefile.in and since the package
+    diff will already be large just use automake 1.6 instead of 1.5 as used
+    upstream.  Sorry.
+  * Update config.{guess,sub}
+  * Temporarily comment out figures from manual so it builds
+  * Apply CVS patch for s/&percnt;/%/ in XML docs
+  * Added devhelp support
+  * Added gst-feedback to gstreamer-tools
+  * Break stuff: blindly reanme gstreamer-lib-core{-dev} to
+    gstreamer-core-libs{-dev}.  Hard to chose naming as these are half-plugins
+    and half-linkable libs.  Picking a scheme that also works with
+    gstreamer-plugins-* packages.  Still looking for a better solution...
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer (0.3.4-1) unstable; urgency=low
+
+  * New upstream
+  * libgstreamer0.3.3 -> libgstreamer0.3.4
+  * Conflict and Replace libgstreamer0.3.3 so upgrades work
+    This shouldn't be required because plugins know what version they were
+    compiled with.  Apparently this doesn't yet work properly.
+  * Add bison and flex to Build-Depends
+  * Add libgstfastscheduler.so to -core
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer (0.3.3-3) unstable; urgency=low
+
+  * Add libgstreamer-dev dependencies on libpopt-dev and libglib2.0-dev
+  * CVS fix for GstElement NEW_PAD and PAD_REMOVED g_signal_new parameters
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer (0.3.3-2) unstable; urgency=low
+
+  * Depend on and rebuld for glib 2.0
+  * Remove libgtk from Build-Depends
+  * Move gs from Build-Depends to Build-Depends-Indep
+  * Added lintian overrides for base.css zero length files
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer (0.3.3-1) unstable; urgency=low
+
+  * New upstream
+  * Renamed libgstX to libgstreamerX.Y.Z
+    will move to better versioning once upstream starts interface versioning
+  * Renamed libgst-dev to libgstreamer-dev
+  * Patch to build plugins as only .so
+  * Added libstandardscheduler.so to -core
+  * Guessing that mips support handles mipsel too
+  * From David Schleef <ds@schleef.org>:
+    * Add popt, gs to Build-Depends:
+    * #include <errno.h> compile fix
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer (0.3.2-2) unstable; urgency=low
+
+  * Rebuild for glib/gtk 1.3.15
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer (0.3.2-1) unstable; urgency=low
+
+  * The "I should have started using cvs-buildpacakge long ago" release
+  * New upstream release
+  * Once again stripped CVS dirs from upstream tarball
+  * Add spider autoplugger
+  * Added gst-xmllaunch and man page to -tools
+  * Despite my complaints, upstream is using new lib versioning
+    until they decide API is "stable" enough to provide support.
+    At that point proper versioning will happen.
+    This release lib change:
+       libgst.so.2.0.0 -> libgst-0.3.2.so.0.0.0
+    This release lib package change:
+       libgst2 -> libgst3
+    Hopefully this is mostly transparent.
+
+    Due to a conflict with GNU Smalltalk the next upstream release
+    will be renaming some "gst" to "gstreamer".  This will change
+    the lib to libgstreamer*.  Some header locations will change too
+    so prepare for broken code.
+
+    Plan for next upstream release is to rename packages:
+       libgst3 -> libgstreamer0
+       libgst-dev -> libgstreamer-dev
+  * Plugins now unversioned upstream:
+    * Just .so, no more .so.x.y.z
+    * Drop .la and .a
+    * Fixup a few
+    * Wait and see if anyone even notices...
+  * Add back some docs that escaped via the diff
+  * Fixup some more doc cruft in the diff
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer (0.3.1-4) unstable; urgency=low
+
+  * (Unreleased)
+  * find . -type d -name CVS -exec rm -rf {} \;
+  * Hack upstream tarball to exclude above CVS/ dirs
+  * Rebuild for conversion to cvs-buildpackage management
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer (0.3.1-3) unstable; urgency=low
+
+  * Rebuild for glib/gtk 1.3.13
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer (0.3.1-2) unstable; urgency=low
+
+  * Upstream fix for proper libxml version in pkg-config
+  * Undo some of the auto docs/*/tmpl breakage
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer (0.3.1-1) unstable; urgency=low
+
+  * New upstream release
+  * Upstream broken into multiple packages
+  * Core plugins left in -core
+  * Core lib plugins moved to -core
+  * Other plugins now built from gst-plugins source pacakge
+  * libgst1 -> libgst2
+  * Tool prefix renamed upstream: s/gstreamer/gst/
+  * Moved gstreamer-guilaunch to gst-editor source package
+  * Removed gstreamer-config and .m4 in favor of pkg-config use
+  * Build for glib2
+  * Change doc build system a bit
+  * Added -lib-core and -lib-core-dev packages for library plugins
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer (0.3.0-3) unstable; urgency=low
+
+  * Remove upstream ChangeLog from packages: 128k changelog.gz per
+    plugin package for 40 packages is too much
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer (0.3.0-2) unstable; urgency=low
+
+  * Fix bug that slipped into 0.3.0: s/aasink/xvideosink/ in
+    gstplay/gstplay.c
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer (0.3.0-1) unstable; urgency=low
+
+  * New upstream release
+  * Attempt to update various Build-Depends versions
+  * Added plugin packages: -a52dec, -dvd, -mikmod, -sid
+  * Renamed -elements to -core
+  * Added to -core: gstbasicscheduler
+  * Moved from -common to -core: gsttypes, autoplug related
+  * Renamed -common to -misc
+  * Added to -misc: speed, qcam, bytesteram, control, silence, sinesrc,
+    mpegstream, playondemand, resample
+  * Added gstreamer-guilaunch to gstreamer-tools package
+  * Added dependencies on unofficial LAME packages
+  * Use PIC libs for Xv
+  * Disable broken building of PDF/PS docs
+  * Renamed -all-plugins to -all
+  * Disable docs -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer (0.2.1-4) unstable; urgency=low
+
+  * Fix some problems reported from lintian 1.20.14:
+    * copyright-lists-upstream-authors-like-dh_make
+    * debian-changelog-file-contains-user-emacs-settings
+  * Patch from CVS to link libgst into plugins
+    Plugins now properly depend on libgst package
+  * Use RedHat Gtk+-1.3 hack to fix relink issues with ltmain.sh
+  * Patch from CVS for xvideosink segfault when no DISPLAY set
+  * Remove builddir references from gstreamer-config.in
+  * Move libgstelements.la from libgst-dev to gstreamer-elements
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer (0.2.1-3) unstable; urgency=low
+
+  * Update build dependencies to FLAC 1.0
+  * Enable debug features
+  * Fixup broken doc build -scan voodoo with link into .libs/ dir
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer (0.2.1-2) unstable; urgency=low
+
+  * Fix lib deps: run debhelper tools in the right order
+  * Added arts dir to Makefile.am SUBDIRS so it builds again
+  * Changed libmpeg2dec to libgstmpeg2dec to avoid naming issues
+    when using -lmpeg2dec
+  * Updated system_encode/ with CVS segfaulter bug fix
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer (0.2.1-1) unstable; urgency=low
+
+  * New upstream 0.2.1: "Return of the Sedi Master"
+  * New plugin packages: -festival, -flac, -avifile, -x
+  * New plugins in -common: chart, deinterlace, udp
+  * Added some post-0.2.1 fixes for FLAC, build system, ALSA
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer (0.2.0-6) unstable; urgency=low
+
+  * Move -compprep to -runtime and call it same places as -register
+  * Do -register and -compprep in postrm instead of prerm
+  * Make -arts plugin actually build all the source (sent upstream)
+  * Purge of -runtime removes /etc/gstreamer
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer (0.2.0-5) unstable; urgency=low
+
+  * Added element package dependencies to libgstmediaplay0
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer (0.2.0-4) unstable; urgency=low
+
+  * Add --gst-mask=0 to -runtime.postinst
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer (0.2.0-3) unstable; urgency=low
+
+  * Fix the plugin control file symlink creation
+  * Add audiofile to Build-Depends
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer (0.2.0-2) unstable; urgency=low
+
+  * Fixed ALSA checks to not include -lasound in -every- link
+  * Update LAME plugin to use latest CVS API
+  * Removed OSS src/sink from -common.files (was in -oss too)
+  * Swapped -arts.files and -artsd.files contents
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer (0.2.0-1) unstable; urgency=low
+
+  * Added gstreamer-compprep manpage
+  * Upgrade to 0.2.0
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer (0.2.0-0.3) unstable; urgency=low
+
+  * GStreamer 0.2.0-pre3
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer (0.2.0-0.2) unstable; urgency=low
+
+  * GStreamer 0.2.0-pre2 + CVS 20010604
+  * Added -artsd (vs -arts), -audiofile, -gnomevfs, -gsm, -jpeg,
+    -oss, and -sdl plugin packages
+  * Added osshelper lib to oss package
+  * Added more AVI related plugins and autoplug libs to -common
+  * Added pkgconfig file to libgst-dev
+  * Added gstreamer-all-plugins pseudo package that depends on
+    all other plugin pacakges
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer (0.2.0-0.1) unstable; urgency=low
+
+  * GStreamer 0.2.0-pre1
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer (0.1.1.20010504-1) unstable; urgency=low
+
+  * Latest CVS code
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer (0.1.1.20010430-2) unstable; urgency=low
+
+  * Added -colorspace package for Hermes dependent conversion
+  * Added -arts package for aRts sink
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer (0.1.1.20010430-1) unstable; urgency=low
+
+  * Latest CVS code
+  * Added -aa package for aasink output
+  * Added -mad package for mad mp3 decoder
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer (0.1.1.20010320-1) unstable; urgency=low
+
+  * Latest CVS code
+  * enable main docs
+  * disable broken plugin docs with new option
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer (0.1.1.20010315-1) unstable; urgency=low
+
+  * Latest CVS code
+  * Added man pages
+  * Split mpeg2dec to seperate plugin
+  * libgst Architectures updated to cothread supported archs
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer (0.1.1-1) unstable; urgency=low
+
+  * New upstream release
+  * disable docs build, broken at the momemnt
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer (0.1.0-2) unstable; urgency=low
+
+  * debian/rules: call configure instead of autogen.sh
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
+
+gstreamer (0.1.0-1) unstable; urgency=low
+
+  * Initial Release.
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 23 Jun 2026 10:00:00 +0800
