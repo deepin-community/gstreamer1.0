@@ -1,3 +1,13 @@
+gstreamer1.0 (1.26.2-2deepin3) unstable; urgency=medium
+
+  * fix: improve sw_64 time_t fix with arch-exclusion catch-all for unknown linux targets.
+  * fix: 使用架构排除列表覆盖所有未知 linux 目标的 time_t 定义，不再依赖 target_arch 的具体值。
+  * sync from master (commit 566cfc1).
+
+ -- lichenggang <lichenggang@uniontech.com>  Tue, 14 Jul 2026 10:00:00 +0800
+
+gstreamer1.0 (1.26.2-2deepin2) unstable; urgency=medium
+
 gstreamer1.0 (1.26.2-2deepin1) unstable; urgency=medium
 
   * feat: add sw64 support
