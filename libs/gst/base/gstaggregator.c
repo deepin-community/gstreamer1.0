@@ -135,6 +135,11 @@ gst_aggregator_start_time_selection_get_type (void)
   return gtype;
 }
 
+/*  Might become API */
+#if 0
+static void gst_aggregator_merge_tags (GstAggregator * aggregator,
+    const GstTagList * tags, GstTagMergeMode mode);
+#endif
 static void gst_aggregator_set_latency_property (GstAggregator * agg,
     GstClockTime latency);
 static GstClockTime gst_aggregator_get_latency_property (GstAggregator * agg);
@@ -366,8 +371,6 @@ struct _GstAggregatorPrivate
 
   /* Our state is >= PAUSED */
   gboolean running;             /* protected by src_lock */
-  /* Our state is >= PAUSED but < PLAYING */
-  gboolean blocked;             /* protected by src_lock */
 
   /* seqnum from last seek or common seqnum to flush start events received
    * on all pads, for flushing without a seek */
@@ -381,6 +384,9 @@ struct _GstAggregatorPrivate
   gboolean got_eos_event;       /* protected by srcpad stream lock */
 
   GstCaps *srccaps;             /* protected by the srcpad stream lock */
+
+  GstTagList *tags;
+  gboolean tags_changed;
 
   gboolean peer_latency_live;   /* protected by src_lock */
   GstClockTime peer_latency_min;        /* protected by src_lock */
@@ -627,7 +633,9 @@ gst_aggregator_reset_flow_values (GstAggregator * self)
 static inline void
 gst_aggregator_push_mandatory_events (GstAggregator * self, gboolean up_to_caps)
 {
+  GstAggregatorPrivate *priv = self->priv;
   GstEvent *segment = NULL;
+  GstEvent *tags = NULL;
 
   if (self->priv->send_stream_start) {
     gchar s_id[32];
@@ -671,10 +679,17 @@ gst_aggregator_push_mandatory_events (GstAggregator * self, gboolean up_to_caps)
 
     GST_DEBUG_OBJECT (self, "pushing segment %" GST_PTR_FORMAT, segment);
   }
+
+  if (priv->tags && priv->tags_changed && !self->priv->flushing) {
+    tags = gst_event_new_tag (gst_tag_list_ref (priv->tags));
+    priv->tags_changed = FALSE;
+  }
   GST_OBJECT_UNLOCK (self);
 
   if (segment)
     gst_pad_push_event (self->srcpad, segment);
+  if (tags)
+    gst_pad_push_event (self->srcpad, tags);
 }
 
 /**
@@ -788,36 +803,6 @@ gst_aggregator_finish_buffer_list (GstAggregator * aggregator,
   return klass->finish_buffer_list (aggregator, bufferlist);
 }
 
-/**
- * gst_aggregator_push_src_event:
- * @aggregator: The #GstAggregator
- * @event: (transfer full): the #GstEvent to push.
- *
- * This method will push the provided event downstream. If needed, mandatory
- * events such as stream-start, caps, and segment events will be sent before
- * pushing the event.
- *
- * This API does not allow pushing stream-start, caps, segment and EOS events.
- * Specific API like gst_aggregator_set_src_caps() should be used for these.
- *
- * Since: 1.26
- */
-gboolean
-gst_aggregator_push_src_event (GstAggregator * aggregator, GstEvent * event)
-{
-  g_return_val_if_fail (GST_EVENT_IS_DOWNSTREAM (event), FALSE);
-  g_return_val_if_fail (GST_EVENT_TYPE (event) != GST_EVENT_STREAM_START &&
-      GST_EVENT_TYPE (event) != GST_EVENT_CAPS &&
-      GST_EVENT_TYPE (event) != GST_EVENT_SEGMENT &&
-      GST_EVENT_TYPE (event) != GST_EVENT_EOS, FALSE);
-
-  if (GST_EVENT_IS_SERIALIZED (event)) {
-    gst_aggregator_push_mandatory_events (aggregator, FALSE);
-  }
-
-  return gst_pad_push_event (aggregator->srcpad, event);
-}
-
 static void
 gst_aggregator_push_eos (GstAggregator * self)
 {
@@ -881,25 +866,6 @@ gst_aggregator_wait_and_check (GstAggregator * self, gboolean * timeout)
     return FALSE;
   }
 
-  if (self->priv->force_live && self->priv->first_buffer
-      && self->priv->start_time_selection ==
-      GST_AGGREGATOR_START_TIME_SELECTION_FIRST) {
-    GstClockTime start_time;
-    GstAggregatorPad *srcpad = GST_AGGREGATOR_PAD (self->srcpad);
-    start_time = gst_element_get_current_running_time (GST_ELEMENT (self));
-
-    if (GST_CLOCK_TIME_IS_VALID (start_time)) {
-      if (srcpad->segment.position == -1)
-        srcpad->segment.position = start_time;
-      else
-        srcpad->segment.position = MIN (start_time, srcpad->segment.position);
-
-      GST_DEBUG_OBJECT (self, "Selecting start time %" GST_TIME_FORMAT,
-          GST_TIME_ARGS (start_time));
-      self->priv->first_buffer = FALSE;
-    }
-  }
-
   start = gst_aggregator_get_next_time (self);
 
   /* If we're not live, or if we use the running time
@@ -910,8 +876,7 @@ gst_aggregator_wait_and_check (GstAggregator * self, gboolean * timeout)
    * that pad.
    */
   GST_OBJECT_LOCK (self);
-  if (!GST_CLOCK_TIME_IS_VALID (latency) ||     /* not live */
-      self->priv->blocked ||    /* live but not PLAYING yet */
+  if (!GST_CLOCK_TIME_IS_VALID (latency) ||
       !GST_IS_CLOCK (GST_ELEMENT_CLOCK (self)) ||
       !GST_CLOCK_TIME_IS_VALID (start) ||
       (self->priv->first_buffer
@@ -923,13 +888,6 @@ gst_aggregator_wait_and_check (GstAggregator * self, gboolean * timeout)
      */
     GST_OBJECT_UNLOCK (self);
     SRC_WAIT (self);
-
-    /* After waiting, check if we're actually still running */
-    if (!self->priv->running || !self->priv->send_eos) {
-      SRC_UNLOCK (self);
-
-      return FALSE;
-    }
   } else {
     GstClockTime base_time, time;
     GstClock *clock;
@@ -970,13 +928,6 @@ gst_aggregator_wait_and_check (GstAggregator * self, gboolean * timeout)
     GST_DEBUG_OBJECT (self,
         "clock returned %d (jitter: %" GST_STIME_FORMAT ")",
         status, GST_STIME_ARGS (jitter));
-
-    /* After waiting, check if we're actually still running */
-    if (!self->priv->running || !self->priv->send_eos || self->priv->blocked) {
-      SRC_UNLOCK (self);
-
-      return FALSE;
-    }
 
     /* we timed out */
     if (status == GST_CLOCK_OK || status == GST_CLOCK_EARLY) {
@@ -1326,11 +1277,11 @@ gst_aggregator_default_negotiate (GstAggregator * self)
   GST_DEBUG_OBJECT (self, "updating caps from %" GST_PTR_FORMAT,
       downstream_caps);
   ret = agg_klass->update_src_caps (self, downstream_caps, &caps);
-  if (ret == GST_AGGREGATOR_FLOW_NEED_DATA) {
-    GST_DEBUG_OBJECT (self, "Subclass needs more data to decide on caps");
-    goto done;
-  } else if (ret < GST_FLOW_OK) {
+  if (ret < GST_FLOW_OK) {
     GST_WARNING_OBJECT (self, "Subclass failed to update provided caps");
+    goto done;
+  } else if (ret == GST_AGGREGATOR_FLOW_NEED_DATA) {
+    GST_DEBUG_OBJECT (self, "Subclass needs more data to decide on caps");
     goto done;
   }
   if ((caps == NULL || gst_caps_is_empty (caps)) && ret >= GST_FLOW_OK) {
@@ -1626,8 +1577,6 @@ gst_aggregator_start (GstAggregator * self)
   self->priv->peer_latency_live = FALSE;
   self->priv->peer_latency_min = self->priv->peer_latency_max = 0;
 
-  self->priv->blocked = TRUE;
-
   gst_aggregator_set_allocation (self, NULL, NULL, NULL, NULL);
 
   klass = GST_AGGREGATOR_GET_CLASS (self);
@@ -1683,6 +1632,7 @@ gst_aggregator_flush (GstAggregator * self)
   GST_OBJECT_LOCK (self);
   priv->send_segment = TRUE;
   priv->flushing = FALSE;
+  priv->tags_changed = FALSE;
   GST_OBJECT_UNLOCK (self);
   if (klass->flush)
     ret = klass->flush (self);
@@ -2084,7 +2034,10 @@ gst_aggregator_stop (GstAggregator * agg)
   agg->priv->peer_latency_live = FALSE;
   agg->priv->peer_latency_min = agg->priv->peer_latency_max = 0;
   agg->priv->posted_latency_msg = FALSE;
-  agg->priv->blocked = FALSE;
+
+  if (agg->priv->tags)
+    gst_tag_list_unref (agg->priv->tags);
+  agg->priv->tags = NULL;
 
   gst_aggregator_set_allocation (agg, NULL, NULL, NULL, NULL);
 
@@ -2115,7 +2068,6 @@ gst_aggregator_change_state (GstElement * element, GstStateChange transition)
       /* Wake up any waiting as now we have a clock and can do
        * proper waiting on the clock if necessary */
       SRC_LOCK (self);
-      self->priv->blocked = FALSE;
       SRC_BROADCAST (self);
       SRC_UNLOCK (self);
       break;
@@ -2140,7 +2092,6 @@ gst_aggregator_change_state (GstElement * element, GstStateChange transition)
       /* Wake up any waiting as now clock might be gone and we might
        * need to wait on the condition variable again */
       SRC_LOCK (self);
-      self->priv->blocked = TRUE;
       SRC_BROADCAST (self);
       SRC_UNLOCK (self);
       if (self->priv->force_live) {
@@ -2320,10 +2271,8 @@ gst_aggregator_request_new_pad (GstElement * element,
 static gboolean
 gst_aggregator_query_latency_unlocked (GstAggregator * self, GstQuery * query)
 {
-  gboolean query_ret, upstream_live;
+  gboolean query_ret, live;
   GstClockTime our_latency, min, max;
-
-  GST_TRACE_OBJECT (self, "querying latency");
 
   /* Temporarily release the lock to do the query. */
   SRC_UNLOCK (self);
@@ -2335,12 +2284,7 @@ gst_aggregator_query_latency_unlocked (GstAggregator * self, GstQuery * query)
     return FALSE;
   }
 
-  gst_query_parse_latency (query, &upstream_live, &min, &max);
-
-  GST_LOG_OBJECT (self,
-      "queried upstream latency, live: %s min: %" GST_TIME_FORMAT " max: %"
-      GST_TIME_FORMAT, upstream_live ? "true" : "false", GST_TIME_ARGS (min),
-      GST_TIME_ARGS (max));
+  gst_query_parse_latency (query, &live, &min, &max);
 
   if (G_UNLIKELY (!GST_CLOCK_TIME_IS_VALID (min))) {
     GST_ERROR_OBJECT (self, "Invalid minimum latency %" GST_TIME_FORMAT
@@ -2370,7 +2314,7 @@ gst_aggregator_query_latency_unlocked (GstAggregator * self, GstQuery * query)
 
   our_latency = self->priv->latency;
 
-  self->priv->peer_latency_live = upstream_live;
+  self->priv->peer_latency_live = live;
   self->priv->peer_latency_min = min;
   self->priv->peer_latency_max = max;
   self->priv->has_peer_latency = TRUE;
@@ -2387,10 +2331,9 @@ gst_aggregator_query_latency_unlocked (GstAggregator * self, GstQuery * query)
   SRC_BROADCAST (self);
 
   GST_DEBUG_OBJECT (self, "configured latency live:%s min:%" G_GINT64_FORMAT
-      " max:%" G_GINT64_FORMAT,
-      is_live_unlocked (self) ? "true" : "false", min, max);
+      " max:%" G_GINT64_FORMAT, live ? "true" : "false", min, max);
 
-  gst_query_set_latency (query, is_live_unlocked (self), min, max);
+  gst_query_set_latency (query, live, min, max);
 
   return query_ret;
 }
@@ -2871,8 +2814,6 @@ gst_aggregator_constructed (GObject * object)
 {
   GstAggregator *agg = GST_AGGREGATOR (object);
 
-  G_OBJECT_CLASS (aggregator_parent_class)->constructed (object);
-
   if (agg->priv->force_live) {
     GST_OBJECT_FLAG_SET (agg, GST_ELEMENT_FLAG_SOURCE);
   }
@@ -3173,6 +3114,7 @@ gst_aggregator_init (GstAggregator * self, GstAggregatorClass * klass)
   g_return_if_fail (pad_template != NULL);
 
   priv->max_padserial = -1;
+  priv->tags_changed = FALSE;
   priv->ignore_inactive_pads = FALSE;
 
   self->priv->peer_latency_live = FALSE;
@@ -3533,8 +3475,6 @@ static void
 gst_aggregator_pad_constructed (GObject * object)
 {
   GstPad *pad = GST_PAD (object);
-
-  G_OBJECT_CLASS (gst_aggregator_pad_parent_class)->constructed (object);
 
   if (GST_PAD_IS_SINK (pad)) {
     gst_pad_set_chain_function (pad,
@@ -3916,6 +3856,43 @@ gst_aggregator_pad_is_inactive (GstAggregatorPad * pad)
   return inactive;
 }
 
+#if 0
+/*
+ * gst_aggregator_merge_tags:
+ * @self: a #GstAggregator
+ * @tags: a #GstTagList to merge
+ * @mode: the #GstTagMergeMode to use
+ *
+ * Adds tags to so-called pending tags, which will be processed
+ * before pushing out data downstream.
+ *
+ * Note that this is provided for convenience, and the subclass is
+ * not required to use this and can still do tag handling on its own.
+ *
+ * MT safe.
+ */
+void
+gst_aggregator_merge_tags (GstAggregator * self,
+    const GstTagList * tags, GstTagMergeMode mode)
+{
+  GstTagList *otags;
+
+  g_return_if_fail (GST_IS_AGGREGATOR (self));
+  g_return_if_fail (tags == NULL || GST_IS_TAG_LIST (tags));
+
+  /* FIXME Check if we can use OBJECT lock here! */
+  GST_OBJECT_LOCK (self);
+  if (tags)
+    GST_DEBUG_OBJECT (self, "merging tags %" GST_PTR_FORMAT, tags);
+  otags = self->priv->tags;
+  self->priv->tags = gst_tag_list_merge (self->priv->tags, tags, mode);
+  if (otags)
+    gst_tag_list_unref (otags);
+  self->priv->tags_changed = TRUE;
+  GST_OBJECT_UNLOCK (self);
+}
+#endif
+
 /**
  * gst_aggregator_set_latency:
  * @self: a #GstAggregator
@@ -4033,11 +4010,6 @@ gst_aggregator_simple_get_next_time (GstAggregator * self)
   GstSegment *segment = &srcpad->segment;
 
   GST_OBJECT_LOCK (self);
-  if (segment->format != GST_FORMAT_TIME) {
-    GST_OBJECT_UNLOCK (self);
-    return GST_CLOCK_TIME_NONE;
-  }
-
   if (segment->position == -1 || segment->position < segment->start)
     next_time = segment->start;
   else

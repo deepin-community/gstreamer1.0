@@ -1,4 +1,5 @@
 plugins = []
-plugin_sources = {}
 subdir('elements')
-subdir('tracers')
+if not get_option('coretracers').disabled()
+  subdir('tracers')
+endif

@@ -2,7 +2,7 @@
 
 set -e
 
-if [ "$1" = configure -a -f /usr/lib/@MULTIARCH@/gstreamer1.0/gstreamer-1.0/gst-ptp-helper ]; then
+if [ "$1" = configure ]; then
     # If we have setcap is installed, try setting cap_net_bind_service,cap_net_admin+ep,
     # which allows us to install our helper binary without the setuid bit.
     if command -v setcap > /dev/null; then
@@ -21,3 +21,4 @@ fi
 #DEBHELPER#
 
 exit 0
+

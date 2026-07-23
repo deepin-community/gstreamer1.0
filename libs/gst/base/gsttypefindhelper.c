@@ -579,14 +579,6 @@ buf_helper_find_suggest (gpointer data, guint probability, GstCaps * caps)
   }
 }
 
-static guint64
-buf_helper_get_length (gpointer data)
-{
-  GstTypeFindBufHelper *helper = (GstTypeFindBufHelper *) data;
-
-  return helper->size;
-}
-
 /**
  * gst_type_find_helper_for_data:
  * @obj: (nullable): object doing the typefinding, or %NULL (used for logging)
@@ -678,7 +670,7 @@ gst_type_find_helper_for_data_with_extension (GstObject * obj,
   find.data = &helper;
   find.peek = buf_helper_find_peek;
   find.suggest = buf_helper_find_suggest;
-  find.get_length = buf_helper_get_length;
+  find.get_length = NULL;
 
   type_list = gst_type_find_factory_get_list ();
   type_list = prioritize_extension (obj, type_list, extension);

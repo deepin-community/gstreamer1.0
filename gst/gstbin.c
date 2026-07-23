@@ -3985,17 +3985,13 @@ gst_bin_handle_message_func (GstBin * bin, GstMessage * message)
     }
     case GST_MESSAGE_NEED_CONTEXT:{
       const gchar *context_type;
+      GList *l, *contexts;
 
       gst_message_parse_context_type (message, &context_type);
 
       if (src) {
-        GList *l, *contexts;
-
         GST_OBJECT_LOCK (bin);
-        contexts =
-            g_list_copy_deep (GST_ELEMENT_CAST (bin)->contexts,
-            (GCopyFunc) gst_mini_object_ref, NULL);
-        GST_OBJECT_UNLOCK (bin);
+        contexts = GST_ELEMENT_CAST (bin)->contexts;
         GST_LOG_OBJECT (bin, "got need-context message type: %s", context_type);
         for (l = contexts; l; l = l->next) {
           GstContext *tmp = l->data;
@@ -4006,8 +4002,7 @@ gst_bin_handle_message_func (GstBin * bin, GstMessage * message)
             break;
           }
         }
-
-        g_list_free_full (contexts, (GDestroyNotify) gst_mini_object_unref);
+        GST_OBJECT_UNLOCK (bin);
 
         /* Forward if we couldn't answer the message */
         if (l == NULL) {

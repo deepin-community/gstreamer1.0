@@ -43,20 +43,6 @@ typedef struct _GstLeaksTracer GstLeaksTracer;
 typedef struct _GstLeaksTracerClass GstLeaksTracerClass;
 
 /**
- * GstLeaksStackTraceFlags:
- * @GST_LEAKS_STACK_TRACE_DISABLED: no stack trace
- * @GST_LEAKS_STACK_TRACE_NONE: minimal stack trace
- * @GST_LEAKS_STACK_TRACE_FULL: full stack trace
- *
- * Since: 1.26
- */
-typedef enum {
-  GST_LEAKS_STACK_TRACE_DISABLED = -1,
-  GST_LEAKS_STACK_TRACE_NONE = GST_STACK_TRACE_SHOW_NONE,
-  GST_LEAKS_STACK_TRACE_FULL = GST_STACK_TRACE_SHOW_FULL
-} GstLeaksStackTraceFlags;
-
-/**
  * GstLeaksTracer:
  *
  * Opaque #GstLeaksTracer data structure
@@ -85,7 +71,7 @@ struct _GstLeaksTracer {
   gboolean check_refs;
   gboolean log_leaks;
 
-  GstLeaksStackTraceFlags trace_flags;
+  GstStackTraceFlags trace_flags;
 };
 
 struct _GstLeaksTracerClass {

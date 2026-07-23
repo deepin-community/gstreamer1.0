@@ -227,131 +227,129 @@ struct URITest
     struct QueryValue query[10];
     const gchar *fragment;
   } uri;
-
-  gboolean check_to_str;        // TRUE if this URI should reconstruct the original URI exactly
 };
 
 #define COMMON_URI_TESTS \
   /* VALID URIS.  PARSING AND PRINTING OF THESE SHOULD NOT CHANGE */ \
   /* scheme/path */ \
   {"scheme:", \
-      {"scheme", NULL, NULL, GST_URI_NO_PORT, NULL, {{NULL, NULL}}, NULL}, TRUE }, \
+      {"scheme", NULL, NULL, GST_URI_NO_PORT, NULL, {{NULL, NULL}}, NULL}}, \
   {"scheme:path", \
-      {"scheme", NULL, NULL, GST_URI_NO_PORT, "path", {{NULL, NULL}}, NULL}, TRUE }, \
+      {"scheme", NULL, NULL, GST_URI_NO_PORT, "path", {{NULL, NULL}}, NULL}}, \
   {"path", \
-      {NULL, NULL, NULL, GST_URI_NO_PORT, "path", {{NULL, NULL}}, NULL}, TRUE }, \
+      {NULL, NULL, NULL, GST_URI_NO_PORT, "path", {{NULL, NULL}}, NULL}}, \
   {"/path", \
-      {NULL, NULL, NULL, GST_URI_NO_PORT, "/path", {{NULL, NULL}}, NULL}, TRUE }, \
+      {NULL, NULL, NULL, GST_URI_NO_PORT, "/path", {{NULL, NULL}}, NULL}}, \
   /* hostname/port */ \
   {"scheme://hostname/path", \
         {"scheme", NULL, "hostname", GST_URI_NO_PORT, "/path", {{NULL, NULL}}, \
-          NULL}, TRUE }, \
+          NULL}}, \
   {"scheme://hostname:123/path", \
-      {"scheme", NULL, "hostname", 123, "/path", {{NULL, NULL}}, NULL}, TRUE }, \
+      {"scheme", NULL, "hostname", 123, "/path", {{NULL, NULL}}, NULL}}, \
   /* ipv6 hostname/port */ \
   {"scheme://[01:23:45:67:89:ab:cd:ef]/path", \
         {"scheme", NULL, "01:23:45:67:89:ab:cd:ef", GST_URI_NO_PORT, "/path", \
-          {{NULL, NULL}}, NULL}, TRUE }, \
+          {{NULL, NULL}}, NULL}}, \
   {"scheme://[01:23:45:67:89:ab:cd:ef]:123/path", \
         {"scheme", NULL, "01:23:45:67:89:ab:cd:ef", 123, "/path", {{NULL, \
-                  NULL}}, NULL}, TRUE }, \
+                  NULL}}, NULL}}, \
   /* query/fragment */ \
   {"path?query", \
         {NULL, NULL, NULL, GST_URI_NO_PORT, "path", {{"query", NULL}, {NULL, \
-                  NULL}}, NULL}, TRUE }, \
+                  NULL}}, NULL}}, \
   {"path?query=value", \
         {NULL, NULL, NULL, GST_URI_NO_PORT, "path", {{"query", "value"}, {NULL, \
-                  NULL}}, NULL}, TRUE }, \
+                  NULL}}, NULL}}, \
   {"path?query#fragment", \
         {NULL, NULL, NULL, GST_URI_NO_PORT, "path", {{"query", NULL}, {NULL, \
-                  NULL}}, "fragment"}, TRUE }, \
+                  NULL}}, "fragment"}}, \
   {"path?query=value#fragment", \
         {NULL, NULL, NULL, GST_URI_NO_PORT, "path", {{"query", "value"}, {NULL, \
-                  NULL}}, "fragment"}, TRUE }, \
+                  NULL}}, "fragment"}}, \
   {"scheme:path?query#fragment", \
         {"scheme", NULL, NULL, GST_URI_NO_PORT, "path", {{"query", NULL}, {NULL, \
-                  NULL}}, "fragment"}, TRUE }, \
+                  NULL}}, "fragment"}}, \
   /* full */ \
   {"scheme://hostname:123/path?query#fragment", \
         {"scheme", NULL, "hostname", 123, "/path", {{"query", NULL}, {NULL, \
-                  NULL}}, "fragment"}, TRUE }, \
+                  NULL}}, "fragment"}}, \
   {"scheme://hostname:123/path?query=value#fragment", \
         {"scheme", NULL, "hostname", 123, "/path", {{"query", "value"}, {NULL, \
-                  NULL}}, "fragment"}, TRUE }, \
+                  NULL}}, "fragment"}}, \
   {"scheme://hostname:123?query", \
         {"scheme", NULL, "hostname", 123, NULL, {{"query", NULL}, {NULL, \
-                  NULL}}, NULL}, TRUE }, \
+                  NULL}}, NULL}}, \
   {"scheme://hostname:123?query=value", \
         {"scheme", NULL, "hostname", 123, NULL, {{"query", "value"}, {NULL, \
-                  NULL}}, NULL}, TRUE }, \
+                  NULL}}, NULL}}, \
   {"scheme://hostname:123?query#fragment", \
         {"scheme", NULL, "hostname", 123, NULL, {{"query", NULL}, {NULL, \
-                  NULL}}, "fragment"}, TRUE }, \
+                  NULL}}, "fragment"}}, \
   {"scheme://hostname:123?query=value#fragment", \
         {"scheme", NULL, "hostname", 123, NULL, {{"query", "value"}, {NULL, \
-                  NULL}}, "fragment"}, TRUE }, \
+                  NULL}}, "fragment"}}, \
   /* user/pass */ \
   {"scheme://userinfo@hostname", \
         {"scheme", "userinfo", "hostname", GST_URI_NO_PORT, NULL, {{NULL, \
-                  NULL}}, NULL}, TRUE }, \
+                  NULL}}, NULL}}, \
   {"scheme://userinfo@hostname:123/path?query#fragment", \
         {"scheme", "userinfo", "hostname", 123, "/path", {{"query", NULL}, \
-              {NULL, NULL}}, "fragment"}, TRUE }, \
+              {NULL, NULL}}, "fragment"}}, \
   {"scheme://user:pass@hostname", \
         {"scheme", "user:pass", "hostname", GST_URI_NO_PORT, NULL, {{NULL, \
-                  NULL}}, NULL}, TRUE }, \
+                  NULL}}, NULL}}, \
   {"scheme://user:pass@hostname:123/path?query#fragment", \
         {"scheme", "user:pass", "hostname", 123, "/path", {{"query", NULL}, \
-              {NULL, NULL}}, "fragment"}, TRUE }, \
+              {NULL, NULL}}, "fragment"}}, \
   /* FUNNY URIS.  PARSING AND PRINTING OF THESE MAY CHANGE */ \
   {"scheme:hostname:123/path?query#fragment", \
         {"scheme", NULL, NULL, GST_URI_NO_PORT, "hostname:123/path", {{"query", \
-                  NULL}, {NULL, NULL}}, "fragment"}, FALSE }, \
+                  NULL}, {NULL, NULL}}, "fragment"}}, \
   {"scheme://:pass@hostname:123/path?query#fragment", \
         {"scheme", ":pass", "hostname", 123, "/path", {{"query", NULL}, {NULL, \
-                  NULL}}, "fragment"}, FALSE }, \
+                  NULL}}, "fragment"}}, \
   /* Skip initial white space */ \
   {" \f\n\r\t\vscheme:", \
-      {"scheme", NULL, NULL, GST_URI_NO_PORT, NULL, {{NULL, NULL}}, NULL}, FALSE }, \
+      {"scheme", NULL, NULL, GST_URI_NO_PORT, NULL, {{NULL, NULL}}, NULL}}, \
   {" \f\n\r\t\vpath", \
-      {NULL, NULL, NULL, GST_URI_NO_PORT, "path", {{NULL, NULL}}, NULL}, FALSE }, \
+      {NULL, NULL, NULL, GST_URI_NO_PORT, "path", {{NULL, NULL}}, NULL}}, \
   /* file URI */ \
   {"file://host/home/joe/foo.txt", \
         {"file", NULL, "host", GST_URI_NO_PORT, "/home/joe/foo.txt", {{NULL, \
-                  NULL}}, NULL}, FALSE }, \
+                  NULL}}, NULL}}, \
   {"file:///home/joe/foo.txt", \
         {"file", NULL, NULL, GST_URI_NO_PORT, "/home/joe/foo.txt", {{NULL, \
-                  NULL}}, NULL}, TRUE },
+                  NULL}}, NULL}},
 
 #define UNESCAPED_URI_TESTS \
   /* Test cases for gst_uri_from_string */ \
   {"scheme://user%20info@hostname", \
         {"scheme", "user info", "hostname", GST_URI_NO_PORT, NULL, {{NULL, \
-                  NULL}}, NULL}, FALSE }, \
+                  NULL}}, NULL}}, \
   {"scheme://userinfo@hostname:123/path?query#frag%23ment", \
         {"scheme", "userinfo", "hostname", 123, "/path", {{"query", NULL}, \
-              {NULL, NULL}}, "frag#ment"}, FALSE }, \
+              {NULL, NULL}}, "frag#ment"}}, \
   {"scheme://us%3Aer:pass@hostname", \
         {"scheme", "us:er:pass", "hostname", GST_URI_NO_PORT, NULL, {{NULL, \
-                  NULL}}, NULL}, FALSE }, \
+                  NULL}}, NULL}}, \
   {"scheme://us%3Aer:pa%3Ass@hostname:123/path?query#frag%23ment", \
         {"scheme", "us:er:pa:ss", "hostname", 123, "/path", {{"query", NULL}, \
-              {NULL, NULL}}, "frag#ment"}, FALSE },
+              {NULL, NULL}}, "frag#ment"}},
 
 #define ESCAPED_URI_TESTS \
   /* Test cases for gst_uri_from_string_escaped */ \
   {"scheme://user%20info@hostname", \
         {"scheme", "user%20info", "hostname", GST_URI_NO_PORT, NULL, {{NULL, \
-                  NULL}}, NULL}, FALSE }, \
+                  NULL}}, NULL}}, \
   {"scheme://userinfo@hostname:123/path?query#frag%23ment", \
         {"scheme", "userinfo", "hostname", 123, "/path", {{"query", NULL}, \
-              {NULL, NULL}}, "frag%23ment"}, FALSE }, \
+              {NULL, NULL}}, "frag%23ment"}}, \
   {"scheme://us%3Aer:pass@hostname", \
         {"scheme", "us%3Aer:pass", "hostname", GST_URI_NO_PORT, NULL, {{NULL, \
-                  NULL}}, NULL}, FALSE }, \
+                  NULL}}, NULL}}, \
   {"scheme://us%3Aer:pa%3Ass@hostname:123/path?query#frag%23ment", \
         {"scheme", "us%3Aer:pa%3Ass", "hostname", 123, "/path", {{"query", NULL}, \
-              {NULL, NULL}}, "frag%23ment"}, FALSE },
+              {NULL, NULL}}, "frag%23ment"}},
 
 
 static const struct URITest tests[] = {
@@ -1229,36 +1227,6 @@ GST_START_TEST (test_url_unescape_equals_in_http_query)
 
 GST_END_TEST;
 
-GST_START_TEST (test_url_to_string)
-{
-  GstUri *uri;
-  guint i;
-
-  for (i = 0; i < G_N_ELEMENTS (tests); i++) {
-    if (!tests[i].check_to_str) {
-      continue;
-    }
-
-    GST_DEBUG ("Testing URI '%s'", tests[i].str);
-
-    uri = gst_uri_from_string (tests[i].str);
-    fail_unless (uri != NULL);
-
-    /* Test that these URIs reconstruct to the original string */
-    GList *keys = gst_uri_get_query_keys (uri);
-    gchar *out_uri = gst_uri_to_string_with_keys (uri, keys);
-    fail_unless (out_uri != NULL);
-    fail_unless_equals_string (out_uri, tests[i].str);
-
-    g_list_free (keys);
-    g_free (out_uri);
-
-    gst_uri_unref (uri);
-  }
-}
-
-GST_END_TEST;
-
 static Suite *
 gst_uri_suite (void)
 {
@@ -1288,7 +1256,6 @@ gst_uri_suite (void)
   tcase_add_test (tc_chain, test_url_get_set);
   tcase_add_test (tc_chain, test_url_get_media_fragment_table);
   tcase_add_test (tc_chain, test_url_unescape_equals_in_http_query);
-  tcase_add_test (tc_chain, test_url_to_string);
 
   return s;
 }
