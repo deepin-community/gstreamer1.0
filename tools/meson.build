@@ -20,7 +20,7 @@ if gst_parse
 endif
 
 foreach tool : tools
-  exe_name = '@0@-@1@'.format(tool, api_version)
+  exe_name = '@0@-@1@'.format(tool, apiversion)
   src_file = '@0@.c'.format(tool)
   extra_deps = []
   extra_c_args = []

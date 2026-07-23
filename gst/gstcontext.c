@@ -64,6 +64,7 @@
 #include "gst_private.h"
 #include <string.h>
 #include "gstcontext.h"
+#include "gstquark.h"
 
 struct _GstContext
 {
@@ -174,7 +175,7 @@ gst_context_new (const gchar * context_type, gboolean persistent)
 
   GST_CAT_LOG (GST_CAT_CONTEXT, "creating new context %p", context);
 
-  structure = gst_structure_new_static_str_empty ("context");
+  structure = gst_structure_new_id_empty (GST_QUARK (CONTEXT));
   gst_structure_set_parent_refcount (structure, &context->mini_object.refcount);
   gst_context_init (context);
 

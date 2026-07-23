@@ -27,7 +27,6 @@ gst_sources = files(
   'gstformat.c',
   'gstghostpad.c',
   'gstdevicemonitor.c',
-  'gstidstr.c',
   'gstinfo.c',
   'gstiterator.c',
   'gstatomicqueue.c',
@@ -44,6 +43,7 @@ gst_sources = files(
   'gstpoll.c',
   'gstpreset.c',
   'gstprotection.c',
+  'gstquark.c',
   'gstquery.c',
   'gstregistry.c',
   'gstregistrychunks.c',
@@ -69,7 +69,6 @@ gst_sources = files(
   'gsturi.c',
   'gstutils.c',
   'gstvalue.c',
-  'gstvecdeque.c',
   'gstparse.c',
 )
 
@@ -106,7 +105,6 @@ gst_headers = files(
   'gstformat.h',
   'gstghostpad.h',
   'gstdevicemonitor.h',
-  'gstidstr.h',
   'gstinfo.h',
   'gstiterator.h',
   'gstatomicqueue.h',
@@ -146,14 +144,13 @@ gst_headers = files(
   'gsturi.h',
   'gstutils.h',
   'gstvalue.h',
-  'gstvecdeque.h',
   'gstregistry.h',
   'gstparse.h',
   'math-compat.h',
 )
 if host_system == 'darwin'
-  gst_headers += files('gstmacos.h')
-  gst_sources += files('gstmacos.m')
+  gst_headers += 'gstmacos.h'
+  gst_sources += 'gstmacos.m'
 endif
 
 install_headers(gst_headers, subdir : 'gstreamer-1.0/gst')
@@ -166,7 +163,7 @@ endif
 
 extra_deps = []
 if host_system == 'android'
-  gst_sources += files('gstandroid.c')
+  gst_sources += 'gstandroid.c'
   extra_deps += cc.find_library('log')
 endif
 
@@ -204,9 +201,9 @@ else
   gst_cdata.set('GST_DISABLE_PARSE_DEFINE', '#define GST_DISABLE_PARSE 1')
 endif
 
-gst_cdata.set10('GST_DISABLE_CAST_CHECKS_DEFINE', disable_cast_checks)
-gst_cdata.set10('GST_DISABLE_GLIB_ASSERTS_DEFINE', disable_glib_asserts)
-gst_cdata.set10('GST_DISABLE_GLIB_CHECKS_DEFINE', disable_glib_checks)
+gst_cdata.set10('GST_DISABLE_CAST_CHECKS_DEFINE', cast_checks.disabled())
+gst_cdata.set10('GST_DISABLE_GLIB_ASSERTS_DEFINE', glib_asserts.disabled())
+gst_cdata.set10('GST_DISABLE_GLIB_CHECKS_DEFINE', glib_checks.disabled())
 
 # FIXME: add --disable-plugin option?
 gst_cdata.set('GST_DISABLE_PLUGIN_DEFINE', '#undef GST_DISABLE_PLUGIN')
@@ -257,9 +254,7 @@ if not tracer_hooks
 endif
 
 if get_option('gstreamer-static-full')
-  libgst_static_c_args = ['-DGST_FULL_STATIC_COMPILATION']
-else
-  libgst_static_c_args = []
+  libgst_c_args += ['-DGST_FULL_STATIC_COMPILATION']
 endif
 
 # Make sure that subproject building gir files work
@@ -271,7 +266,6 @@ libgst = library('gstreamer-1.0', gst_sources,
   soversion : soversion,
   darwin_versions : osxversion,
   c_args : libgst_c_args + ['-DBUILDING_GST'],
-  c_static_args : libgst_static_c_args,
   include_directories : [configinc,
     # HACK, change include paths in .y and .l in final version.
     include_directories('parse')],
@@ -314,7 +308,7 @@ if build_gir
   gir = {
     'sources' : gst_sources + gst_headers + gst_enums + [gst_version_h],
     'namespace' : 'Gst',
-    'nsversion' : api_version,
+    'nsversion' : apiversion,
     'identifier_prefix' : 'Gst',
     'symbol_prefix' : 'gst',
     'export_packages' : pkg_name,

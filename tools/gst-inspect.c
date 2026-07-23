@@ -50,8 +50,6 @@
 #include <TargetConditionals.h>
 #endif
 
-#include "gst/glib-compat-private.h"
-
 /* "R" : support color
  * "X" : do not clear the screen when leaving the pager
  * "F" : skip the pager if content fit into the screen
@@ -182,13 +180,13 @@ n_print (const char *format, ...)
 }
 
 static gboolean
-print_field (const GstIdStr * fieldname, const GValue * value, gpointer pfx)
+print_field (GQuark field, const GValue * value, gpointer pfx)
 {
   gchar *str = gst_value_serialize (value);
 
   n_print ("%s  %s%15s%s: %s%s%s\n",
-      (gchar *) pfx, FIELD_NAME_COLOR, gst_id_str_as_str (fieldname),
-      RESET_COLOR, FIELD_VALUE_COLOR, str, RESET_COLOR);
+      (gchar *) pfx, FIELD_NAME_COLOR, g_quark_to_string (field), RESET_COLOR,
+      FIELD_VALUE_COLOR, str, RESET_COLOR);
   g_free (str);
   return TRUE;
 }
@@ -226,7 +224,7 @@ print_caps (const GstCaps * caps, const gchar * pfx)
       n_print ("%s%s%s%s\n", pfx, STRUCT_NAME_COLOR,
           gst_structure_get_name (structure), RESET_COLOR);
     }
-    gst_structure_foreach_id_str (structure, print_field, (gpointer) pfx);
+    gst_structure_foreach (structure, print_field, (gpointer) pfx);
   }
 }
 
@@ -372,29 +370,6 @@ print_interfaces (GType type)
   }
 }
 
-static void
-print_element_flags (GstElement * element)
-{
-  n_print (_("%sElement Flags%s:\n"), HEADING_COLOR, RESET_COLOR);
-
-  push_indent ();
-  if (GST_OBJECT_FLAG_IS_SET (element, GST_ELEMENT_FLAG_LOCKED_STATE))
-    n_print ("- %s%s%s\n", DATATYPE_COLOR, "LOCKED_STATE", RESET_COLOR);
-  if (GST_OBJECT_FLAG_IS_SET (element, GST_ELEMENT_FLAG_SINK))
-    n_print ("- %s%s%s\n", DATATYPE_COLOR, "SINK", RESET_COLOR);
-  if (GST_OBJECT_FLAG_IS_SET (element, GST_ELEMENT_FLAG_SOURCE))
-    n_print ("- %s%s%s\n", DATATYPE_COLOR, "SOURCE", RESET_COLOR);
-  if (GST_OBJECT_FLAG_IS_SET (element, GST_ELEMENT_FLAG_PROVIDE_CLOCK))
-    n_print ("- %s%s%s\n", DATATYPE_COLOR, "PROVIDE_CLOCK", RESET_COLOR);
-  if (GST_OBJECT_FLAG_IS_SET (element, GST_ELEMENT_FLAG_REQUIRE_CLOCK))
-    n_print ("- %s%s%s\n", DATATYPE_COLOR, "REQUIRE_CLOCK", RESET_COLOR);
-  if (GST_OBJECT_FLAG_IS_SET (element, GST_ELEMENT_FLAG_INDEXABLE))
-    n_print ("- %s%s%s\n", DATATYPE_COLOR, "REQUIRE_INDEXABLE", RESET_COLOR);
-  pop_indent ();
-
-  n_print ("\n");
-}
-
 static gchar *
 flags_to_string (GFlagsValue * vals, guint flags)
 {
@@ -452,10 +427,9 @@ print_object_properties_info (GObject * obj, GObjectClass * obj_class,
   guint num_properties, i;
   gboolean readable;
   gboolean first_flag;
-  gboolean is_tracer = GST_IS_TRACER (obj);
 
   property_specs = g_object_class_list_properties (obj_class, &num_properties);
-  g_sort_array (property_specs, num_properties, sizeof (gpointer),
+  g_qsort_with_data (property_specs, num_properties, sizeof (gpointer),
       (GCompareDataFunc) sort_gparamspecs, NULL);
 
   n_print ("%s%s%s:\n", HEADING_COLOR, desc, RESET_COLOR);
@@ -472,10 +446,6 @@ print_object_properties_info (GObject * obj, GObjectClass * obj_class,
     if (obj == NULL && (owner_type == G_TYPE_OBJECT
             || owner_type == GST_TYPE_OBJECT || owner_type == GST_TYPE_PAD))
       continue;
-
-    if (is_tracer && !g_strcmp0 (param->name, "params")) {
-      continue;
-    }
 
     g_value_init (&value, param->value_type);
 
@@ -747,7 +717,7 @@ print_object_properties_info (GObject * obj, GObjectClass * obj_class,
             const GstStructure *s = gst_value_get_structure (&value);
             if (s) {
               g_print ("\n");
-              gst_structure_foreach_id_str (s, print_field,
+              gst_structure_foreach (s, print_field,
                   (gpointer) "                           ");
             }
           }
@@ -1827,7 +1797,6 @@ print_element_info (GstPluginFeature * feature, gboolean print_names)
 
   print_hierarchy (G_OBJECT_TYPE (element), 0, &maxlevel);
   print_interfaces (G_OBJECT_TYPE (element));
-  print_element_flags (element);
 
   print_pad_templates_info (element, factory);
   print_clocking_info (element);
@@ -1943,15 +1912,6 @@ print_tracer_info (GstPluginFeature * feature, gboolean print_names)
 
   print_hierarchy (G_OBJECT_TYPE (tracer), 0, &maxlevel);
   print_interfaces (G_OBJECT_TYPE (tracer));
-  print_object_properties_info (G_OBJECT (tracer),
-      G_OBJECT_GET_CLASS (tracer), "Tracer Properties");
-
-  n_print ("\n%sNOTE: those properties can be set using the `GST_TRACERS`"
-      " environment variable as follow:%s"
-      "\n\n    $ %sGST_TRACERS%s=\"%s%s%s(%sproperty1-name%s=value1,%sproperty2-name%s=value2));....\"",
-      HEADING_COLOR, RESET_COLOR, DATATYPE_COLOR, RESET_COLOR,
-      HEADING_COLOR, GST_OBJECT_NAME (factory), RESET_COLOR,
-      PROP_NAME_COLOR, RESET_COLOR, PROP_NAME_COLOR, RESET_COLOR);
 
   /* TODO: list what hooks it registers
    * - the data is available in gsttracerutils, we need to iterate the

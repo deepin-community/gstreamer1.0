@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gstreamer-1.26.2\n"
+"Project-Id-Version: gstreamer-1.24.6\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-29 23:56+0100\n"
+"POT-Creation-Date: 2024-07-29 16:41+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -101,7 +101,7 @@ msgstr ""
 msgid "Show GStreamer Options"
 msgstr ""
 
-#: gst/gst.c:1020
+#: gst/gst.c:1015
 #, c-format
 msgid "Unknown option"
 msgstr ""
@@ -1060,139 +1060,139 @@ msgstr ""
 #. ******************************************************************************************
 #. *** helpers for pipeline-setup
 #. ******************************************************************************************
-#: gst/parse/grammar.y.in:327
+#: gst/parse/grammar.y.in:295
 #, c-format
 msgid "link has no source [sink=%s@%p]"
 msgstr ""
 
-#: gst/parse/grammar.y.in:332
+#: gst/parse/grammar.y.in:300
 #, c-format
 msgid "link has no sink [source=%s@%p]"
 msgstr ""
 
-#: gst/parse/grammar.y.in:533
+#: gst/parse/grammar.y.in:497
 msgid "No such property."
 msgstr ""
 
-#: gst/parse/grammar.y.in:533 gst/parse/grammar.y.in:719
-#: gst/parse/grammar.y.in:753 gst/parse/grammar.y.in:867
+#: gst/parse/grammar.y.in:497 gst/parse/grammar.y.in:683
+#: gst/parse/grammar.y.in:717 gst/parse/grammar.y.in:831
 #, c-format
 msgid "no property \"%s\" in element \"%s\""
 msgstr ""
 
-#: gst/parse/grammar.y.in:628
+#: gst/parse/grammar.y.in:592
 #, c-format
 msgid "Element \"%s\" is not a GstPreset"
 msgstr ""
 
-#: gst/parse/grammar.y.in:634
+#: gst/parse/grammar.y.in:598
 #, c-format
 msgid "could not set preset \"%s\" in element \"%s\""
 msgstr ""
 
-#: gst/parse/grammar.y.in:665
+#: gst/parse/grammar.y.in:629
 #, c-format
 msgid "no element \"%s\""
 msgstr ""
 
-#: gst/parse/grammar.y.in:708 gst/parse/grammar.y.in:890
+#: gst/parse/grammar.y.in:672 gst/parse/grammar.y.in:854
 #, c-format
 msgid "could not set property \"%s\" in element \"%s\" to \"%s\""
 msgstr ""
 
-#: gst/parse/grammar.y.in:762
+#: gst/parse/grammar.y.in:726
 #, c-format
 msgid "could not set property \"%s\" in child of element \"%s\" to \"%s\""
 msgstr ""
 
-#: gst/parse/grammar.y.in:951
+#: gst/parse/grammar.y.in:915
 msgid "Delayed linking failed."
 msgstr ""
 
-#: gst/parse/grammar.y.in:1187 gst/parse/grammar.y.in:1192
+#: gst/parse/grammar.y.in:1128 gst/parse/grammar.y.in:1133
 #, c-format
 msgid "could not link %s to %s, %s can't handle caps %s"
 msgstr ""
 
-#: gst/parse/grammar.y.in:1197
+#: gst/parse/grammar.y.in:1138
 #, c-format
 msgid "could not link %s to %s, neither element can handle caps %s"
 msgstr ""
 
-#: gst/parse/grammar.y.in:1201
+#: gst/parse/grammar.y.in:1142
 #, c-format
 msgid "could not link %s to %s with caps %s"
 msgstr ""
 
-#: gst/parse/grammar.y.in:1207
+#: gst/parse/grammar.y.in:1148
 #, c-format
 msgid "could not link %s to %s"
 msgstr ""
 
-#: gst/parse/grammar.y.in:1361
+#: gst/parse/grammar.y.in:1302
 #, c-format
 msgid "unexpected reference \"%s\" - ignoring"
 msgstr ""
 
-#: gst/parse/grammar.y.in:1367
+#: gst/parse/grammar.y.in:1308
 #, c-format
 msgid "unexpected pad-reference \"%s\" - ignoring"
 msgstr ""
 
-#: gst/parse/grammar.y.in:1401 gst/parse/grammar.y.in:1412
+#: gst/parse/grammar.y.in:1342 gst/parse/grammar.y.in:1353
 #, c-format
 msgid "could not parse caps \"%s\""
 msgstr ""
 
-#: gst/parse/grammar.y.in:1440
+#: gst/parse/grammar.y.in:1381
 #, c-format
 msgid "no sink element for URI \"%s\""
 msgstr ""
 
-#: gst/parse/grammar.y.in:1459
+#: gst/parse/grammar.y.in:1400
 #, c-format
 msgid "no source element for URI \"%s\""
 msgstr ""
 
-#: gst/parse/grammar.y.in:1549
+#: gst/parse/grammar.y.in:1490
 msgid "syntax error"
 msgstr ""
 
-#: gst/parse/grammar.y.in:1572
+#: gst/parse/grammar.y.in:1513
 #, c-format
 msgid "specified empty bin \"%s\", not allowed"
 msgstr ""
 
-#: gst/parse/grammar.y.in:1582
+#: gst/parse/grammar.y.in:1523
 #, c-format
 msgid "no bin \"%s\", unpacking elements"
 msgstr ""
 
-#: gst/parse/grammar.y.in:1613
+#: gst/parse/grammar.y.in:1554
 msgid "empty pipeline not allowed"
 msgstr ""
 
-#: libs/gst/base/gstbasesink.c:1249
+#: libs/gst/base/gstbasesink.c:1250
 msgid "Pipeline construction is invalid, please add queues."
 msgstr ""
 
-#: libs/gst/base/gstbasesink.c:3147
+#: libs/gst/base/gstbasesink.c:3148
 msgid "A lot of buffers are being dropped."
 msgstr ""
 
-#: libs/gst/base/gstbasesink.c:3803
+#: libs/gst/base/gstbasesink.c:3806
 msgid "Internal data flow problem."
 msgstr ""
 
-#: libs/gst/base/gstbasesink.c:4645 libs/gst/base/gstbasesrc.c:2820
+#: libs/gst/base/gstbasesink.c:4648 libs/gst/base/gstbasesrc.c:2818
 msgid "Internal data flow error."
 msgstr ""
 
-#: libs/gst/base/gstbasesrc.c:2750
+#: libs/gst/base/gstbasesrc.c:2748
 msgid "Internal clock error."
 msgstr ""
 
-#: libs/gst/base/gstbasesrc.c:2778 plugins/elements/gstdownloadbuffer.c:850
+#: libs/gst/base/gstbasesrc.c:2776 plugins/elements/gstdownloadbuffer.c:850
 #: plugins/elements/gstdownloadbuffer.c:1277
 msgid "Failed to map buffer."
 msgstr ""
@@ -1315,98 +1315,93 @@ msgstr ""
 msgid "Stream contains no data."
 msgstr ""
 
-#: tools/gst-inspect.c:361
+#: tools/gst-inspect.c:359
 #, c-format
 msgid "%sImplemented Interfaces%s:\n"
 msgstr ""
 
-#: tools/gst-inspect.c:378
-#, c-format
-msgid "%sElement Flags%s:\n"
-msgstr ""
-
-#: tools/gst-inspect.c:501
+#: tools/gst-inspect.c:471
 msgid "readable"
 msgstr ""
 
-#: tools/gst-inspect.c:506
+#: tools/gst-inspect.c:476
 msgid "writable"
 msgstr ""
 
-#: tools/gst-inspect.c:511
+#: tools/gst-inspect.c:481
 msgid "deprecated"
 msgstr ""
 
-#: tools/gst-inspect.c:515
+#: tools/gst-inspect.c:485
 msgid "controllable"
 msgstr ""
 
-#: tools/gst-inspect.c:520
+#: tools/gst-inspect.c:490
 msgid "conditionally available"
 msgstr ""
 
-#: tools/gst-inspect.c:526
+#: tools/gst-inspect.c:496
 msgid "can be set only at object construction time"
 msgstr ""
 
-#: tools/gst-inspect.c:529
+#: tools/gst-inspect.c:499
 msgid "changeable in NULL, READY, PAUSED or PLAYING state"
 msgstr ""
 
-#: tools/gst-inspect.c:532
+#: tools/gst-inspect.c:502
 msgid "changeable only in NULL, READY or PAUSED state"
 msgstr ""
 
-#: tools/gst-inspect.c:535
+#: tools/gst-inspect.c:505
 msgid "changeable only in NULL or READY state"
 msgstr ""
 
-#: tools/gst-inspect.c:1303
+#: tools/gst-inspect.c:1273
 msgid "Blacklisted files:"
 msgstr ""
 
-#: tools/gst-inspect.c:1318 tools/gst-inspect.c:1457
+#: tools/gst-inspect.c:1288 tools/gst-inspect.c:1427
 #, c-format
 msgid "%sTotal count%s: %s"
 msgstr ""
 
-#: tools/gst-inspect.c:1320
+#: tools/gst-inspect.c:1290
 #, c-format
 msgid "%d blacklisted file"
 msgid_plural "%d blacklisted files"
 msgstr[0] ""
 msgstr[1] ""
 
-#: tools/gst-inspect.c:1459
+#: tools/gst-inspect.c:1429
 #, c-format
 msgid "%d plugin"
 msgid_plural "%d plugins"
 msgstr[0] ""
 msgstr[1] ""
 
-#: tools/gst-inspect.c:1462
+#: tools/gst-inspect.c:1432
 #, c-format
 msgid "%d blacklist entry"
 msgid_plural "%d blacklist entries"
 msgstr[0] ""
 msgstr[1] ""
 
-#: tools/gst-inspect.c:1467
+#: tools/gst-inspect.c:1437
 #, c-format
 msgid "%d feature"
 msgid_plural "%d features"
 msgstr[0] ""
 msgstr[1] ""
 
-#: tools/gst-inspect.c:2228
+#: tools/gst-inspect.c:2188
 msgid "Print all elements"
 msgstr ""
 
-#: tools/gst-inspect.c:2230
+#: tools/gst-inspect.c:2190
 msgid "Print list of blacklisted files"
 msgstr ""
 
-#: tools/gst-inspect.c:2232
+#: tools/gst-inspect.c:2192
 msgid ""
 "Print a machine-parsable list of features the specified plugin or all "
 "plugins provide.\n"
@@ -1414,46 +1409,46 @@ msgid ""
 "automatic plugin installation mechanisms"
 msgstr ""
 
-#: tools/gst-inspect.c:2237
+#: tools/gst-inspect.c:2197
 msgid "List the plugin contents"
 msgstr ""
 
-#: tools/gst-inspect.c:2239
+#: tools/gst-inspect.c:2199
 msgid ""
 "A slashes ('/') separated list of types of elements (also known as klass) to "
 "list. (unordered)"
 msgstr ""
 
-#: tools/gst-inspect.c:2242
+#: tools/gst-inspect.c:2202
 msgid "Check if the specified element or plugin exists"
 msgstr ""
 
-#: tools/gst-inspect.c:2245
+#: tools/gst-inspect.c:2205
 msgid ""
 "When checking if an element or plugin exists, also check that its version is "
 "at least the version specified"
 msgstr ""
 
-#: tools/gst-inspect.c:2249
+#: tools/gst-inspect.c:2209
 msgid "Print supported URI schemes, with the elements that implement them"
 msgstr ""
 
-#: tools/gst-inspect.c:2254
+#: tools/gst-inspect.c:2214
 msgid ""
 "Disable colors in output. You can also achieve the same by setting "
 "'GST_INSPECT_NO_COLORS' environment variable to any value."
 msgstr ""
 
-#: tools/gst-inspect.c:2262
+#: tools/gst-inspect.c:2222
 msgid "Color output, even when not sending to a tty."
 msgstr ""
 
-#: tools/gst-inspect.c:2436
+#: tools/gst-inspect.c:2396
 #, c-format
 msgid "Could not load plugin file: %s\n"
 msgstr ""
 
-#: tools/gst-inspect.c:2442
+#: tools/gst-inspect.c:2402
 #, c-format
 msgid "No such element or plugin '%s'\n"
 msgstr ""

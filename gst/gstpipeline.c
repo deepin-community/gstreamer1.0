@@ -693,6 +693,9 @@ gst_pipeline_do_latency (GstBin * bin)
   latency = pipeline->priv->latency;
   GST_OBJECT_UNLOCK (pipeline);
 
+  if (latency == GST_CLOCK_TIME_NONE)
+    return GST_BIN_CLASS (parent_class)->do_latency (bin);
+
   GST_DEBUG_OBJECT (pipeline, "querying latency");
 
   query = gst_query_new_latency ();
@@ -700,6 +703,10 @@ gst_pipeline_do_latency (GstBin * bin)
     gboolean live;
 
     gst_query_parse_latency (query, &live, &min_latency, &max_latency);
+
+    GST_OBJECT_LOCK (pipeline);
+    pipeline->priv->min_latency = min_latency;
+    GST_OBJECT_UNLOCK (pipeline);
 
     GST_DEBUG_OBJECT (pipeline,
         "got min latency %" GST_TIME_FORMAT ", max latency %"
@@ -715,27 +722,13 @@ gst_pipeline_do_latency (GstBin * bin)
               GST_TIME_ARGS (max_latency), GST_TIME_ARGS (min_latency)));
     }
 
-    /* If no static latency was configured then select the minimum latency */
-    if (latency == GST_CLOCK_TIME_NONE) {
-      latency = min_latency;
-    } else {
-      if (latency < min_latency) {
-        /* This is a problematic situation as we will most likely drop lots of
-         * data if we configure a too low latency */
-        GST_ELEMENT_WARNING (pipeline, CORE, CLOCK, (NULL),
-            ("Configured latency is lower than detected minimum latency: configured %"
-                GST_TIME_FORMAT " < min %" GST_TIME_FORMAT,
-                GST_TIME_ARGS (latency), GST_TIME_ARGS (min_latency)));
-      }
-      if (max_latency < latency) {
-        /* and this is basically the same check as further above. There is not
-         * enough buffering and the pipeline might not work correctly. */
-        GST_ELEMENT_WARNING (pipeline, CORE, CLOCK, (NULL),
-            ("Impossible to configure latency: max %" GST_TIME_FORMAT
-                " < configured %" GST_TIME_FORMAT
-                ". Add queues or other buffering elements.",
-                GST_TIME_ARGS (max_latency), GST_TIME_ARGS (latency)));
-      }
+    if (latency < min_latency) {
+      /* This is a problematic situation as we will most likely drop lots of
+       * data if we configure a too low latency */
+      GST_ELEMENT_WARNING (pipeline, CORE, CLOCK, (NULL),
+          ("Configured latency is lower than detected minimum latency: configured %"
+              GST_TIME_FORMAT " < min %" GST_TIME_FORMAT,
+              GST_TIME_ARGS (latency), GST_TIME_ARGS (min_latency)));
     }
   } else {
     /* this is not a real problem, we just don't configure any latency. */
@@ -744,23 +737,17 @@ gst_pipeline_do_latency (GstBin * bin)
   gst_query_unref (query);
 
 
-  if (latency != GST_CLOCK_TIME_NONE) {
-    GST_OBJECT_LOCK (pipeline);
-    pipeline->priv->min_latency = latency;
-    GST_OBJECT_UNLOCK (pipeline);
-
-    /* configure latency on elements */
-    res =
-        gst_element_send_event (GST_ELEMENT_CAST (pipeline),
-        gst_event_new_latency (latency));
-    if (res) {
-      GST_INFO_OBJECT (pipeline, "configured latency of %" GST_TIME_FORMAT,
-          GST_TIME_ARGS (latency));
-    } else {
-      GST_WARNING_OBJECT (pipeline,
-          "did not really configure latency of %" GST_TIME_FORMAT,
-          GST_TIME_ARGS (latency));
-    }
+  /* configure latency on elements */
+  res =
+      gst_element_send_event (GST_ELEMENT_CAST (pipeline),
+      gst_event_new_latency (latency));
+  if (res) {
+    GST_INFO_OBJECT (pipeline, "configured latency of %" GST_TIME_FORMAT,
+        GST_TIME_ARGS (latency));
+  } else {
+    GST_WARNING_OBJECT (pipeline,
+        "did not really configure latency of %" GST_TIME_FORMAT,
+        GST_TIME_ARGS (latency));
   }
 
   return res;

@@ -646,7 +646,7 @@ vasnprintf (char *resultbuf, size_t *lengthp, const char *format, va_list args)
               break;
 #else
               *p++ = 'l';
-              G_GNUC_FALLTHROUGH;
+               /*FALLTHROUGH*/
 #endif
 #endif
             case TYPE_LONGINT:
