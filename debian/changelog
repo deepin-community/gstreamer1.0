@@ -1,3 +1,12 @@
+gstreamer1.0 (1.24.6-1deepin2) unstable; urgency=medium
+
+  * fix(cve): CVE-2026-125704 (unknown) - value: On buffer
+    deserialization errors first unmap the buffer and then unref it
+    Upstream: https://gitlab.freedesktop.org/gstreamer/gstreamer/-
+    /commit/3703541094f2d8026a7a70765a1acd0341bd356f.patch
+
+ -- deepin-ci-robot <packages@deepin.org>  Thu, 12 Nov 2026 09:35:37 +0800
+
 gstreamer1.0 (1.24.6-1deepin1) unstable; urgency=medium
 
   * feat: add sw64 support.
